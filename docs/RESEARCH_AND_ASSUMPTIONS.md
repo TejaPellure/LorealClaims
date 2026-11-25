@@ -34,17 +34,16 @@ This is a proof of concept, so the library mixes real and invented records witho
 They are not research and must not be cited. They exist only to demonstrate Supported (a trial of the exact formula backs the claim), Not supported (the formula's own trial shows no effect on a benefit the ingredient alone is known for) and Inconclusive (only ingredient-level evidence). Everything else in the library is a real, PubMed-checked publication.
 
 ## What this means for verdicts
-Because no study tested a formula built here, the guardrail (a SUPPORTED verdict needs finished-product evidence of the same formula) keeps most verdicts at **Inconclusive**, with a score showing how close the ingredient evidence is. To change that, add a finished-product study for the product in the Evidence library (link it to the product), then evaluate again. The matched ingredient studies still drive the score, the reasoning and the recommended tests.
+Most formulas built here have no study of their own, so Claude usually cannot mark them SUPPORTED: its rules require a finished-product study of the exact formula, so results are mostly **Inconclusive**. To change that, add a finished-product study for the product in the Evidence library (link it to the product), then evaluate again. Studies on the ingredients still shape Claude's score, reasoning and recommended tests.
 
 ## Assumptions
 - A finished-product study applies to the exact formulation it is linked to; for any other formula it is "different formulation" evidence.
 - Ingredient-level studies never prove a finished-product claim on their own.
 - A study longer than the claimed timeframe does not prove the benefit already appears at the claimed time.
-- Unknown values (concentration, duration, effect size) are scored conservatively; a claim that leaves a field blank gets neutral credit for it.
+- A claimed percentage is only comparable with a reported effect when the source stated the effect; the playbook tells Claude to say so when it cannot compare.
 - `UNVERIFIED` evidence is excluded from assessments.
-- A claimed percentage is compared with a reported effect only when the unit is `%` and the source stated the effect.
-- Benefit matching is keyword-based (see AI_ASSESSMENT_ENGINE.md); unusual wording falls back to Claude's own judgement over a few context records.
-- The scoring weights are initial heuristics and need validation by a domain expert.
+- Claude decides which studies are about the claimed benefit; the backend sends all verified studies for the formula's ingredients.
+- The score is Claude's own rating and can vary slightly between runs; it needs validation by a domain expert.
 - Wording that implies treating a disease (for example "treats acne") may be a medicinal rather than cosmetic claim in many markets. The playbook asks Claude to flag this and suggest cosmetic wording; it does not state specific laws.
 
 ## Verification status

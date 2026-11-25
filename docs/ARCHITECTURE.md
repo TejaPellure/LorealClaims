@@ -13,8 +13,8 @@ One deployable application. The browser only talks to NestJS on its own origin; 
 | Single NestJS app serving the SPA | One container to run and secure; no CORS |
 | PostgreSQL + Prisma | Relational integrity, `Decimal` concentrations, typed migrations |
 | Metadata retrieval, no vector DB | Evidence is small and structured (ingredient, endpoint, duration, concentration); SQL filtering is explainable and auditable |
-| Deterministic score + Claude reasoning | The score must be reproducible; the LLM explains, it does not calculate |
-| Backend guardrails on the verdict | The scientific rules are enforced in code, not only in a prompt |
+| Claude does all the judging | Verdict, score and explanations come from one place, the model; the backend only gathers facts, validates the shape and stores the answer |
+| Strict prompt + playbook | The scientific rules (ingredient evidence is not product proof; SUPPORTED needs a study of the exact formula) are stated to Claude, not coded around it |
 | Immutable snapshots | An assessment is a record; later edits never rewrite it |
 | Claude through a host bridge | The Claude CLI uses the user's login, which a container cannot reach |
 | No review stage, statuses or versions | The product needs one short path from formula to answer; every extra step was removed |
@@ -23,7 +23,7 @@ One deployable application. The browser only talks to NestJS on its own origin; 
 `ingredients`, `evidence` (+ PDF upload/download), `products` (product + formulation, 100% validation), `claims`, `assessments` (engine + controllers). Cross-cutting code in `common/` (config, error filter, pagination, Decimal interceptor, health) and `prisma/`.
 
 ## Assessment engine (`modules/assessments/engine`)
-`evidence-retrieval.ts` (+ `benefit-match.ts`) -> `scoring.ts` -> `providers/providers.ts` (Claude via bridge) -> `ai-schema.ts` (validation) -> `guardrails.ts` -> `assessment-pipeline.ts` (orchestrates and persists). See [AI_ASSESSMENT_ENGINE.md](AI_ASSESSMENT_ENGINE.md).
+`evidence-retrieval.ts` -> `providers/providers.ts` (Claude via bridge) -> `ai-schema.ts` (shape validation) -> `assessment-pipeline.ts` (orchestrates and stores). See [AI_ASSESSMENT_ENGINE.md](AI_ASSESSMENT_ENGINE.md).
 
 ## Frontend (`apps/web/src`)
 `pages/` (Formulate, Claims, Report, Ingredients, Evidence), `features/` (studio, claims, evidence, ingredients), `components/ui` primitives, `services/api.ts`, `hooks/`, `layouts/`. Native React state only.
@@ -31,9 +31,9 @@ One deployable application. The browser only talks to NestJS on its own origin; 
 ## Request flow: submitting a claim
 1. UI `POST /api/claims` (product, title; optionally description, benefit chips, improvement %, weeks, population). The server binds the product's formulation.
 2. UI `POST /api/claims/assess { claimId }`.
-3. Server loads claim + formulation + ingredients, checks readiness (title present, formulation = 100%), retrieves and classifies evidence, scores it.
+3. Server loads claim + formulation + ingredients, checks readiness (title present, formulation = 100%) and gathers every verified study for the formula's ingredients.
 4. Duplicate inputs return the stored assessment; concurrent identical runs share one call.
-5. Claude returns structured JSON (via the bridge); the server validates it (one retry with feedback), applies guardrails, saves assessment + evidence links + snapshots.
+5. Claude returns structured JSON (verdict, score, explanations, the role of each study) via the bridge; the server validates its shape (one retry with feedback) and saves it unchanged with snapshots.
 6. The saved assessment is returned; the UI shows the report.
 
 ## Limitations

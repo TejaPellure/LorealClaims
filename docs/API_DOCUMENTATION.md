@@ -28,7 +28,7 @@ Base URL: `http://localhost:3000/api`. JSON in/out.
 |---|---|---|
 | POST | `/claims/assess` | Body `{ "claimId": uuid, "forceNew"?: boolean }`. Returns the saved assessment plus `reused` (true if an identical assessment already existed). 400 not ready, 404 unknown claim, 422 refusal, 502 invalid Claude output, 503 Claude unavailable (bridge down, not logged in), 504 timeout |
 | GET | `/assessments` | `q`, `verdict` |
-| GET | `/assessments/meta` | model, prompt/rubric versions, weights |
+| GET | `/assessments/meta` | Claude model and prompt version |
 | GET | `/assessments/:id` | full report: breakdown, snapshots, evidence links |
 | GET | `/claims/:id/assessments` | every evaluation of a claim |
 

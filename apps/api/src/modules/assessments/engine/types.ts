@@ -1,36 +1,24 @@
 // Shared types for the claim assessment engine.
-import { EffectDirection, EvidenceRole, EvidenceScope, EvidenceType, QualityRating, VerificationStatus, Verdict } from '@prisma/client';
+// The backend only gathers facts and stores Claude's answer. It does not score, rank by relevance or decide verdicts.
+import { EffectDirection, EvidenceScope, EvidenceType, QualityRating, VerificationStatus, Verdict } from '@prisma/client';
 
 /**
- * How a piece of evidence relates to the formulation being assessed.
- * This distinction is the heart of the scientific rules: ingredient evidence is never finished-product proof.
+ * How a study relates to the formulation being assessed. This is a FACT read from the database links,
+ * not a judgement: ingredient evidence is never finished-product proof, and Claude is told so.
  */
 export type EvidenceRelation =
-  | 'FINISHED_EXACT' // finished-product study of THIS formulation
+  | 'FINISHED_EXACT' // finished-product study linked to THIS formulation
   | 'FINISHED_OTHER' // finished-product study of a DIFFERENT formulation
   | 'INGREDIENT'; // study of an ingredient or simple vehicle
 
-/** 0..1 match factors between one evidence record and the claim/formulation. */
-export interface MatchFactors {
-  endpoint: number; // endpoint family match, scaled by reported magnitude vs claimed target
-  concentration: number;
-  duration: number;
-  population: number;
-  quality: number; // methodological quality weight
-  scope: number; // directness of the evidence (finished > ingredient)
-  fit: number; // blended score used only to pick the "anchor" evidence
-  magnitudeShortfall: boolean; // reported effect is smaller than the claimed effect
-}
-
-/** One evidence record as seen by the assessment (also stored as the immutable evidence snapshot). */
+/** One evidence record as sent to Claude (also stored as the immutable evidence snapshot). */
 export interface EvidenceCandidate {
   id: string;
   title: string;
   evidenceType: EvidenceType;
   scope: EvidenceScope;
   relation: EvidenceRelation;
-  role: EvidenceRole;
-  categoryMatch: boolean;
+  benefits: string[];
   ingredientNames: string[];
   sourceName: string;
   doi: string | null;
@@ -42,7 +30,7 @@ export interface EvidenceCandidate {
   durationWeeks: number | null;
   testedSubject: string;
   testedConcentration: number | null;
-  formulatedConcentration: number | null; // concentration of the linked ingredient in THIS formulation
+  formulatedConcentration: number | null; // concentration of the linked ingredient in THIS formulation (a fact from the formula)
   endpoint: string;
   resultsSummary: string;
   effectDirection: EffectDirection;
@@ -50,7 +38,6 @@ export interface EvidenceCandidate {
   limitations: string;
   quality: QualityRating;
   status: VerificationStatus;
-  factors: MatchFactors;
 }
 
 export interface ClaimInput {
@@ -70,44 +57,39 @@ export interface FormulationInput {
   ingredients: { ingredientId: string; name: string; inciName: string; percentage: number; function: string; minConcentration: number | null; maxConcentration: number | null }[];
 }
 
-export interface CriterionScore {
-  key: string;
-  label: string;
-  weight: number;
-  value: number; // 0..1
-  points: number;
-  explanation: string;
-}
-
-export interface ScoreResult {
-  total: number; // 0..100
-  rubricVersion: string;
-  anchorEvidenceId: string | null;
-  breakdown: CriterionScore[];
-  disclaimer: string;
-}
-
 export interface EvidencePackage {
   claim: ClaimInput;
   formulation: FormulationInput;
   evidence: EvidenceCandidate[];
 }
 
-// ───────────── Structured AI output ─────────────
+// ───────────── Structured AI output (everything below comes from Claude) ─────────────
 
 export interface EvidenceNote {
   evidenceId: string;
   note: string;
 }
 
+/** How Claude used each study. */
+export type UsageRole = 'SUPPORTS' | 'DISAGREES' | 'BACKGROUND';
+
+export interface EvidenceUsage {
+  evidenceId: string;
+  role: UsageRole;
+}
+
 export interface AiAssessment {
   verdict: Verdict;
+  /** 0-100: how strongly the supplied evidence supports the claim as worded. Claude's own judgement. */
+  score: number;
+  scoreExplanation: string;
   summary: string;
   strengths: string[];
   limitations: string[];
   ingredientEvidenceAnalysis: EvidenceNote[];
   formulationEvidenceAnalysis: EvidenceNote[];
   contradictoryEvidence: EvidenceNote[];
+  evidenceRoles: EvidenceUsage[];
   missingEvidence: string[];
   recommendedTests: string[];
   evidenceReferences: string[];

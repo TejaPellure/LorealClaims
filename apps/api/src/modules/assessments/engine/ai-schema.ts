@@ -1,6 +1,8 @@
-// Structured AI output: JSON schema (sent to Claude) and the server-side validator (never trust the model).
+// Structured AI output: JSON schema (sent to Claude) and the server-side validator.
+// The validator checks that the answer is well-formed and only cites studies that were actually supplied.
+// It never changes Claude's verdict, score or reasoning.
 import { Verdict } from '@prisma/client';
-import { AiAssessment, EvidenceCandidate, EvidenceNote } from './types';
+import { AiAssessment, EvidenceCandidate, EvidenceNote, EvidenceUsage, UsageRole } from './types';
 
 const noteArray = {
   type: 'array',
@@ -18,20 +20,31 @@ export const AI_JSON_SCHEMA = {
   type: 'object',
   properties: {
     verdict: { type: 'string', enum: ['SUPPORTED', 'NOT_SUPPORTED', 'INCONCLUSIVE'] },
+    score: { type: 'integer', minimum: 0, maximum: 100 },
+    scoreExplanation: { type: 'string' },
     summary: { type: 'string' },
     strengths: stringArray,
     limitations: stringArray,
     ingredientEvidenceAnalysis: noteArray,
     formulationEvidenceAnalysis: noteArray,
     contradictoryEvidence: noteArray,
+    evidenceRoles: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: { evidenceId: { type: 'string' }, role: { type: 'string', enum: ['SUPPORTS', 'DISAGREES', 'BACKGROUND'] } },
+        required: ['evidenceId', 'role'],
+        additionalProperties: false,
+      },
+    },
     missingEvidence: stringArray,
     recommendedTests: stringArray,
     evidenceReferences: stringArray,
     reasoning: { type: 'string' },
   },
   required: [
-    'verdict', 'summary', 'strengths', 'limitations', 'ingredientEvidenceAnalysis', 'formulationEvidenceAnalysis',
-    'contradictoryEvidence', 'missingEvidence', 'recommendedTests', 'evidenceReferences', 'reasoning',
+    'verdict', 'score', 'scoreExplanation', 'summary', 'strengths', 'limitations', 'ingredientEvidenceAnalysis', 'formulationEvidenceAnalysis',
+    'contradictoryEvidence', 'evidenceRoles', 'missingEvidence', 'recommendedTests', 'evidenceReferences', 'reasoning',
   ],
   additionalProperties: false,
 };
@@ -44,8 +57,9 @@ export class InvalidAiResponseError extends Error {
 }
 
 const VERDICTS: Verdict[] = ['SUPPORTED', 'NOT_SUPPORTED', 'INCONCLUSIVE'];
+const ROLES: UsageRole[] = ['SUPPORTS', 'DISAGREES', 'BACKGROUND'];
 const MAX_TEXT = 6000;
-const MAX_ITEMS = 25;
+const MAX_ITEMS = 40;
 /** Models sometimes write the two characters backslash + n instead of a line break. */
 const cleanText = (value: string) => value.replace(/\\n/g, '\n').trim();
 
@@ -70,7 +84,7 @@ export function validateAiAssessment(raw: unknown, evidence: EvidenceCandidate[]
     }
     return value.slice(0, MAX_ITEMS).map((v: string) => cleanText(v).slice(0, MAX_TEXT)).filter(Boolean);
   };
-  /** Notes must cite real evidence IDs, and (optionally) only evidence of the right kind. */
+  /** Notes must cite real evidence ids, and (optionally) only evidence of the right kind. */
   const notes = (field: string, allowed: (e: EvidenceCandidate) => boolean, rule: string): EvidenceNote[] => {
     const value = obj[field];
     if (!Array.isArray(value)) {
@@ -89,12 +103,38 @@ export function validateAiAssessment(raw: unknown, evidence: EvidenceCandidate[]
       return [{ evidenceId: candidate.id, note: cleanText(entry.note).slice(0, MAX_TEXT) }];
     });
   };
+  const roles = (): EvidenceUsage[] => {
+    const value = obj.evidenceRoles;
+    if (!Array.isArray(value)) {
+      problems.push('"evidenceRoles" must be an array');
+      return [];
+    }
+    const seen = new Set<string>();
+    return value.slice(0, MAX_ITEMS).flatMap((item: unknown, index) => {
+      const entry = item as Partial<EvidenceUsage>;
+      if (typeof entry?.evidenceId !== 'string' || !byId.has(entry.evidenceId)) {
+        problems.push(`"evidenceRoles[${index}]" cites an unknown evidenceId`);
+        return [];
+      }
+      if (!ROLES.includes(entry.role as UsageRole)) {
+        problems.push(`"evidenceRoles[${index}].role" must be SUPPORTS, DISAGREES or BACKGROUND`);
+        return [];
+      }
+      if (seen.has(entry.evidenceId)) return [];
+      seen.add(entry.evidenceId);
+      return [{ evidenceId: entry.evidenceId, role: entry.role as UsageRole }];
+    });
+  };
 
   const verdict = obj.verdict as Verdict;
   if (!VERDICTS.includes(verdict)) problems.push('"verdict" must be SUPPORTED, NOT_SUPPORTED or INCONCLUSIVE');
+  const score = Number(obj.score);
+  if (!Number.isFinite(score) || score < 0 || score > 100) problems.push('"score" must be a number from 0 to 100');
 
   const result: AiAssessment = {
     verdict,
+    score: Math.round(score),
+    scoreExplanation: text('scoreExplanation'),
     summary: text('summary'),
     strengths: strings('strengths'),
     limitations: strings('limitations'),
@@ -102,6 +142,7 @@ export function validateAiAssessment(raw: unknown, evidence: EvidenceCandidate[]
     ingredientEvidenceAnalysis: notes('ingredientEvidenceAnalysis', (e) => e.relation === 'INGREDIENT', 'must cite ingredient-level evidence only'),
     formulationEvidenceAnalysis: notes('formulationEvidenceAnalysis', (e) => e.relation !== 'INGREDIENT', 'must cite finished-product evidence only'),
     contradictoryEvidence: notes('contradictoryEvidence', () => true, ''),
+    evidenceRoles: roles(),
     missingEvidence: strings('missingEvidence'),
     recommendedTests: strings('recommendedTests'),
     evidenceReferences: strings('evidenceReferences'),

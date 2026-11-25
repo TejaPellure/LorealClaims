@@ -4,7 +4,7 @@ import { Transform } from 'class-transformer';
 import { ArrayMaxSize, IsArray, IsInt, IsNumber, IsOptional, IsString, IsUUID, Max, MaxLength, Min, MinLength } from 'class-validator';
 import { pageArgs, paged, PaginationQueryDto } from '../../common/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { normalizeBenefit } from '../assessments/engine/benefit-match';
+import { normalizeBenefit } from '../../common/benefits';
 
 /** Empty strings from the UI count as "not provided". */
 const blankToUndefined = ({ value }: { value: unknown }) => (value === '' || value === null ? undefined : value);

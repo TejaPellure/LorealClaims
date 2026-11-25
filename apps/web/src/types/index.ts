@@ -39,12 +39,10 @@ export interface Claim {
   _count: { assessments: number };
 }
 
-export interface CriterionScore { key: string; label: string; weight: number; value: number; points: number; explanation: string }
-export interface ScoreResult { total: number; rubricVersion: string; breakdown: CriterionScore[]; disclaimer: string; anchorEvidenceId: string | null }
 export interface EvidenceNote { evidenceId: string; note: string }
 
 export interface AiResult {
-  verdict: Verdict; summary: string; strengths: string[]; limitations: string[]; ingredientEvidenceAnalysis: EvidenceNote[];
+  verdict: Verdict; score: number; scoreExplanation: string; summary: string; strengths: string[]; limitations: string[]; ingredientEvidenceAnalysis: EvidenceNote[];
   formulationEvidenceAnalysis: EvidenceNote[]; contradictoryEvidence: EvidenceNote[]; missingEvidence: string[];
   recommendedTests: string[]; evidenceReferences: string[]; reasoning: string;
 }
@@ -55,11 +53,11 @@ export interface AssessmentSummary {
 }
 
 export interface Assessment extends AssessmentSummary {
-  promptVersion: string; scoringVersion: string; scoreBreakdown: ScoreResult; summary: string; reasoning: string;
-  missingEvidence: string[]; recommendedTests: string[]; guardrailNotes: string[]; aiResult: AiResult;
+  promptVersion: string; scoreExplanation: string; summary: string; reasoning: string;
+  missingEvidence: string[]; recommendedTests: string[]; aiResult: AiResult;
   claim: AssessmentSummary['claim'] & { description?: string | null; benefits: string[]; targetValue?: number | null; measurementUnit: string; durationWeeks?: number | null; targetPopulation?: string | null };
   formulationSnapshot: { productName: string; ingredients: { name: string; inciName: string; percentage: number }[] };
   evidenceSnapshot: { id: string; relation: string; role: string; title: string; ingredientNames: string[] }[];
-  evidence: { evidenceId: string; role: 'SUPPORTING' | 'CONTRADICTORY' | 'CONTEXT'; relevanceScore: number; note?: string | null; evidence: { id: string; title: string; scope: EvidenceScope; status: VerificationStatus; doi?: string | null; pmid?: string | null; documents: { id: string }[] } }[];
+  evidence: { evidenceId: string; role: 'SUPPORTING' | 'CONTRADICTORY' | 'CONTEXT'; note?: string | null; evidence: { id: string; title: string; scope: EvidenceScope; status: VerificationStatus; doi?: string | null; pmid?: string | null; documents: { id: string }[] } }[];
   reused?: boolean;
 }

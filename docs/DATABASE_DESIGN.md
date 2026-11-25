@@ -17,8 +17,8 @@ UUID primary keys, enums for statuses, `Decimal` for scientific values (`Decimal
 | `Formulation` | A product's composition | immutable once created |
 | `FormulationIngredient` | Line items | unique `(formulationId, ingredientId)`; `percentage` Decimal; `position` |
 | `Claim` | Claim wording + optional description, `benefits[]`, `targetValue`, `durationWeeks`, `targetPopulation` | bound to one formulation; only the wording is required |
-| `Assessment` | Claude's result | `model`, prompt/rubric versions, `verdict`, `evidenceScore`, `scoreBreakdown`, `aiResult`, `guardrailNotes`, `inputHash`, three snapshots |
-| `AssessmentEvidence` | Evidence used + role | composite PK; SUPPORTING/CONTRADICTORY/CONTEXT; `relevanceScore` |
+| `Assessment` | Claude's result | `model`, `promptVersion`, `verdict`, `evidenceScore` and `scoreExplanation` (both from Claude), `aiResult`, `inputHash`, three snapshots |
+| `AssessmentEvidence` | Studies sent to Claude + the role Claude gave each | composite PK; SUPPORTING / CONTRADICTORY / CONTEXT |
 
 ## Relationships
 Product 1-N Formulation 1-N FormulationIngredient N-1 Ingredient. Formulation 1-N Claim 1-N Assessment. Evidence M:N Ingredient, Evidence M:N Formulation, Assessment M:N Evidence.

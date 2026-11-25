@@ -1,55 +1,33 @@
 # AI assessment engine
 
-> The score is a **prototype scoring rubric requiring scientific validation**, not a calibrated probability. Output is decision support, never regulatory approval.
+> **Claude does all the judging.** The verdict, the 0-100 evidence-strength score, which studies matter and how, and every explanation come from Claude. The backend does not score, rank by relevance, match keywords or override verdicts. It fetches facts from the database, checks that Claude's answer is well-formed, and stores it exactly as given. The score is Claude's rating, not a probability, and the output is decision support, never regulatory approval.
 
 ## Pipeline (`engine/assessment-pipeline.ts`)
-1. **Load** claim + formulation + ingredients from PostgreSQL. The client sends only `claimId`.
-2. **Readiness**: the claim has its wording (the only required field) and the formulation totals 100%. Description, benefit chips, improvement %, weeks and population are optional.
-3. **Retrieve** (`evidence-retrieval.ts`): non-UNVERIFIED evidence linked to any ingredient in the formula or directly to this formulation. A study is matched to the claim by `benefit-match.ts` (below). Up to 14 matching records are sent (contradictory ones are never dropped in favour of supporting ones) plus a few CONTEXT records that do not measure the claimed benefit (4, or 8 when nothing in the claim is recognisable) so Claude can still judge unusual wording.
-4. **Classify** each record: `FINISHED_EXACT`, `FINISHED_OTHER` (a different formulation) or `INGREDIENT`; role `SUPPORTING`, `CONTRADICTORY` (neutral or negative) or `CONTEXT`.
-5. **Score** deterministically (below).
-6. **Claude** returns a structured result (below).
-7. **Validate** (`ai-schema.ts`): verdict enum, required fields, every cited evidence id must exist in the package, ingredient notes may cite only ingredient evidence and formulation notes only finished-product evidence. Invalid output gets one retry with the problems fed back, then a 502. Nothing unvalidated is stored or returned.
-8. **Guardrails** (`guardrails.ts`) adjust the verdict and record notes.
-9. **Persist** assessment, evidence links and snapshots.
+1. **Load** the claim, formulation and ingredients from PostgreSQL. The client sends only `claimId`.
+2. **Readiness**: the claim has its wording (the only required field) and the formulation totals 100%.
+3. **Gather evidence** (`evidence-retrieval.ts`): every non-UNVERIFIED study linked to an ingredient in the formula, or directly to this formulation, up to 40 records. Each is labelled with its relation to the formula (a fact read from the links): `FINISHED_EXACT` (a finished-product study of this exact formula), `FINISHED_OTHER` (another formula) or `INGREDIENT`, plus the percentage of its ingredient in this formula. No relevance filtering: studies on every benefit are sent and Claude decides which matter.
+4. **Ask Claude** (`providers/providers.ts`): the evidence package goes to the Claude bridge with the system prompt (rules + playbook).
+5. **Validate the shape** (`ai-schema.ts`): verdict is one of the three values, score is 0-100, required fields are present, every study Claude cites was actually supplied, ingredient notes cite only ingredient studies and formula notes only finished-product studies. Invalid output gets one retry with the problems fed back, then a 502. Claude's verdict, score and wording are never altered.
+6. **Store** the assessment, the role Claude gave each study, and immutable snapshots of the claim, formulation and evidence.
+
+## What Claude receives
+- **System prompt** (`engine/prompt.ts`, version `claims-assess-v5`): the rules (below) plus the **evaluation playbook** (`engine/playbook.ts`). The bridge runs the CLI in an empty folder with the prompt on stdin, so nothing else influences an evaluation.
+- **User message**: compact JSON with the claim (wording, optional description, benefit chips, optional improvement, weeks, population), the formula (ingredient, percentage, role, sourced reference range if any) and the evidence records.
+
+### Rules in the prompt
+Ingredient evidence is not finished-product proof; a study of this exact formula is the strongest evidence; first decide which studies are about the claimed benefit; compare concentration, population, duration, endpoint, quality and effect size; never invent evidence or ids; SUPPORTED needs a finished-product study of this exact formula; NOT_SUPPORTED when evidence contradicts the claim (for example this formula's own study measured the benefit and found nothing); missing evidence is INCONCLUSIVE, not false.
+
+### Playbook (`engine/playbook.ts`)
+Reading the claim from all its parts, mapping claims to measurable endpoints (corneometry, TEWL, profilometry, sebumeter, lesion counts...), reading effect sizes ("up to X%" is a best case; a share of responders is not a percentage reduction), timeframe, dose and population caveats, an evidence-quality ladder, cosmetic versus medicinal wording, formula-level cautions, and writing for two audiences. It contains judgement rules, never study facts.
+
+## What Claude returns (structured JSON)
+`verdict` (SUPPORTED / NOT_SUPPORTED / INCONCLUSIVE), `score` (integer 0-100: how strongly the evidence supports the claim as worded; the prompt asks for SUPPORTED 70-100, INCONCLUSIVE 25-69, NOT_SUPPORTED 0-40), `scoreExplanation`, `summary`, `strengths[]`, `limitations[]`, `missingEvidence[]`, `recommendedTests[]` (plain language, for non-scientists), and for scientists `reasoning`, `ingredientEvidenceAnalysis[]`, `formulationEvidenceAnalysis[]`, `contradictoryEvidence[]` (each with an evidence id and a note), `evidenceRoles[]` (SUPPORTS / DISAGREES / BACKGROUND for every study) and `evidenceReferences[]`.
 
 ## Claude via the bridge
-`providers/providers.ts` POSTs `{systemPrompt, prompt, jsonSchema, model}` to the bridge with `Authorization: Bearer <CLAUDE_BRIDGE_TOKEN>`. The bridge (`apps/claude-bridge/server.mjs`) runs `claude -p <prompt> --output-format json --json-schema <schema> --no-session-persistence --tools ""` on the host and returns the structured output. Failures map to 503 (bridge unreachable, token rejected, CLI not logged in, with the CLI's own message), 504 (timeout `CLAUDE_TIMEOUT_MS`, default 180 s), 422 (refusal), 502 (invalid or empty output).
-
-The prompt (`engine/prompt.ts`, version `claims-assess-v3`) is the fixed rules plus the **evaluation playbook** (`engine/playbook.ts`), sent as the system prompt. The user message is a compact package: the claim (wording, optional description, benefit chips, optional numbers), the formula (ingredient, percentage, role, sourced reference range if any) and the evidence records. The model is never asked for a score. The bridge runs the CLI in an empty folder with the prompt on stdin, so nothing but this prompt influences an evaluation.
-
-## Benefit matching (`engine/benefit-match.ts`)
-The claim text (wording + description + chips) and each study (benefit tags + endpoint + title) are reduced to concepts (hydration, wrinkle, firmness, barrier, pigmentation, soothing, acne, oil, pores, exfoliation, antioxidant) with keyword patterns, so "reduces pimples", "blemish-prone" and the Pimples / blemishes chip meet the same concept. A shared concept, or an identical custom tag, is a match. Custom benefits that map to no concept still reach Claude as claim text and as CONTEXT records. Matching is a heuristic; Claude makes the final relevance judgement.
-
-## Evaluation playbook (`engine/playbook.ts`)
-Judgement rules handed to Claude with every evaluation: reading the claim from all its parts, mapping claims to measurable endpoints (corneometry, TEWL, profilometry, sebumeter, lesion counts...), reading effect sizes (an "up to X%" is a best case; a share of responders is not a percentage reduction), timeframe, dose and population caveats, an evidence-quality ladder, cosmetic versus medicinal wording (claims of treating a disease such as acne may be medicinal; suggest cosmetic wording and a regulatory review), and formula-level cautions. It contains rules, never study facts.
-
-## Structured response
-`verdict`, `summary`, `strengths[]`, `limitations[]`, `ingredientEvidenceAnalysis[{evidenceId,note}]`, `formulationEvidenceAnalysis[]`, `contradictoryEvidence[]`, `missingEvidence[]`, `recommendedTests[]`, `evidenceReferences[]`, `reasoning`.
-
-## Evidence Sufficiency Score (`engine/scoring.ts`, `prototype-rubric-v1`)
-Score = sum(weight x value) over 8 criteria, rounded, 0-100. Weights are configurable via `SCORING_WEIGHTS` (must total 100; an invalid override falls back to the defaults).
-
-| Criterion | Weight | Value (0-1) |
-|---|---:|---|
-| Methodological quality | 15 | anchor study quality (HIGH 1, MODERATE 0.7, LOW 0.4, VERY_LOW 0.2) |
-| Direct relevance | 15 | anchor: exact finished 1, other formulation 0.6, ingredient 0.4 |
-| Concentration similarity | 12 | formulated/tested; 1x to 2x = 1, above 2x = 0.8, unknown 0.5 (exact finished product 1) |
-| Endpoint and magnitude | 15 | benefit match x min(1, reported effect / claimed target); unknown magnitude, or no claimed target, 0.7 |
-| Duration match | 10 | study/claim; within +25% = 1; much longer 0.6; unknown study duration 0.3; claim names no timeframe 0.5 |
-| Population similarity | 8 | keyword overlap with the claim population (minimum 0.2); claim names no population 0.5 |
-| Finished-product testing | 15 | best supporting finished study: exact = quality, other formulation = 0.4 x quality |
-| Consistency | 10 | supporting quality weight / (supporting + neutral/contradictory) |
-
-The **anchor** is the best-fitting supporting study for the claim endpoint. No supporting evidence means score 0 and an INCONCLUSIVE verdict, not "false". The per-criterion breakdown is stored and shown in the report.
-
-## Guardrails
-- SUPPORTED requires exact finished-product supporting evidence, no exact contradiction, and score >= `SUPPORTED_MIN_SCORE` (60); otherwise INCONCLUSIVE.
-- NOT_SUPPORTED requires contradictory evidence or a magnitude shortfall; otherwise INCONCLUSIVE.
-- With only the seeded literature (none of it tested the user's own formulas), claims therefore come back INCONCLUSIVE or NOT_SUPPORTED until finished-product evidence for the formula is added and linked to the product.
+`POST` `{systemPrompt, prompt, jsonSchema, model}` with `Authorization: Bearer <CLAUDE_BRIDGE_TOKEN>`. The bridge (`apps/claude-bridge/server.mjs`) runs `claude -p --output-format json --json-schema <schema> --no-session-persistence --tools ""` on the host. Failures map to 503 (bridge unreachable, token rejected, CLI not logged in, with the CLI's own message), 504 (timeout `CLAUDE_TIMEOUT_MS`, default 180 s), 422 (refusal) and 502 (invalid or empty output).
 
 ## Duplicates and history
-`inputHash` fingerprints claim + formulation + evidence + prompt + weights. Identical submissions return the stored assessment (`reused: true`); concurrent identical submissions share one call; `forceNew` creates another record. Old assessments are never modified.
+`inputHash` fingerprints claim + formulation + evidence + prompt version. Identical submissions return the stored assessment (`reused: true`); concurrent identical submissions share one call; `forceNew` creates another record. Old assessments are never modified.
 
 ## Limitations
-Population matching is keyword-based. Effect sizes are compared only when the source stated them. The rubric weights are initial values. An evaluation takes about 1-2 minutes.
+Because Claude is the only judge, the same claim can score a few points differently between runs, and the scientific rules (such as "SUPPORTED needs a study of this exact formula") are enforced by the prompt rather than by code. An evaluation takes about 1-2 minutes.

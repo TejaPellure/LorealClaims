@@ -11,7 +11,7 @@ One NestJS app (REST `/api`) + one PostgreSQL + one compiled React SPA served by
 
 ```
 apps/api/src/modules/{ingredients,evidence,products,claims,assessments}
-apps/api/src/modules/assessments/engine/  retrieval, benefit-match, scoring, playbook, prompt, ai-schema, guardrails, providers (Claude), pipeline
+apps/api/src/modules/assessments/engine/  retrieval, playbook, prompt, ai-schema, providers (Claude), pipeline
 apps/api/src/common/                      config, error filter, pagination, Decimal interceptor, health
 apps/web/src/{pages,features,components,hooks,services,types,layouts,lib}
 apps/claude-bridge/server.mjs             `claude -p` as authenticated HTTP (host process, zero deps)
@@ -47,8 +47,8 @@ Edit `prisma/schema.prisma`, then `npx prisma migrate dev --name <change>` (need
 2. Distinguish ingredient-level, finished-product (this formula), other-formulation, different-concentration and contradictory evidence.
 3. Never fabricate studies, DOIs, PMIDs, results or evidence IDs. The only invented evidence is the PoC set listed in docs/RESEARCH_AND_ASSUMPTIONS.md (source "Internal clinical study", no DOI/PMID); do not add more without recording it there. Missing evidence is stated.
 4. Missing evidence is not proof a claim is false: use INCONCLUSIVE.
-5. The score is computed by backend rules (`engine/scoring.ts`), labelled a prototype rubric, never presented as a probability.
-6. Claude's output passes `validateAiAssessment` and `applyGuardrails` before saving. SUPPORTED requires a finished-product study of this exact formula.
+5. Claude does all the judging: verdict, 0-100 score, which studies matter and every explanation. The backend must not score, filter by relevance, match keywords or override verdicts; it only gathers facts, validates the shape of the answer and stores it.
+6. Claude's output passes `validateAiAssessment` (shape and cited ids only) before saving. The scientific rules (for example SUPPORTED needs a study of this exact formula) live in the prompt and playbook.
 
 ## Testing
 Jest in `apps/api/test`. Replace Prisma and the provider with test doubles; never call the real model in tests. Add tests with every rule change.

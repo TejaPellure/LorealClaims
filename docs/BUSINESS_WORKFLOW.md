@@ -21,7 +21,7 @@ product name + ingredients   wording + benefit + target + weeks   Claude's evalu
 - **Supported**: finished-product evidence for this exact formula supports the claim as worded.
 - **Not supported**: evidence contradicts the claim or does not reach its size or scope.
 - **Inconclusive**: not enough applicable evidence. This is the normal outcome when only ingredient-level studies exist.
-- The **evidence score** (0-100) shows how well the available evidence matches the claim. It is a prototype rubric, not a probability.
+- The **evidence strength** score (0-100) is Claude's rating of how well the available evidence backs the claim, with a plain explanation. It is a guide, not the chance the claim is true.
 
 ## Improving a result
 Add finished-product evidence for the formula in the Evidence library (link it to the product), then use "Evaluate again with Claude". Every earlier evaluation is kept.

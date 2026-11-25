@@ -1,6 +1,6 @@
 ---
 name: scientific-evidence
-description: Evidence provenance, ingredient vs finished-product evidence, assessment rules, scoring and prohibited assumptions for cosmetic claim substantiation. Use when editing the assessment engine, prompts, scoring, evidence data, or writing any scientific text in this project.
+description: Evidence provenance, ingredient vs finished-product evidence, assessment rules, assessment rules and prohibited assumptions for cosmetic claim substantiation. Use when editing the assessment engine, prompts, scoring, evidence data, or writing any scientific text in this project.
 ---
 
 # Scientific evidence rules
@@ -17,14 +17,14 @@ description: Evidence provenance, ingredient vs finished-product evidence, asses
 | `FINISHED_OTHER` | Finished-product study of a different formulation | Context only |
 | `INGREDIENT` | Ingredient or simple-vehicle study | No, never alone |
 
-## Rules Claude and the backend must respect
+## Rules Claude must respect (stated in the prompt and playbook, applied by Claude)
 1. Ingredient benefit does not equal finished-product benefit.
-2. Compare tested vs formulated concentration, population, duration, endpoint, design, quality and reported magnitude vs the claimed target.
+2. Decide which studies are about the claimed benefit; compare tested vs formulated concentration, population, duration, endpoint, design, quality and reported effect size against the claim.
 3. A 12-week result does not prove a 4-week benefit; a lower tested concentration does not prove a higher formulated one works as claimed.
-4. SUPPORTED needs exact finished-product evidence and score >= `SUPPORTED_MIN_SCORE`. NOT_SUPPORTED needs contradictory evidence or a magnitude shortfall. Otherwise INCONCLUSIVE. Missing evidence is never "false".
+4. SUPPORTED needs a finished-product study of this exact formula. NOT_SUPPORTED needs evidence that contradicts the claim or falls short of it. Otherwise INCONCLUSIVE. Missing evidence is never "false".
 5. Reference concentration ranges are context, not proof of safety or efficacy.
-6. Claude's reasoning and the deterministic score are separate outputs. The score is a prototype rubric, not a probability.
+6. The score (0-100) is Claude's own rating of how strongly the evidence supports the claim, consistent with the verdict (the prompt asks SUPPORTED 70-100, INCONCLUSIVE 25-69, NOT_SUPPORTED 0-40). It is not a probability.
 7. Output is decision support for scientific evaluators, never legal or regulatory approval.
 
-## Scoring (`engine/scoring.ts`, `prototype-rubric-v1`)
-Weights (configurable, sum 100): quality 15, direct relevance 15, concentration 12, endpoint and magnitude 15, duration 10, population 8, finished-product testing 15, consistency 10. Most criteria use the best "anchor" supporting study; finished-product testing and consistency use all relevant evidence. Unknown values score conservatively. Any rubric change bumps `RUBRIC_VERSION` and updates docs/AI_ASSESSMENT_ENGINE.md.
+## Who judges
+Claude does, entirely. The backend labels each study's relation to the formula (a fact from the database links), validates the answer's shape and stores it. It does not score, filter by relevance, match keywords or override verdicts.

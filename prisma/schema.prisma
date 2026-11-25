@@ -254,16 +254,14 @@ model Assessment {
   formulationId       String
   model               String // Claude model that produced the reasoning
   promptVersion       String
-  scoringVersion      String
   inputHash           String // fingerprint of claim + formulation + evidence; detects duplicate submissions
   verdict             Verdict
-  evidenceScore       Int // 0-100 deterministic backend rubric (NOT a probability)
-  scoreBreakdown      Json // per-criterion score, weight and explanation
+  evidenceScore       Int // 0-100, given by Claude: how strongly the evidence supports the claim (NOT a probability)
+  scoreExplanation    String // Claude's plain-language reason for the score
   summary             String
   reasoning           String
   missingEvidence     String[]
   recommendedTests    String[]
-  guardrailNotes      String[] // backend overrides applied to the AI verdict
   aiResult            Json // validated structured AI output
   rawResponse         Json? // raw provider payload (kept for audit)
   claimSnapshot       Json // claim as assessed
@@ -281,12 +279,11 @@ model Assessment {
   @@index([inputHash])
 }
 
-/// Which evidence record was used by an assessment, and in what role.
+/// Which evidence record was sent to Claude for an assessment, and the role Claude gave it.
 model AssessmentEvidence {
   assessmentId   String
   evidenceId     String
   role           EvidenceRole
-  relevanceScore Decimal      @db.Decimal(4, 3) // 0-1 deterministic match score
   note           String?
 
   assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)

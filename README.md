@@ -2,13 +2,12 @@
 
 Formulate a cosmetic product, write the claim you want to make, and **Claude evaluates whether the available scientific evidence supports it**, with an explainable, traceable report.
 
-> Decision support, not approval. The score is a prototype rubric needing scientific validation, and an evaluation never constitutes regulatory approval.
+> Decision support, not approval. Claude gives the score and every judgement; the score is its rating of how well the evidence backs the claim, not a probability, and an evaluation never constitutes regulatory approval.
 
 ## The flow (3 steps)
 
 1. **Formulate**: type a product name, add ingredients (drag or click Add), set concentrations so they total 100%, save.
 2. **Claim**: write a claim title (the only required field), optionally a description, benefit chips (pick presets or add your own) and the numbers you know (improvement %, weeks, population). Claude reads the title, the description and the fields together. Submitting sends it to Claude immediately. Earlier claims are behind the **History** button.
-3. **Result**: the report shows the verdict (Supported / Not supported / Inconclusive), a transparent 0-100 evidence score, Claude's reasoning, strengths, limitations, missing evidence, recommended tests and the exact studies used.
 
 Plus two libraries: **Ingredients** (16) and **Evidence** (29 real, PubMed-verified studies, at least one for every ingredient that has any; add your own and upload PDFs). When you evaluate a claim, Claude is given the evidence for the ingredients in your formula, so a niacinamide product claiming fewer pimples or smaller pores is judged against the real niacinamide acne and sebum studies.
 

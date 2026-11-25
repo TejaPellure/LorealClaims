@@ -1,19 +1,17 @@
-// The assessment pipeline: retrieval -> scoring -> Claude -> validation -> guardrails -> persistence.
-// Framework-light on purpose (plain class, constructor injection by hand) so it is easy to test.
+// The assessment pipeline: load -> gather evidence -> ask Claude -> validate shape -> save.
+// Claude does ALL the judging (verdict, score, which studies matter, reasoning). The backend only supplies facts,
+// checks the answer is well-formed and cites real studies, and stores it. Framework-light on purpose so it is easy to test.
 import {
   BadGatewayException, BadRequestException, GatewayTimeoutException, NotFoundException, ServiceUnavailableException, UnprocessableEntityException,
 } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { EvidenceRole, Prisma, PrismaClient } from '@prisma/client';
 import { createHash } from 'crypto';
-import { AppConfig } from '../../../common/config';
 import { validateClaimReadiness } from '../../claims/claim-rules';
 import { InvalidAiResponseError, validateAiAssessment } from './ai-schema';
 import { retrieveEvidence } from './evidence-retrieval';
-import { applyGuardrails } from './guardrails';
 import { PROMPT_VERSION } from './prompt';
 import { AssessmentProvider, ProviderError } from './providers/providers';
-import { computeScore } from './scoring';
-import { ClaimInput, EvidencePackage } from './types';
+import { ClaimInput, EvidencePackage, UsageRole } from './types';
 
 export interface AssessOptions {
   /** Re-run even if an identical assessment already exists. */
@@ -21,6 +19,7 @@ export interface AssessOptions {
 }
 
 const MAX_ATTEMPTS = 2; // one retry with validation feedback if the model output is malformed
+const ROLE_TO_STORED: Record<UsageRole, EvidenceRole> = { SUPPORTS: 'SUPPORTING', DISAGREES: 'CONTRADICTORY', BACKGROUND: 'CONTEXT' };
 
 export class AssessmentPipeline {
   /** Duplicate protection for concurrent clicks: identical inputs share one in-flight run. */
@@ -29,7 +28,6 @@ export class AssessmentPipeline {
   constructor(
     private readonly prisma: PrismaClient,
     private readonly provider: AssessmentProvider,
-    private readonly config: AppConfig['assessment'],
   ) {}
 
   async run(claimId: string, options: AssessOptions = {}): Promise<{ id: string; reused: boolean }> {
@@ -72,26 +70,22 @@ export class AssessmentPipeline {
         minConcentration: l.ingredient.minConcentration?.toNumber() ?? null, maxConcentration: l.ingredient.maxConcentration?.toNumber() ?? null,
       })),
     };
-    const evidence = await retrieveEvidence(this.prisma, claimInput, formulation);
-    return { claim: claimInput, formulation, evidence };
+    return { claim: claimInput, formulation, evidence: await retrieveEvidence(this.prisma, formulation) };
   }
 
   /** Fingerprint of everything that influences the result. Same fingerprint => same assessment. */
   private hashInputs(pkg: EvidencePackage): string {
-    const material = JSON.stringify({ pkg, prompt: PROMPT_VERSION, weights: this.config.weights, min: this.config.supportedMinScore });
-    return createHash('sha256').update(material).digest('hex');
+    return createHash('sha256').update(JSON.stringify({ pkg, prompt: PROMPT_VERSION })).digest('hex');
   }
 
-  // ── Score, ask Claude, validate, apply guardrails, save ──
+  // ── Ask Claude, validate its answer, save it exactly as given ──
   private async execute(pkg: EvidencePackage, inputHash: string) {
-    const score = computeScore(pkg.evidence, this.config.weights);
-
     let feedback: string[] | undefined;
     let output: Awaited<ReturnType<AssessmentProvider['generate']>> | undefined;
     let validated: ReturnType<typeof validateAiAssessment> | undefined;
     for (let attempt = 1; attempt <= MAX_ATTEMPTS && !validated; attempt++) {
       try {
-        output = await this.provider.generate({ package: pkg, score, feedback });
+        output = await this.provider.generate({ package: pkg, feedback });
         validated = validateAiAssessment(output.payload, pkg.evidence);
       } catch (error) {
         const retryable = error instanceof InvalidAiResponseError || (error instanceof ProviderError && error.kind === 'BAD_RESPONSE');
@@ -104,18 +98,21 @@ export class AssessmentPipeline {
     }
     if (!validated || !output) throw new BadGatewayException('Claude did not return a usable assessment.');
 
-    const { verdict, notes } = applyGuardrails(validated.verdict, pkg.evidence, score.total, this.config.supportedMinScore);
+    const roleById = new Map(validated.evidenceRoles.map((r) => [r.evidenceId, r.role]));
     const notesById = new Map([...validated.ingredientEvidenceAnalysis, ...validated.formulationEvidenceAnalysis, ...validated.contradictoryEvidence].map((n) => [n.evidenceId, n.note]));
     const json = (value: unknown) => value as Prisma.InputJsonValue;
 
     const saved = await this.prisma.assessment.create({
       data: {
-        claimId: pkg.claim.id, formulationId: pkg.formulation.id, model: output.model, promptVersion: PROMPT_VERSION, scoringVersion: score.rubricVersion,
-        inputHash, verdict, evidenceScore: score.total, scoreBreakdown: json(score), summary: validated.summary, reasoning: validated.reasoning,
-        missingEvidence: validated.missingEvidence, recommendedTests: validated.recommendedTests, guardrailNotes: notes,
+        claimId: pkg.claim.id, formulationId: pkg.formulation.id, model: output.model, promptVersion: PROMPT_VERSION, inputHash,
+        verdict: validated.verdict, evidenceScore: validated.score, scoreExplanation: validated.scoreExplanation,
+        summary: validated.summary, reasoning: validated.reasoning, missingEvidence: validated.missingEvidence, recommendedTests: validated.recommendedTests,
         aiResult: json(validated), rawResponse: json(output.raw),
         claimSnapshot: json(pkg.claim), formulationSnapshot: json(pkg.formulation), evidenceSnapshot: json(pkg.evidence),
-        evidence: { create: pkg.evidence.map((e) => ({ evidenceId: e.id, role: e.role, relevanceScore: Number(e.factors.fit.toFixed(3)), note: notesById.get(e.id) })) },
+        evidence: {
+          // Every study that was sent is kept with the role Claude gave it (studies it did not mention are background).
+          create: pkg.evidence.map((e) => ({ evidenceId: e.id, role: ROLE_TO_STORED[roleById.get(e.id) ?? 'BACKGROUND'], note: notesById.get(e.id) })),
+        },
       },
     });
     return { id: saved.id, reused: false };

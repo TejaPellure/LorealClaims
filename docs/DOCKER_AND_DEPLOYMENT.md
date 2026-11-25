@@ -24,7 +24,7 @@ The app and database need only Docker. The bridge needs Node.js 22+ and a logged
 No `migrate reset` or other destructive command ever runs.
 
 ## Environment
-See `.env.example`: `POSTGRES_*`, `CLAUDE_BRIDGE_URL`, `CLAUDE_BRIDGE_TOKEN`, `CLAUDE_MODEL`, `CLAUDE_TIMEOUT_MS` (default 180000), `SCORING_WEIGHTS`, `SUPPORTED_MIN_SCORE`, `MAX_UPLOAD_MB`, `UPLOAD_DIR`. `.env` is git-ignored. Compose has safe local defaults for the database; `CLAUDE_BRIDGE_TOKEN` must be set (the same value for the bridge and the app).
+See `.env.example`: `POSTGRES_*`, `CLAUDE_BRIDGE_URL`, `CLAUDE_BRIDGE_TOKEN`, `CLAUDE_MODEL`, `CLAUDE_TIMEOUT_MS` (default 180000), `MAX_UPLOAD_MB`, `UPLOAD_DIR`. `.env` is git-ignored. Compose has safe local defaults for the database; `CLAUDE_BRIDGE_TOKEN` must be set (the same value for the bridge and the app).
 
 ## Persistence
 `docker compose down` keeps data. `docker compose down -v` removes `pgdata` and `uploads` (a fresh database reseeds the library). Back up with `docker compose exec db pg_dump -U cie cie > backup.sql`.

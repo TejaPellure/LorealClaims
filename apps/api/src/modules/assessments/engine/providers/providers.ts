@@ -2,11 +2,10 @@
 // It returns an UNVALIDATED payload; the pipeline validates it before anything is saved or returned.
 import { AI_JSON_SCHEMA } from '../ai-schema';
 import { buildUserPrompt, SYSTEM_PROMPT } from '../prompt';
-import { EvidencePackage, ScoreResult } from '../types';
+import { EvidencePackage } from '../types';
 
 export interface ProviderInput {
   package: EvidencePackage;
-  score: ScoreResult;
   /** Validation problems from a previous attempt, passed back so the model can correct itself. */
   feedback?: string[];
 }

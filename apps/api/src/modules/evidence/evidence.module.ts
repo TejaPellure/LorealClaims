@@ -18,7 +18,7 @@ import { join } from 'path';
 import { APP_CONFIG, AppConfig, loadConfig } from '../../common/config';
 import { pageArgs, paged, PaginationQueryDto } from '../../common/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { normalizeBenefit } from '../assessments/engine/benefit-match';
+import { normalizeBenefit } from '../../common/benefits';
 
 // ───────────────────────────── DTOs ─────────────────────────────
 

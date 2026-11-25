@@ -7,7 +7,6 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AssessmentPipeline } from './engine/assessment-pipeline';
 import { PROMPT_VERSION } from './engine/prompt';
 import { ClaudeProvider } from './engine/providers/providers';
-import { RUBRIC_VERSION } from './engine/scoring';
 
 // ───────────────────────────── DTOs ─────────────────────────────
 
@@ -52,8 +51,7 @@ export class AssessmentsService {
   }
 
   meta() {
-    const { assessment, claude } = this.config;
-    return { model: claude.model, promptVersion: PROMPT_VERSION, rubricVersion: RUBRIC_VERSION, weights: assessment.weights, supportedMinScore: assessment.supportedMinScore };
+    return { model: this.config.claude.model, promptVersion: PROMPT_VERSION };
   }
 
   async list(query: AssessmentQueryDto) {
@@ -106,7 +104,7 @@ export class AssessmentsController {
     {
       provide: ASSESSMENT_PIPELINE,
       inject: [PrismaService, APP_CONFIG],
-      useFactory: (prisma: PrismaService, config: AppConfig) => new AssessmentPipeline(prisma, new ClaudeProvider(config.claude), config.assessment),
+      useFactory: (prisma: PrismaService, config: AppConfig) => new AssessmentPipeline(prisma, new ClaudeProvider(config.claude)),
     },
   ],
 })

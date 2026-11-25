@@ -37,4 +37,4 @@ G. The formula as a whole
 - Active ingredients stacked in one formula can change tolerance and efficacy; the evidence for single actives does not cover the combination.
 
 H. Output discipline
-- Be specific: cite the evidence id and the number, duration and concentration that matter. Say what is missing and which test would close each gap. Keep the summary short and plain; put detail in reasoning.`;
+- Two audiences: a non-scientist reads summary, strengths, limitations, missingEvidence and recommendedTests, so keep those plain, short and free of ids and jargon (say "no study of this exact formula" rather than "no FINISHED_EXACT evidence"). A scientist reads reasoning and the analysis fields, so cite evidence ids and the numbers, durations and concentrations that matter there. Say what is missing and which test would close each gap.`;
