@@ -50,7 +50,10 @@ export function claimConcepts(claim: ClaimBenefitInput): Set<string> {
 /** True when the study measures something the claim is about (shared concept, or an identical custom tag). */
 export function studyMatchesClaim(claim: ClaimBenefitInput, study: StudyBenefitInput): boolean {
   const wanted = claimConcepts(claim);
-  const offered = conceptsOf([...study.benefits, study.endpoint, study.title].join(' '));
+  // Tags and endpoint say what the study measured. The title is only a fallback: product names in a title
+  // ("Clear Pore Serum trial") must not make a skin-tone result look like pore evidence.
+  let offered = conceptsOf([...study.benefits, study.endpoint].join(' '));
+  if (offered.size === 0) offered = conceptsOf(study.title);
   if ([...wanted].some((concept) => offered.has(concept))) return true;
   const claimTags = new Set(claim.benefits.map(normalizeBenefit));
   return study.benefits.map(normalizeBenefit).some((tag) => claimTags.has(tag));

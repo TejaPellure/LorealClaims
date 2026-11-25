@@ -29,6 +29,16 @@ describe('benefit matching', () => {
     expect(studyMatchesClaim({ title: 'Plumper skin', benefits: ['hydration'] }, study())).toBe(false);
   });
 
+  it('does not let a product name in a study title create a false match', () => {
+    const skinToneResult = { benefits: ['brightening', 'anti-pigmentation'], endpoint: 'Skin tone evenness and brightness (colorimetry)', title: 'Skin tone results from the 8-week Clear Pore Serum trial' };
+    expect(studyMatchesClaim({ title: 'Reduces the look of pores by 25% in 8 weeks', benefits: ['pores'] }, skinToneResult)).toBe(false);
+    expect(studyMatchesClaim({ title: 'Brightens skin tone by 20% in 4 weeks', benefits: ['brightening'] }, skinToneResult)).toBe(true);
+  });
+
+  it('falls back to the title when a study has no recognisable tags or endpoint', () => {
+    expect(studyMatchesClaim({ title: 'Fewer pimples', benefits: [] }, { benefits: ['custom'], endpoint: 'Global assessment', title: 'Gel for acne vulgaris' })).toBe(true);
+  });
+
   it('matches a user-defined chip that is identical to a study tag', () => {
     expect(studyMatchesClaim({ title: 'A new glow', benefits: ['Skin Radiance Boost'] }, study({ benefits: ['skin-radiance-boost'], endpoint: 'x', title: 'y' }))).toBe(true);
   });
