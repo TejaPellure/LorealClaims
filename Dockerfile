@@ -41,6 +41,8 @@ ENV NODE_ENV=production \
     PORT=3000 \
     UPLOAD_DIR=/data/uploads
 COPY --from=prod-deps /app/node_modules ./node_modules
+# npm may nest workspace-specific versions under apps/api/node_modules
+COPY --from=prod-deps /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=api-build /app/apps/api/dist ./apps/api/dist
 # The seed script (run with tsx) imports the pure assessment/validation modules from source.
 COPY --from=api-build /app/apps/api/src ./apps/api/src

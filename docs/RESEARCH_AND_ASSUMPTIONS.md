@@ -33,5 +33,7 @@ Public INCI lists exist for many marketed serums and creams, but manufacturers d
 - Claim percentages are compared to reported effect sizes only when the unit is `%`.
 - Scoring weights are initial heuristics and need scientific validation by a domain expert.
 
-## Not verified in this build
-The README Docker test command and the full `docker compose up --build` run were not executed in the build environment (Docker Desktop's engine was unavailable); migrations, seed, API, static serving and UI were verified against a throwaway PostgreSQL instead. The real Claude path was verified only against mocks (the host CLI session had expired).
+## Verification status
+`docker compose up --build` was run end to end on 2026-11-25 (Docker 29.2.1): image builds, migrations apply, the seed populates an empty database and is skipped on restart, the app serves the SPA and API on :3000 as the non-root `node` user, the container healthcheck is healthy, a live mock assessment is saved, and a PDF upload lands in the `uploads` volume. 54 API tests pass.
+
+Not verified: the real Claude path (verified only against mocks; the host CLI session had expired when the bridge was smoke-tested) and the README one-line Docker test command.
