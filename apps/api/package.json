@@ -1,0 +1,58 @@
+{
+  "name": "@cie/api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "nest build",
+    "start": "node dist/main.js",
+    "start:dev": "nest start --watch",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.0",
+    "@nestjs/config": "^4.0.0",
+    "@nestjs/core": "^11.1.0",
+    "@nestjs/mapped-types": "^2.1.1",
+    "@nestjs/platform-express": "^11.1.0",
+    "@nestjs/serve-static": "^5.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "helmet": "^8.1.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.0",
+    "@nestjs/testing": "^11.1.0",
+    "@types/express": "^5.0.0",
+    "@types/jest": "^30.0.0",
+    "@types/multer": "^2.0.0",
+    "@types/supertest": "^6.0.0",
+    "jest": "^30.0.0",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.4.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": ".",
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/test"
+    ],
+    "testRegex": ".*[.]spec[.]ts$",
+    "transform": {
+      "^.+[.]ts$": [
+        "ts-jest",
+        {
+          "tsconfig": "<rootDir>/tsconfig.json",
+          "diagnostics": false
+        }
+      ]
+    },
+    "testEnvironment": "node"
+  }
+}

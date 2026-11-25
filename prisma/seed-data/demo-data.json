@@ -1,0 +1,476 @@
+{
+  "meta": {
+    "datasetVersion": "1.0.0",
+    "notice": "Bibliographic records marked VERIFIED were checked against PubMed (E-utilities) on 2026-11-25 and their summaries only restate what each abstract says. Records marked DEMO are fictitious sample studies for demonstration; they are NOT real research. All formulations are ILLUSTRATIVE reconstructions, not manufacturer recipes.",
+    "researchNotes": "Public INCI lists exist for many marketed serums and creams, but manufacturers do not disclose exact percentages. Therefore every formulation here is flagged ILLUSTRATIVE and uses round example percentages."
+  },
+  "ingredients": [
+    {
+      "key": "aqua", "name": "Purified Water", "inciName": "Aqua",
+      "description": "Solvent and base component of most cosmetic emulsions and serums. Used to bring a formulation to 100%.",
+      "category": "BASE", "primaryFunction": "Solvent / base",
+      "commonApplications": ["Serums", "Lotions", "Creams"],
+      "solubility": "Universal cosmetic solvent for water-soluble ingredients.",
+      "status": "UNVERIFIED", "sources": []
+    },
+    {
+      "key": "glycerin", "name": "Glycerin", "inciName": "Glycerin", "chemicalName": "Propane-1,2,3-triol",
+      "description": "Widely used humectant that attracts and retains water in the stratum corneum.",
+      "category": "HUMECTANT", "primaryFunction": "Humectant",
+      "commonApplications": ["Moisturisers", "Serums", "Cleansers"],
+      "solubility": "Miscible with water.",
+      "status": "UNVERIFIED", "sources": []
+    },
+    {
+      "key": "niacinamide", "name": "Niacinamide", "inciName": "Niacinamide", "chemicalName": "Pyridine-3-carboxamide (vitamin B3 amide)",
+      "description": "Vitamin B3 derivative studied for effects on the appearance of ageing facial skin. The cited clinical study tested a 5% niacinamide formulation; this is not a recommended or proven range for other formulas.",
+      "category": "ACTIVE", "primaryFunction": "Skin-conditioning active",
+      "commonApplications": ["Anti-ageing serums", "Moisturisers", "Tone-evening products"],
+      "solubility": "Water soluble.",
+      "compatibilityNotes": "Compatibility with other actives and pH must be confirmed by formulation stability testing.",
+      "status": "VERIFIED",
+      "sources": [
+        { "name": "PubMed 16029679 - Bissett et al., Dermatol Surg 2005", "url": "https://pubmed.ncbi.nlm.nih.gov/16029679/" },
+        { "name": "PubMed 16209160 - Draelos et al., Cutis 2005", "url": "https://pubmed.ncbi.nlm.nih.gov/16209160/" }
+      ]
+    },
+    {
+      "key": "sodium-hyaluronate", "name": "Sodium Hyaluronate", "inciName": "Sodium Hyaluronate",
+      "description": "Sodium salt of hyaluronic acid, a high-water-binding polysaccharide used for hydration claims. Published topical studies use different molecular weights, which affects results.",
+      "category": "HUMECTANT", "primaryFunction": "Humectant / hydration active",
+      "commonApplications": ["Hydrating serums", "Anti-ageing creams"],
+      "solubility": "Water soluble; viscosity rises with molecular weight.",
+      "status": "VERIFIED",
+      "sources": [
+        { "name": "PubMed 22052267 - Pavicic et al., J Drugs Dermatol 2011", "url": "https://pubmed.ncbi.nlm.nih.gov/22052267/" },
+        { "name": "PubMed 24688623 - Jegasothy et al., J Clin Aesthet Dermatol 2014", "url": "https://pubmed.ncbi.nlm.nih.gov/24688623/" }
+      ]
+    },
+    {
+      "key": "panthenol", "name": "Panthenol", "inciName": "Panthenol", "chemicalName": "2,4-Dihydroxy-N-(3-hydroxypropyl)-3,3-dimethylbutanamide",
+      "description": "Provitamin B5 used as a moisturising and skin-conditioning ingredient.",
+      "category": "ACTIVE", "primaryFunction": "Moisturising / skin conditioning",
+      "commonApplications": ["Moisturisers", "Soothing products", "Serums"],
+      "solubility": "Water soluble.",
+      "status": "UNVERIFIED", "sources": []
+    },
+    {
+      "key": "ceramide-np", "name": "Ceramide NP", "inciName": "Ceramide NP",
+      "description": "Skin-identical lipid used in barrier-supporting moisturisers, usually combined with cholesterol and fatty acids.",
+      "category": "BARRIER_LIPID", "primaryFunction": "Barrier lipid",
+      "commonApplications": ["Barrier creams", "Dry-skin moisturisers"],
+      "solubility": "Oil/lipid phase; needs a suitable emulsion system.",
+      "compatibilityNotes": "Lipid ratios (ceramide : cholesterol : fatty acid) influence barrier performance; confirm with finished-product testing.",
+      "status": "UNVERIFIED",
+      "sources": [{ "name": "PubMed 22507050 - Draelos, Clin Dermatol 2012 (review of barrier repair creams)", "url": "https://pubmed.ncbi.nlm.nih.gov/22507050/" }]
+    },
+    {
+      "key": "cholesterol", "name": "Cholesterol", "inciName": "Cholesterol",
+      "description": "Skin-identical lipid used alongside ceramides in barrier-oriented formulations.",
+      "category": "BARRIER_LIPID", "primaryFunction": "Barrier lipid",
+      "commonApplications": ["Barrier creams"],
+      "status": "UNVERIFIED", "sources": []
+    },
+    {
+      "key": "squalane", "name": "Squalane", "inciName": "Squalane",
+      "description": "Stable hydrocarbon emollient that softens skin and improves spreadability.",
+      "category": "EMOLLIENT", "primaryFunction": "Emollient",
+      "commonApplications": ["Creams", "Serums", "Oils"],
+      "solubility": "Oil soluble.",
+      "status": "UNVERIFIED", "sources": []
+    },
+    {
+      "key": "tocopherol", "name": "Tocopherol", "inciName": "Tocopherol",
+      "description": "Vitamin E, used as an antioxidant to help protect oils in a formulation.",
+      "category": "ANTIOXIDANT", "primaryFunction": "Antioxidant",
+      "commonApplications": ["Creams", "Serums"],
+      "solubility": "Oil soluble.",
+      "status": "UNVERIFIED", "sources": []
+    },
+    {
+      "key": "phenoxyethanol", "name": "Phenoxyethanol", "inciName": "Phenoxyethanol",
+      "description": "Preservative used to protect water-containing formulations from microbial growth.",
+      "category": "PRESERVATIVE", "primaryFunction": "Preservative",
+      "commonApplications": ["Serums", "Creams", "Lotions"],
+      "maxConcentration": 1.0,
+      "concentrationSource": "EU Cosmetics Regulation (EC) No 1223/2009, Annex V (maximum 1.0% as a preservative)",
+      "regulatoryNotes": "Maximum 1.0% in finished EU cosmetic products. Verify the current Annex V entry for each target market.",
+      "status": "VERIFIED",
+      "sources": [{ "name": "EU CosIng database (ingredient and Annex V lookup)", "url": "https://ec.europa.eu/growth/tools-databases/cosing/" }]
+    },
+    {
+      "key": "xanthan-gum", "name": "Xanthan Gum", "inciName": "Xanthan Gum",
+      "description": "Polysaccharide thickener used to give serums and creams viscosity and suspension stability.",
+      "category": "TEXTURIZER", "primaryFunction": "Viscosity controlling agent",
+      "commonApplications": ["Serums", "Gels", "Creams"],
+      "solubility": "Disperses in water to form viscous solutions.",
+      "status": "UNVERIFIED", "sources": []
+    }
+  ],
+  "evidence": [
+    {
+      "key": "ev-bissett-2005",
+      "title": "Niacinamide: A B vitamin that improves aging facial skin appearance",
+      "evidenceType": "CLINICAL_STUDY", "scope": "INGREDIENT", "benefitCategories": ["ANTI_WRINKLE"],
+      "sourceName": "Dermatologic Surgery", "doi": "10.1111/j.1524-4725.2005.31732", "pmid": "16029679",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16029679/", "publishedAt": "2005-07-01",
+      "studyDesign": "Double-blind, left-right randomised vehicle-controlled (split-face)",
+      "sampleSize": 50, "population": "Female white subjects with clinical signs of facial photoaging",
+      "durationWeeks": 12, "testedSubject": "5% niacinamide formulation vs its vehicle", "testedConcentration": 5,
+      "endpoint": "Fine lines and wrinkles, hyperpigmented spots, red blotchiness, yellowing, elasticity (cutometry)",
+      "methodology": "Applied twice daily for 12 weeks; facial images and instrumental measures at baseline and 4-week intervals.",
+      "resultsSummary": "Abstract reports significant improvements for niacinamide in fine lines and wrinkles, hyperpigmented spots, red blotchiness, skin yellowing and elasticity. The abstract does not state a percentage wrinkle reduction.",
+      "effectDirection": "POSITIVE", "effectMagnitude": null,
+      "limitations": "Ingredient-level (single 5% test vehicle), not the finished formulation. Single population (female, white). 12-week duration. Authors are affiliated with a cosmetics manufacturer.",
+      "quality": "MODERATE", "status": "VERIFIED",
+      "ingredientKeys": ["niacinamide"], "formulationRefs": []
+    },
+    {
+      "key": "ev-pavicic-2011",
+      "title": "Efficacy of cream-based novel formulations of hyaluronic acid of different molecular weights in anti-wrinkle treatment",
+      "evidenceType": "CLINICAL_STUDY", "scope": "INGREDIENT", "benefitCategories": ["ANTI_WRINKLE", "HYDRATION"],
+      "sourceName": "Journal of Drugs in Dermatology", "doi": null, "pmid": "22052267",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/22052267/", "publishedAt": "2011-09-01",
+      "studyDesign": "Randomised, vehicle-controlled (periocular area, vehicle on the other eye)",
+      "sampleSize": 76, "population": "Female subjects aged 30-60 with periocular wrinkles",
+      "durationWeeks": 9, "testedSubject": "0.1% hyaluronan creams of 50, 130, 300, 800 and 2000 kDa", "testedConcentration": 0.1,
+      "endpoint": "Skin hydration, elasticity, wrinkle depth (replica morphometry, Ra and Rz)",
+      "methodology": "Twice-daily application for 60 days; measurements at baseline, 30 and 60 days.",
+      "resultsSummary": "All HA creams significantly improved hydration and elasticity vs placebo. Wrinkle depth improved significantly only for the 130 kDa and 50 kDa (low molecular weight) HA groups after 60 days.",
+      "effectDirection": "POSITIVE", "effectMagnitude": null,
+      "limitations": "Tested 0.1% hyaluronan creams; effect depends on molecular weight. Periocular area only. Not the finished formulation under assessment.",
+      "quality": "MODERATE", "status": "VERIFIED",
+      "ingredientKeys": ["sodium-hyaluronate"], "formulationRefs": []
+    },
+    {
+      "key": "ev-draelos-2005-rosacea",
+      "title": "Niacinamide-containing facial moisturizer improves skin barrier and benefits subjects with rosacea",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL", "scope": "FINISHED_PRODUCT", "benefitCategories": ["BARRIER_REPAIR", "HYDRATION", "SOOTHING"],
+      "sourceName": "Cutis", "doi": null, "pmid": "16209160",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16209160/", "publishedAt": "2005-08-01",
+      "studyDesign": "Randomised, investigator-blind, controlled observational study (untreated forearm control)",
+      "sampleSize": 50, "population": "Subjects with rosacea",
+      "durationWeeks": 4, "testedSubject": "A niacinamide-containing facial moisturizer (a different commercial formulation)", "testedConcentration": null,
+      "endpoint": "Stratum corneum barrier function (instrumental and DMSO probe), hydration, rosacea severity",
+      "methodology": "Moisturizer applied twice daily to face and one forearm for 4 weeks; other forearm untreated.",
+      "resultsSummary": "The abstract states instruments provided objective measures of improved barrier function and hydration; it does not give numeric effect sizes.",
+      "effectDirection": "POSITIVE", "effectMagnitude": null,
+      "limitations": "Finished product is a different formulation with undisclosed niacinamide level. Population limited to rosacea. Observational design with untreated control.",
+      "quality": "MODERATE", "status": "VERIFIED",
+      "ingredientKeys": ["niacinamide"], "formulationRefs": []
+    },
+    {
+      "key": "ev-jegasothy-2014",
+      "title": "Efficacy of a New Topical Nano-hyaluronic Acid in Humans",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL", "scope": "FINISHED_PRODUCT", "benefitCategories": ["ANTI_WRINKLE", "HYDRATION"],
+      "sourceName": "Journal of Clinical and Aesthetic Dermatology", "doi": null, "pmid": "24688623",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24688623/", "publishedAt": "2014-03-01",
+      "studyDesign": "Open evaluation of a product range with instrumental and rater assessment (control not described in the abstract)",
+      "sampleSize": 33, "population": "Women, average age 45.2",
+      "durationWeeks": 8, "testedSubject": "A nano-hyaluronic acid product range (lotion, serum, cream) - a different commercial formulation", "testedConcentration": null,
+      "endpoint": "Wrinkle depth (DermaTOP), hydration (Corneometer), elasticity (Cutometer), erythema",
+      "methodology": "Periorbital measurements over 8 weeks plus image rating by six trained raters.",
+      "resultsSummary": "Abstract reports significant moisturising effects after 2, 4 and 8 weeks and concludes wrinkle depth decreased by up to 40% and hydration increased by up to 96% at 8 weeks. The 'up to' figures are best-case values, not average effects.",
+      "effectDirection": "POSITIVE", "effectMagnitude": null,
+      "limitations": "Different formulation and undisclosed HA concentration. Small sample. Control group not described in the abstract. 'Up to' maxima overstate typical response.",
+      "quality": "LOW", "status": "VERIFIED",
+      "ingredientKeys": ["sodium-hyaluronate"], "formulationRefs": []
+    },
+    {
+      "key": "ev-draelos-2012-review",
+      "title": "New treatments for restoring impaired epidermal barrier permeability: skin barrier repair creams",
+      "evidenceType": "LITERATURE_REVIEW", "scope": "INGREDIENT", "benefitCategories": ["BARRIER_REPAIR"],
+      "sourceName": "Clinics in Dermatology", "doi": "10.1016/j.clindermatol.2011.08.018", "pmid": "22507050",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/22507050/", "publishedAt": "2012-05-01",
+      "studyDesign": "Narrative review",
+      "sampleSize": null, "population": "Not applicable (review)",
+      "durationWeeks": null, "testedSubject": "Barrier repair creams containing ceramides, hyaluronic acid and other substances", "testedConcentration": null,
+      "endpoint": "Skin barrier repair (qualitative)",
+      "methodology": "Reviews the formulation and effect of skin barrier creams.",
+      "resultsSummary": "Reviews externally applied substances such as ceramides and hyaluronic acid used to treat damaged skin barrier. The abstract is descriptive and gives no quantitative claim-level results.",
+      "effectDirection": "POSITIVE", "effectMagnitude": null,
+      "limitations": "Narrative review, no pooled quantitative estimate; cannot substantiate a specific numeric claim.",
+      "quality": "LOW", "status": "VERIFIED",
+      "ingredientKeys": ["ceramide-np", "sodium-hyaluronate"], "formulationRefs": []
+    },
+    {
+      "key": "ev-draelos-2023-ceramide",
+      "title": "Ceramide-Containing Adjunctive Skin Care for Skin Barrier Restoration During Acne Vulgaris Treatment",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL", "scope": "FINISHED_PRODUCT", "benefitCategories": ["BARRIER_REPAIR"],
+      "sourceName": "Journal of Drugs in Dermatology", "doi": "10.36849/JDD.7142", "pmid": "37276158",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37276158/", "publishedAt": "2023-06-01",
+      "studyDesign": "Double-blind, controlled (ceramide cleanser + lotion vs basic cleanser)",
+      "sampleSize": null, "population": "Acne vulgaris patients treated with adapalene 0.3% / benzoyl peroxide 2.5% gel",
+      "durationWeeks": 12, "testedSubject": "A ceramide-containing foaming cleanser and facial lotion (different formulation)", "testedConcentration": null,
+      "endpoint": "Transepidermal water loss (TEWL), dryness, lesion counts",
+      "methodology": "Participants used the acne gel once daily plus the ceramide routine or a basic cleanser twice daily; TEWL measured over 12 weeks.",
+      "resultsSummary": "Abstract states TEWL in the ceramide group remained significantly lower than control at all timepoints and improved from baseline by week 12. No numeric TEWL percentage is given in the abstract.",
+      "effectDirection": "POSITIVE", "effectMagnitude": null,
+      "limitations": "Acne population with irritating drug treatment, not general dry skin. Different formulation and undisclosed ceramide level. Barrier damage was induced by the acne drugs.",
+      "quality": "MODERATE", "status": "VERIFIED",
+      "ingredientKeys": ["ceramide-np"], "formulationRefs": []
+    },
+    {
+      "key": "ev-demo-hydra-hydration",
+      "title": "[DEMO] 4-week corneometry study of Hyaluronic Hydration Serum v1",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL", "scope": "FINISHED_PRODUCT", "benefitCategories": ["HYDRATION"],
+      "sourceName": "Fictitious internal study (demo data)", "doi": null, "pmid": null, "sourceUrl": null, "publishedAt": "2026-03-01",
+      "studyDesign": "Randomised, vehicle-controlled, single-centre (fictitious)",
+      "sampleSize": 40, "population": "Adults with normal to dry skin",
+      "durationWeeks": 4, "testedSubject": "Hyaluronic Hydration Serum, formulation v1", "testedConcentration": null,
+      "endpoint": "Skin surface hydration (Corneometer units)",
+      "methodology": "Twice-daily application on the forearm for 4 weeks versus vehicle; measurements at baseline, week 2 and week 4.",
+      "resultsSummary": "DEMO RESULT: mean hydration increased 32% from baseline at week 4, significantly above vehicle.",
+      "effectDirection": "POSITIVE", "effectMagnitude": 32,
+      "limitations": "Fictitious demo record. Single centre, forearm site only.",
+      "quality": "MODERATE", "status": "DEMO",
+      "ingredientKeys": ["sodium-hyaluronate", "glycerin"], "formulationRefs": [{ "product": "Hyaluronic Hydration Serum", "version": 1 }]
+    },
+    {
+      "key": "ev-demo-ceramide-tewl",
+      "title": "[DEMO] 2-week TEWL study of Ceramide Barrier Cream v1",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL", "scope": "FINISHED_PRODUCT", "benefitCategories": ["BARRIER_REPAIR"],
+      "sourceName": "Fictitious internal study (demo data)", "doi": null, "pmid": null, "sourceUrl": null, "publishedAt": "2026-02-10",
+      "studyDesign": "Open-label, untreated-site control (fictitious)",
+      "sampleSize": 30, "population": "Adults with dry skin",
+      "durationWeeks": 2, "testedSubject": "Ceramide Barrier Cream, formulation v1", "testedConcentration": null,
+      "endpoint": "Transepidermal water loss (TEWL)",
+      "methodology": "Cream applied twice daily to the lower leg for 2 weeks; TEWL measured at baseline and week 2.",
+      "resultsSummary": "DEMO RESULT: TEWL decreased 12% from baseline at week 2.",
+      "effectDirection": "POSITIVE", "effectMagnitude": 12,
+      "limitations": "Fictitious demo record. Only 2 weeks, open-label, small sample.",
+      "quality": "LOW", "status": "DEMO",
+      "ingredientKeys": ["ceramide-np"], "formulationRefs": [{ "product": "Ceramide Barrier Cream", "version": 1 }]
+    },
+    {
+      "key": "ev-demo-ceramide-null",
+      "title": "[DEMO] 4-week vehicle-controlled TEWL study of Ceramide Barrier Cream v1 (no significant difference)",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL", "scope": "FINISHED_PRODUCT", "benefitCategories": ["BARRIER_REPAIR"],
+      "sourceName": "Fictitious internal study (demo data)", "doi": null, "pmid": null, "sourceUrl": null, "publishedAt": "2026-05-15",
+      "studyDesign": "Randomised, vehicle-controlled (fictitious)",
+      "sampleSize": 24, "population": "Adults with dry skin",
+      "durationWeeks": 4, "testedSubject": "Ceramide Barrier Cream, formulation v1", "testedConcentration": null,
+      "endpoint": "Transepidermal water loss (TEWL)",
+      "methodology": "Randomised split-body design over 4 weeks.",
+      "resultsSummary": "DEMO RESULT: TEWL change versus vehicle was not statistically significant at week 4.",
+      "effectDirection": "NEUTRAL", "effectMagnitude": null,
+      "limitations": "Fictitious demo record. Small sample, possibly underpowered.",
+      "quality": "LOW", "status": "DEMO",
+      "ingredientKeys": ["ceramide-np"], "formulationRefs": [{ "product": "Ceramide Barrier Cream", "version": 1 }]
+    },
+    {
+      "key": "ev-demo-niacinamide-null",
+      "title": "[DEMO] 4-week profilometry of a 2% niacinamide serum (no significant wrinkle change)",
+      "evidenceType": "INSTRUMENTAL_MEASUREMENT", "scope": "INGREDIENT", "benefitCategories": ["ANTI_WRINKLE"],
+      "sourceName": "Fictitious internal study (demo data)", "doi": null, "pmid": null, "sourceUrl": null, "publishedAt": "2026-01-20",
+      "studyDesign": "Vehicle-controlled instrumental pilot (fictitious)",
+      "sampleSize": 30, "population": "Women aged 35-55",
+      "durationWeeks": 4, "testedSubject": "2% niacinamide serum vs vehicle", "testedConcentration": 2,
+      "endpoint": "Wrinkle depth by skin profilometry",
+      "methodology": "Twice-daily application for 4 weeks; 3D profilometry of the crow's-feet area.",
+      "resultsSummary": "DEMO RESULT: no significant change in wrinkle depth versus vehicle at 4 weeks.",
+      "effectDirection": "NEUTRAL", "effectMagnitude": null,
+      "limitations": "Fictitious demo record. Tested a lower concentration (2%) than the formulations under assessment and only 4 weeks.",
+      "quality": "LOW", "status": "DEMO",
+      "ingredientKeys": ["niacinamide"], "formulationRefs": []
+    },
+    {
+      "key": "ev-demo-glycerin-hydration",
+      "title": "[DEMO] 4-week hydration study of a 5% glycerin vehicle",
+      "evidenceType": "INSTRUMENTAL_MEASUREMENT", "scope": "INGREDIENT", "benefitCategories": ["HYDRATION"],
+      "sourceName": "Fictitious internal study (demo data)", "doi": null, "pmid": null, "sourceUrl": null, "publishedAt": "2025-11-05",
+      "studyDesign": "Vehicle-controlled (fictitious)",
+      "sampleSize": 25, "population": "Adults with dry skin",
+      "durationWeeks": 4, "testedSubject": "5% glycerin in aqueous gel", "testedConcentration": 5,
+      "endpoint": "Skin surface hydration (Corneometer)",
+      "methodology": "Twice-daily application for 4 weeks.",
+      "resultsSummary": "DEMO RESULT: hydration increased 18% from baseline at week 4.",
+      "effectDirection": "POSITIVE", "effectMagnitude": 18,
+      "limitations": "Fictitious demo record. Simple aqueous gel, not a finished formulation.",
+      "quality": "LOW", "status": "DEMO",
+      "ingredientKeys": ["glycerin"], "formulationRefs": []
+    },
+    {
+      "key": "ev-demo-squalane-emollience",
+      "title": "[DEMO] Instrumental emollience measurement of squalane at 2%",
+      "evidenceType": "INSTRUMENTAL_MEASUREMENT", "scope": "INGREDIENT", "benefitCategories": ["HYDRATION", "BARRIER_REPAIR"],
+      "sourceName": "Fictitious internal study (demo data)", "doi": null, "pmid": null, "sourceUrl": null, "publishedAt": "2025-10-12",
+      "studyDesign": "Single-arm instrumental (fictitious)",
+      "sampleSize": 20, "population": "Adults with normal skin",
+      "durationWeeks": 2, "testedSubject": "2% squalane in an emulsion", "testedConcentration": 2,
+      "endpoint": "Skin hydration and TEWL",
+      "methodology": "Single-arm, 2 weeks.",
+      "resultsSummary": "DEMO RESULT: small hydration increase, no TEWL change.",
+      "effectDirection": "POSITIVE", "effectMagnitude": 6,
+      "limitations": "Fictitious demo record. Single arm, no vehicle control.",
+      "quality": "VERY_LOW", "status": "DEMO",
+      "ingredientKeys": ["squalane"], "formulationRefs": []
+    },
+    {
+      "key": "ev-demo-phenoxyethanol-safety",
+      "title": "[DEMO] Human repeat-insult patch test of a serum preserved with 0.9% phenoxyethanol",
+      "evidenceType": "SAFETY_COMPATIBILITY_STUDY", "scope": "FINISHED_PRODUCT", "benefitCategories": ["OTHER"],
+      "sourceName": "Fictitious internal study (demo data)", "doi": null, "pmid": null, "sourceUrl": null, "publishedAt": "2026-04-02",
+      "studyDesign": "Repeat-insult patch test (fictitious)",
+      "sampleSize": 100, "population": "Healthy adults",
+      "durationWeeks": 6, "testedSubject": "Revitalizing Skin Serum, formulation v2", "testedConcentration": null,
+      "endpoint": "Skin irritation / sensitisation",
+      "methodology": "Standard induction and challenge phases.",
+      "resultsSummary": "DEMO RESULT: no irritation or sensitisation reactions observed.",
+      "effectDirection": "POSITIVE", "effectMagnitude": null,
+      "limitations": "Fictitious demo record. Safety only; says nothing about efficacy claims.",
+      "quality": "MODERATE", "status": "DEMO",
+      "ingredientKeys": ["phenoxyethanol"], "formulationRefs": [{ "product": "Revitalizing Skin Serum", "version": 2 }]
+    }
+  ],
+  "products": [
+    {
+      "name": "Revitalizing Skin Serum", "category": "Facial serum",
+      "description": "Illustrative anti-ageing and hydrating serum built around niacinamide.",
+      "createdBy": "SCIENTIST",
+      "formulations": [
+        {
+          "version": 1, "status": "FINAL", "basis": "ILLUSTRATIVE",
+          "basisNote": "Illustrative demo formula. Not a real manufacturer's formulation.",
+          "notes": "Initial prototype.",
+          "ingredients": [
+            { "ingredient": "niacinamide", "percentage": 5 },
+            { "ingredient": "glycerin", "percentage": 5 },
+            { "ingredient": "panthenol", "percentage": 1 },
+            { "ingredient": "sodium-hyaluronate", "percentage": 0.2 },
+            { "ingredient": "aqua", "percentage": 88.8 }
+          ]
+        },
+        {
+          "version": 2, "status": "FINAL", "basis": "ILLUSTRATIVE",
+          "basisNote": "Illustrative demo formula. Not a real manufacturer's formulation.",
+          "notes": "Adds squalane, antioxidant, preservative and thickener; raises hyaluronate.",
+          "ingredients": [
+            { "ingredient": "niacinamide", "percentage": 5 },
+            { "ingredient": "glycerin", "percentage": 4 },
+            { "ingredient": "panthenol", "percentage": 1 },
+            { "ingredient": "sodium-hyaluronate", "percentage": 0.5 },
+            { "ingredient": "squalane", "percentage": 2 },
+            { "ingredient": "tocopherol", "percentage": 0.5 },
+            { "ingredient": "phenoxyethanol", "percentage": 0.9 },
+            { "ingredient": "xanthan-gum", "percentage": 0.3 },
+            { "ingredient": "aqua", "percentage": 85.8 }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hyaluronic Hydration Serum", "category": "Facial serum",
+      "description": "Illustrative hydration serum based on sodium hyaluronate and glycerin.",
+      "createdBy": "SCIENTIST",
+      "formulations": [
+        {
+          "version": 1, "status": "FINAL", "basis": "ILLUSTRATIVE",
+          "basisNote": "Illustrative demo formula. Not a real manufacturer's formulation.",
+          "notes": "Hydration-focused prototype.",
+          "ingredients": [
+            { "ingredient": "sodium-hyaluronate", "percentage": 0.5 },
+            { "ingredient": "glycerin", "percentage": 6 },
+            { "ingredient": "panthenol", "percentage": 0.5 },
+            { "ingredient": "phenoxyethanol", "percentage": 0.9 },
+            { "ingredient": "xanthan-gum", "percentage": 0.2 },
+            { "ingredient": "aqua", "percentage": 91.9 }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ceramide Barrier Cream", "category": "Moisturising cream",
+      "description": "Illustrative barrier cream with ceramide NP and cholesterol.",
+      "createdBy": "SCIENTIST",
+      "formulations": [
+        {
+          "version": 1, "status": "FINAL", "basis": "ILLUSTRATIVE",
+          "basisNote": "Illustrative demo formula. Not a real manufacturer's formulation.",
+          "notes": "Barrier-repair prototype.",
+          "ingredients": [
+            { "ingredient": "ceramide-np", "percentage": 0.2 },
+            { "ingredient": "cholesterol", "percentage": 0.2 },
+            { "ingredient": "glycerin", "percentage": 5 },
+            { "ingredient": "squalane", "percentage": 4 },
+            { "ingredient": "panthenol", "percentage": 1 },
+            { "ingredient": "tocopherol", "percentage": 0.3 },
+            { "ingredient": "phenoxyethanol", "percentage": 0.9 },
+            { "ingredient": "xanthan-gum", "percentage": 0.3 },
+            { "ingredient": "aqua", "percentage": 88.1 }
+          ]
+        }
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "key": "claim-serum-wrinkle-v1", "product": "Revitalizing Skin Serum", "formulationVersion": 1,
+      "title": "Reduces wrinkle depth by 20% in 4 weeks",
+      "description": "Visible reduction in wrinkle depth after 4 weeks of use.",
+      "benefitCategory": "ANTI_WRINKLE", "targetOutcome": "Reduced wrinkle depth",
+      "measurementEndpoint": "Wrinkle depth by skin profilometry", "targetValue": 20, "measurementUnit": "%",
+      "durationWeeks": 4, "targetPopulation": "Women with facial wrinkles", "applicationFrequency": "Twice daily",
+      "scientificContext": "Niacinamide is the lead active.", "createdBy": "BUSINESS",
+      "managerNotes": "Feasible; needs finished-product clinical evidence.",
+      "assess": true, "review": null
+    },
+    {
+      "key": "claim-hydra-hydration-v1", "product": "Hyaluronic Hydration Serum", "formulationVersion": 1,
+      "title": "Increases skin hydration by 25% in 4 weeks",
+      "description": "Measurable increase in skin surface hydration after 4 weeks.",
+      "benefitCategory": "HYDRATION", "targetOutcome": "Increased skin hydration",
+      "measurementEndpoint": "Skin surface hydration (Corneometer)", "targetValue": 25, "measurementUnit": "%",
+      "durationWeeks": 4, "targetPopulation": "Adults with normal to dry skin", "applicationFrequency": "Twice daily",
+      "scientificContext": "Sodium hyaluronate and glycerin humectant system.", "createdBy": "BUSINESS",
+      "managerNotes": "Accepted. Directly testable by corneometry.",
+      "assess": true,
+      "review": { "decision": "APPROVED", "by": "EVALUATOR", "comments": "Finished-product corneometry (demo) exceeds the 25% target at 4 weeks with matching population. Approved for the claim as worded; repeat in an independent lab before launch." }
+    },
+    {
+      "key": "claim-ceramide-tewl-v1", "product": "Ceramide Barrier Cream", "formulationVersion": 1,
+      "title": "Reduces transepidermal water loss by 20% in 4 weeks",
+      "description": "Improved skin barrier measured by a 20% reduction in TEWL after 4 weeks.",
+      "benefitCategory": "BARRIER_REPAIR", "targetOutcome": "Reduced TEWL",
+      "measurementEndpoint": "Transepidermal water loss (TEWL)", "targetValue": 20, "measurementUnit": "%",
+      "durationWeeks": 4, "targetPopulation": "Adults with dry skin", "applicationFrequency": "Twice daily",
+      "scientificContext": "Ceramide NP with cholesterol.", "createdBy": "BUSINESS",
+      "managerNotes": "Accepted subject to evidence.",
+      "assess": true,
+      "review": { "decision": "MORE_EVIDENCE_REQUESTED", "by": "EVALUATOR", "comments": "Finished-product evidence shows 12% at 2 weeks and a non-significant 4-week trial. Run an adequately powered 4-week vehicle-controlled TEWL study before reconsidering." }
+    },
+    {
+      "key": "claim-serum-hydration-v2", "product": "Revitalizing Skin Serum", "formulationVersion": 2,
+      "title": "Improves skin hydration by 15% in 4 weeks",
+      "description": "Measurable hydration benefit after 4 weeks.",
+      "benefitCategory": "HYDRATION", "targetOutcome": "Increased skin hydration",
+      "measurementEndpoint": "Skin surface hydration (Corneometer)", "targetValue": 15, "measurementUnit": "%",
+      "durationWeeks": 4, "targetPopulation": "Adults with normal to dry skin", "applicationFrequency": "Twice daily",
+      "scientificContext": "Glycerin, panthenol and hyaluronate humectant system.", "createdBy": "BUSINESS",
+      "managerNotes": "Accepted.",
+      "assess": true, "review": null
+    },
+    {
+      "key": "claim-serum-wrinkle-v2", "product": "Revitalizing Skin Serum", "formulationVersion": 2,
+      "title": "Reduces wrinkle depth by 20% in 12 weeks",
+      "description": "Wrinkle-depth reduction after 12 weeks of use. Ready to run a live assessment.",
+      "benefitCategory": "ANTI_WRINKLE", "targetOutcome": "Reduced wrinkle depth",
+      "measurementEndpoint": "Wrinkle depth by skin profilometry", "targetValue": 20, "measurementUnit": "%",
+      "durationWeeks": 12, "targetPopulation": "Women with facial wrinkles", "applicationFrequency": "Twice daily",
+      "scientificContext": "Niacinamide 5% matches the concentration in the cited 12-week study.", "createdBy": "BUSINESS",
+      "managerNotes": "Accepted.",
+      "assess": false, "status": "READY_FOR_ASSESSMENT", "review": null
+    },
+    {
+      "key": "claim-hydra-brightening", "product": "Hyaluronic Hydration Serum", "formulationVersion": null,
+      "title": "Evens skin tone in 8 weeks",
+      "description": "Business proposal awaiting claim manager review.",
+      "benefitCategory": "BRIGHTENING", "targetOutcome": "More even skin tone",
+      "measurementEndpoint": "Skin colour uniformity (chromameter)", "targetValue": 10, "measurementUnit": "%",
+      "durationWeeks": 8, "targetPopulation": "Adults with uneven skin tone", "applicationFrequency": "Once daily",
+      "scientificContext": null, "createdBy": "BUSINESS",
+      "managerNotes": null,
+      "assess": false, "status": "SUBMITTED", "review": null
+    }
+  ]
+}

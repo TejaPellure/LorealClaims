@@ -1,0 +1,21 @@
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { Toaster } from 'sonner';
+import App from './App';
+import { TooltipProvider } from './components/ui/primitives';
+import { PersonaProvider } from './hooks/hooks';
+import './index.css';
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <BrowserRouter>
+      <PersonaProvider>
+        <TooltipProvider>
+          <App />
+          <Toaster position="bottom-right" richColors closeButton />
+        </TooltipProvider>
+      </PersonaProvider>
+    </BrowserRouter>
+  </StrictMode>,
+);

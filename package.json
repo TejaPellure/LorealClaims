@@ -1,0 +1,26 @@
+{
+  "name": "claims-intelligence-engine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cosmetic formulation research and claims substantiation platform",
+  "workspaces": ["apps/api", "apps/web"],
+  "scripts": {
+    "build": "npm run build -w apps/web && npm run build -w apps/api",
+    "test": "npm test -w apps/api",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts",
+    "bridge": "node apps/claude-bridge/server.mjs"
+  },
+  "prisma": { "schema": "prisma/schema.prisma", "seed": "tsx prisma/seed.ts" },
+  "dependencies": {
+    "@prisma/client": "6.19.3",
+    "prisma": "6.19.3",
+    "tsx": "^4.20.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3",
+    "@types/node": "^22.10.0"
+  },
+  "engines": { "node": ">=22" }
+}

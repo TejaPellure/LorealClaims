@@ -1,0 +1,12 @@
+node_modules/
+dist/
+apps/api/public/*
+!apps/api/public/.gitkeep
+uploads/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+
+.tmp/

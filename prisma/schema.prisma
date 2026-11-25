@@ -1,0 +1,370 @@
+// Claims Intelligence Engine — database schema.
+// Design rules (see docs/DATABASE_DESIGN.md):
+//  * UUID keys, Decimal for every scientific / concentration value (never Float).
+//  * Formulations are versioned and claims point at ONE exact version.
+//  * Assessments store immutable JSON snapshots, so later edits never rewrite history.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────────── Enums ─────────────────────────────
+
+enum IngredientCategory {
+  BASE
+  HUMECTANT
+  ACTIVE
+  EMOLLIENT
+  BARRIER_LIPID
+  PRESERVATIVE
+  TEXTURIZER
+  ANTIOXIDANT
+}
+
+/// VERIFIED = checked against a public source, UNVERIFIED = not yet checked, DEMO = illustrative sample data.
+enum VerificationStatus {
+  VERIFIED
+  UNVERIFIED
+  DEMO
+}
+
+enum EvidenceType {
+  CLINICAL_STUDY
+  DERMATOLOGICAL_STUDY
+  INSTRUMENTAL_MEASUREMENT
+  IN_VITRO_RESEARCH
+  LITERATURE_REVIEW
+  FINISHED_PRODUCT_TRIAL
+  SAFETY_COMPATIBILITY_STUDY
+}
+
+/// INGREDIENT = tested a single ingredient / simple vehicle; FINISHED_PRODUCT = tested a complete formula.
+enum EvidenceScope {
+  INGREDIENT
+  FINISHED_PRODUCT
+}
+
+enum QualityRating {
+  HIGH
+  MODERATE
+  LOW
+  VERY_LOW
+}
+
+enum EffectDirection {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+enum BenefitCategory {
+  HYDRATION
+  ANTI_WRINKLE
+  BARRIER_REPAIR
+  BRIGHTENING
+  SOOTHING
+  OTHER
+}
+
+/// DISCLOSED = percentages published by a credible source; ILLUSTRATIVE = reconstructed for the demo.
+enum FormulaBasis {
+  DISCLOSED
+  ILLUSTRATIVE
+}
+
+enum FormulationStatus {
+  DRAFT
+  FINAL
+}
+
+enum ClaimStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_MANAGER_REVIEW
+  ACCEPTED_FOR_FORMULATION
+  FORMULATION_IN_PROGRESS
+  AWAITING_EVIDENCE
+  READY_FOR_ASSESSMENT
+  ASSESSED
+  APPROVED_BY_EVALUATOR
+  REQUIRES_MORE_EVIDENCE
+  REJECTED
+}
+
+enum Verdict {
+  SUPPORTED
+  NOT_SUPPORTED
+  INCONCLUSIVE
+}
+
+enum AssessmentProviderKind {
+  MOCK
+  CLAUDE
+}
+
+enum ReviewDecision {
+  PENDING
+  APPROVED
+  REJECTED
+  MORE_EVIDENCE_REQUESTED
+}
+
+enum EvidenceRole {
+  SUPPORTING
+  CONTRADICTORY
+  CONTEXT
+}
+
+// ───────────────────────────── Ingredients & evidence ─────────────────────────────
+
+model Ingredient {
+  id                  String             @id @default(uuid())
+  name                String
+  inciName            String             @unique
+  chemicalName        String?
+  description         String
+  category            IngredientCategory
+  primaryFunction     String
+  commonApplications  String[]
+  minConcentration    Decimal?           @db.Decimal(7, 4) // % w/w, only when a source supports it
+  maxConcentration    Decimal?           @db.Decimal(7, 4)
+  concentrationSource String?
+  solubility          String?
+  compatibilityNotes  String?
+  regulatoryNotes     String?
+  sources             Json               @default("[]") // [{ name, url }]
+  status              VerificationStatus @default(UNVERIFIED)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  evidenceLinks    IngredientEvidence[]
+  formulationItems FormulationIngredient[]
+
+  @@index([category])
+  @@index([status])
+  @@index([name])
+}
+
+model Evidence {
+  id                  String          @id @default(uuid())
+  title               String
+  evidenceType        EvidenceType
+  scope               EvidenceScope
+  benefitCategories   BenefitCategory[] // endpoint families, used for deterministic matching
+  sourceName          String
+  doi                 String?         @unique
+  pmid                String?         @unique
+  sourceUrl           String?
+  publishedAt         DateTime?
+  studyDesign         String
+  sampleSize          Int?
+  population          String
+  durationWeeks       Int?
+  testedSubject       String // ingredient or formulation that was tested
+  testedConcentration Decimal?        @db.Decimal(7, 4) // % w/w of the tested ingredient
+  endpoint            String
+  methodology         String
+  resultsSummary      String
+  effectDirection     EffectDirection
+  effectMagnitude     Decimal?        @db.Decimal(7, 2) // reported % improvement, only if the source states it
+  limitations         String
+  quality             QualityRating
+  status              VerificationStatus @default(UNVERIFIED)
+  createdBy           String          @default("system")
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  ingredientLinks  IngredientEvidence[]
+  formulationLinks FormulationEvidence[]
+  documents        UploadedDocument[]
+  assessmentLinks  AssessmentEvidence[]
+
+  @@index([evidenceType])
+  @@index([scope])
+  @@index([status])
+  @@index([title])
+}
+
+/// Many-to-many: one study can cover several ingredients, one ingredient has many studies.
+model IngredientEvidence {
+  ingredientId String
+  evidenceId   String
+  createdAt    DateTime @default(now())
+
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  evidence   Evidence   @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+
+  @@id([ingredientId, evidenceId])
+  @@index([evidenceId])
+}
+
+/// Links finished-product evidence to the exact formulation version that was tested.
+model FormulationEvidence {
+  formulationId String
+  evidenceId    String
+  createdAt     DateTime @default(now())
+
+  formulation Formulation @relation(fields: [formulationId], references: [id], onDelete: Cascade)
+  evidence    Evidence    @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+
+  @@id([formulationId, evidenceId])
+  @@index([evidenceId])
+}
+
+model UploadedDocument {
+  id           String   @id @default(uuid())
+  evidenceId   String
+  originalName String
+  storedName   String   @unique // server-generated; clients never choose paths
+  mimeType     String
+  sizeBytes    Int
+  createdAt    DateTime @default(now())
+
+  evidence Evidence @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+
+  @@index([evidenceId])
+}
+
+// ───────────────────────────── Products & formulations ─────────────────────────────
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String
+  category    String
+  createdBy   String   @default("system")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  formulations Formulation[]
+  claims       Claim[]
+
+  @@index([createdAt])
+}
+
+model Formulation {
+  id         String            @id @default(uuid())
+  productId  String
+  version    Int
+  notes      String?
+  status     FormulationStatus @default(DRAFT) // FINAL once a claim is submitted; FINAL versions are immutable
+  basis      FormulaBasis      @default(ILLUSTRATIVE)
+  basisNote  String?
+  createdBy  String            @default("system")
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  product     Product                 @relation(fields: [productId], references: [id], onDelete: Restrict)
+  ingredients FormulationIngredient[]
+  claims      Claim[]
+  assessments Assessment[]
+  evidence    FormulationEvidence[]
+
+  @@unique([productId, version])
+  @@index([productId])
+}
+
+model FormulationIngredient {
+  id            String  @id @default(uuid())
+  formulationId String
+  ingredientId  String
+  percentage    Decimal @db.Decimal(7, 4) // % w/w; all rows of a formulation must total 100
+  position      Int // display order in the formulation canvas
+
+  formulation Formulation @relation(fields: [formulationId], references: [id], onDelete: Cascade)
+  ingredient  Ingredient  @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+
+  @@unique([formulationId, ingredientId])
+  @@index([ingredientId])
+}
+
+// ───────────────────────────── Claims & assessments ─────────────────────────────
+
+model Claim {
+  id                   String          @id @default(uuid())
+  productId            String
+  formulationId        String? // exact formulation version; null while the claim is only a business proposal
+  title                String
+  description          String
+  benefitCategory      BenefitCategory
+  targetOutcome        String
+  measurementEndpoint  String
+  targetValue          Decimal         @db.Decimal(8, 2) // expected improvement, e.g. 20
+  measurementUnit      String // e.g. "%"
+  durationWeeks        Int
+  targetPopulation     String
+  applicationFrequency String?
+  scientificContext    String?
+  status               ClaimStatus     @default(DRAFT)
+  managerNotes         String?
+  createdBy            String          @default("system")
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  product     Product      @relation(fields: [productId], references: [id], onDelete: Restrict)
+  formulation Formulation? @relation(fields: [formulationId], references: [id], onDelete: Restrict)
+  assessments Assessment[]
+
+  @@index([productId])
+  @@index([formulationId])
+  @@index([status])
+}
+
+model Assessment {
+  id                   String                 @id @default(uuid())
+  claimId              String
+  formulationId        String
+  provider             AssessmentProviderKind
+  model                String? // e.g. "claude-sonnet" or "mock-rules-v1"
+  promptVersion        String
+  scoringVersion       String
+  inputHash            String // fingerprint of claim + formulation + evidence; detects duplicate submissions
+  verdict              Verdict
+  evidenceScore        Int // 0-100 deterministic backend rubric (NOT a probability)
+  scoreBreakdown       Json // per-criterion score, weight and explanation
+  summary              String
+  reasoning            String
+  missingEvidence      String[]
+  recommendedTests     String[]
+  guardrailNotes       String[] // backend overrides applied to the AI verdict
+  aiResult             Json // validated structured AI output
+  rawResponse          Json? // raw provider payload (kept for audit)
+  claimSnapshot        Json // claim as assessed
+  formulationSnapshot  Json // formulation + ingredients as assessed
+  evidenceSnapshot     Json // evidence records as assessed
+  reviewDecision       ReviewDecision         @default(PENDING)
+  reviewComments       String?
+  reviewedBy           String?
+  reviewedAt           DateTime?
+  createdBy            String                 @default("system")
+  createdAt            DateTime               @default(now())
+
+  claim       Claim                @relation(fields: [claimId], references: [id], onDelete: Restrict)
+  formulation Formulation          @relation(fields: [formulationId], references: [id], onDelete: Restrict)
+  evidence    AssessmentEvidence[]
+
+  @@index([claimId, createdAt])
+  @@index([formulationId])
+  @@index([verdict])
+  @@index([inputHash])
+}
+
+/// Which evidence record was used by an assessment, and in what role.
+model AssessmentEvidence {
+  assessmentId   String
+  evidenceId     String
+  role           EvidenceRole
+  relevanceScore Decimal      @db.Decimal(4, 3) // 0-1 deterministic match score
+  note           String?
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  evidence   Evidence   @relation(fields: [evidenceId], references: [id], onDelete: Restrict)
+
+  @@id([assessmentId, evidenceId])
+  @@index([evidenceId])
+}
