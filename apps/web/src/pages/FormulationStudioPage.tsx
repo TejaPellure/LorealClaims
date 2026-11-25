@@ -64,14 +64,30 @@ export default function FormulationStudioPage() {
     }
   };
 
-  /** Puts whatever is unassigned into the first BASE ingredient (usually purified water). */
-  const balanceWithBase = () =>
+  /**
+   * Gets the formula to 100%.
+   *  - If some ingredients have no concentration yet, the unassigned percentage is shared evenly between them
+   *    (water included); any rounding remainder goes to the base ingredient.
+   *  - If every ingredient already has a value, the base ingredient (usually water) absorbs the difference.
+   * Works in integer units of 0.0001% so the total is exact.
+   */
+  const balanceFormula = () =>
     setLines((current) => {
+      const scaled = (l: CanvasLine) => Math.round((Number(l.percentage) || 0) * 10000);
+      const assigned = current.reduce((sum, l) => sum + scaled(l), 0);
       const baseIndex = current.findIndex((l) => l.ingredient.category === 'BASE');
+      const emptyIndexes = current.flatMap((l, i) => (scaled(l) > 0 ? [] : [i]));
+      const remaining = 1_000_000 - assigned;
+
+      if (remaining > 0 && emptyIndexes.length > 0) {
+        const share = Math.floor(remaining / emptyIndexes.length);
+        const remainderTo = emptyIndexes.includes(baseIndex) ? baseIndex : emptyIndexes[emptyIndexes.length - 1];
+        const remainder = remaining - share * emptyIndexes.length;
+        return current.map((l, i) => (emptyIndexes.includes(i) ? { ...l, percentage: String((share + (i === remainderTo ? remainder : 0)) / 10000) } : l));
+      }
       if (baseIndex < 0) return current;
-      const others = current.reduce((sum, l, i) => (i === baseIndex ? sum : sum + (Number(l.percentage) || 0)), 0);
-      const balance = Math.max(0, Math.round((100 - others) * 10000) / 10000);
-      return current.map((l, i) => (i === baseIndex ? { ...l, percentage: String(balance) } : l));
+      const others = assigned - scaled(current[baseIndex]);
+      return current.map((l, i) => (i === baseIndex ? { ...l, percentage: String(Math.max(0, 1_000_000 - others) / 10000) } : l));
     });
 
   const save = async () => {
@@ -130,7 +146,7 @@ export default function FormulationStudioPage() {
             <IngredientExplorer ingredients={ingredients.data?.items ?? []} loading={ingredients.loading} usedIds={usedIds} onAdd={(i) => addIngredient(i)} />
             <div className="space-y-4">
               <FormulationCanvas
-                lines={lines} selectedId={selectedId} readOnly={false} onSelect={setSelectedId} onBalance={balanceWithBase}
+                lines={lines} selectedId={selectedId} readOnly={false} onSelect={setSelectedId} onBalance={balanceFormula}
                 onChange={(id, value) => setLines((cur) => cur.map((l) => (l.ingredient.id === id ? { ...l, percentage: value } : l)))}
                 onRemove={(id) => { setLines((cur) => cur.filter((l) => l.ingredient.id !== id)); if (selectedId === id) setSelectedId(null); }}
               />

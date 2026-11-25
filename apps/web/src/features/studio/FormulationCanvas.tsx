@@ -42,6 +42,7 @@ export function FormulationCanvas({ lines, selectedId, readOnly, onSelect, onCha
   const { total, remaining, status } = compositionOf(lines.map((l) => Number(l.percentage)));
   const tone = status === 'VALID' ? 'green' : status === 'OVER' ? 'red' : 'amber';
   const hasBase = lines.some((l) => l.ingredient.category === 'BASE');
+  const hasEmpty = lines.some((l) => !(Number(l.percentage) > 0));
 
   return (
     <section className="flex min-w-0 flex-col rounded-lg border border-slate-200 bg-white" aria-label="Formulation canvas">
@@ -69,8 +70,8 @@ export function FormulationCanvas({ lines, selectedId, readOnly, onSelect, onCha
           <span className="font-semibold text-slate-900">Total {total}%</span>
           <span className="text-slate-600">Remaining {remaining}%</span>
           <Badge tone={tone}>{status === 'VALID' ? <><CheckCircle2 className="h-3 w-3" aria-hidden />Valid: totals 100%</> : status === 'OVER' ? <><AlertTriangle className="h-3 w-3" aria-hidden />Over-allocated</> : status === 'UNDER' ? <><AlertTriangle className="h-3 w-3" aria-hidden />Under-allocated</> : 'Empty'}</Badge>
-          {!readOnly && hasBase && status !== 'VALID' && lines.length > 1 && (
-            <Button variant="secondary" size="sm" className="ml-auto" onClick={onBalance}><Scale className="h-4 w-4" />Balance with base</Button>
+          {!readOnly && (hasBase || hasEmpty) && status !== 'VALID' && lines.length > 1 && (
+            <Button variant="secondary" size="sm" className="ml-auto" onClick={onBalance} title="Shares the unassigned percentage between ingredients that have no concentration yet. If all have one, water takes the difference."><Scale className="h-4 w-4" />Balance to 100%</Button>
           )}
         </div>
         <Progress value={total} tone={status === 'VALID' ? 'green' : status === 'OVER' ? 'red' : 'amber'} />
