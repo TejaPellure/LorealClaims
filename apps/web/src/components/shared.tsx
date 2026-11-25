@@ -4,16 +4,18 @@ import type { ReactNode } from 'react';
 import { Badge, Button, Dialog, ErrorState, Skeleton } from '@/components/ui/primitives';
 import { QualityBadge, ScopeBadge, VerificationBadge } from '@/components/badges';
 import { useAsync } from '@/hooks/hooks';
-import { formatDate, humanize } from '@/lib/lib';
+import { cn, formatDate, humanize } from '@/lib/lib';
 import { api } from '@/services/api';
 import type { Evidence } from '@/types';
 
-export function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: ReactNode }) {
+/** Editorial page heading: small step label, serif title, short description. */
+export function PageHeader({ eyebrow, title, description, actions }: { eyebrow?: string; title: string; description?: string; actions?: ReactNode }) {
   return (
-    <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900">{title}</h1>
-        {description && <p className="mt-0.5 max-w-3xl text-sm text-slate-500">{description}</p>}
+        {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
+        <h1 className="font-display text-4xl font-semibold leading-tight text-slate-900 sm:text-5xl">{title}</h1>
+        {description && <p className="mt-3 max-w-2xl text-base text-slate-600">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>
@@ -33,16 +35,17 @@ export function Detail({ label, children }: { label: string; children?: ReactNod
 
 export function BulletList({ items, empty }: { items: string[]; empty: string }) {
   if (!items.length) return <p className="text-sm text-slate-500">{empty}</p>;
-  return <ul className="list-disc space-y-1 pl-5 text-sm text-slate-800">{items.map((item, i) => <li key={i}>{item}</li>)}</ul>;
+  return <ul className="list-disc space-y-1.5 pl-5 text-sm text-slate-800">{items.map((item, i) => <li key={i}>{item}</li>)}</ul>;
 }
 
-/** Simple search/filter bar layout. */
-export const FilterBar = ({ children }: { children: ReactNode }) => <div className="flex flex-wrap items-end gap-3 border-b border-slate-100 p-3">{children}</div>;
+/** Search/filter bar layout. */
+export const FilterBar = ({ children, className }: { children: ReactNode; className?: string }) =>
+  <div className={cn('flex flex-wrap items-end gap-3 border-b border-slate-100 p-4', className)}>{children}</div>;
 
 export function Pager({ page, pageSize, total, onPage }: { page: number; pageSize: number; total: number; onPage: (page: number) => void }) {
   const pages = Math.max(1, Math.ceil(total / pageSize));
   return (
-    <div className="flex items-center justify-between border-t border-slate-100 px-3 py-2 text-xs text-slate-500">
+    <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-xs text-slate-500">
       <span>{total} record{total === 1 ? '' : 's'}</span>
       <div className="flex items-center gap-2">
         <Button variant="secondary" size="sm" disabled={page <= 1} onClick={() => onPage(page - 1)}>Previous</Button>
@@ -66,7 +69,6 @@ export function EvidenceDetailDialog({ evidenceId, onClose }: { evidenceId: stri
             <VerificationBadge status={data.status} /><ScopeBadge scope={data.scope} /><QualityBadge quality={data.quality} />
             <Badge>{humanize(data.evidenceType)}</Badge>
           </div>
-          {data.status === 'DEMO' && <p className="rounded-md border border-violet-200 bg-violet-50 p-2 text-xs text-violet-800">Demo record: fictitious sample data created for demonstration, not real research.</p>}
           <dl>
             <Detail label="Source">{data.sourceName}</Detail>
             <Detail label="DOI">{data.doi && <a className="inline-flex items-center gap-1 text-teal-700 hover:underline" href={`https://doi.org/${data.doi}`} target="_blank" rel="noreferrer noopener">{data.doi}<ExternalLink className="h-3 w-3" /></a>}</Detail>
@@ -79,12 +81,11 @@ export function EvidenceDetailDialog({ evidenceId, onClose }: { evidenceId: stri
             <Detail label="Tested subject">{data.testedSubject}</Detail>
             <Detail label="Tested concentration">{data.testedConcentration != null ? `${data.testedConcentration}%` : undefined}</Detail>
             <Detail label="Endpoint">{data.endpoint}</Detail>
-            <Detail label="Methodology">{data.methodology}</Detail>
             <Detail label="Results">{data.resultsSummary}</Detail>
             <Detail label="Reported effect">{data.effectMagnitude != null ? `${data.effectMagnitude}%` : undefined}</Detail>
             <Detail label="Limitations">{data.limitations}</Detail>
             <Detail label="Ingredients">{data.ingredientLinks?.length ? data.ingredientLinks.map((l) => l.ingredient.name).join(', ') : undefined}</Detail>
-            <Detail label="Formulations">{data.formulationLinks?.length ? data.formulationLinks.map((l) => `${l.formulation.product.name} v${l.formulation.version}`).join(', ') : undefined}</Detail>
+            <Detail label="Products">{data.formulationLinks?.length ? data.formulationLinks.map((l) => l.formulation.product.name).join(', ') : undefined}</Detail>
           </dl>
           <div className="flex flex-wrap gap-2">
             {data.sourceUrl && <Button asChild variant="secondary" size="sm"><a href={data.sourceUrl} target="_blank" rel="noreferrer noopener"><ExternalLink className="h-4 w-4" />Open source</a></Button>}

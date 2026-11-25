@@ -56,17 +56,13 @@ export default function EvidencePage() {
 
   return (
     <>
-      <PageHeader
-        title="Evidence Library"
-        description="Reusable scientific evidence linked to ingredients and formulation versions. Ingredient-level and finished-product studies are kept distinct."
-        actions={<Button onClick={() => setFormOpen(true)}><Plus className="h-4 w-4" />Add evidence</Button>}
-      />
+      <PageHeader eyebrow="Library" title="Evidence" description="The studies Claude reviews. Ingredient-level and finished-product studies are kept distinct." actions={<Button onClick={() => setFormOpen(true)}><Plus className="h-4 w-4" />Add evidence</Button>} />
       <Card>
         <FilterBar>
           <Field label="Search" className="w-64"><Input placeholder="Title, source or tested subject" value={q} onChange={(e) => reset(setQ)(e.target.value)} /></Field>
           <Field label="Evidence type" className="w-52"><Select value={evidenceType} onChange={(e) => reset(setEvidenceType)(e.target.value)}><option value="">All types</option>{EVIDENCE_TYPES.map((t) => <option key={t} value={t}>{humanize(t)}</option>)}</Select></Field>
           <Field label="Scope" className="w-44"><Select value={scope} onChange={(e) => reset(setScope)(e.target.value)}><option value="">All scopes</option><option value="INGREDIENT">Ingredient level</option><option value="FINISHED_PRODUCT">Finished product</option></Select></Field>
-          <Field label="Verification" className="w-40"><Select value={status} onChange={(e) => reset(setStatus)(e.target.value)}><option value="">All</option><option value="VERIFIED">Verified</option><option value="UNVERIFIED">Unverified</option><option value="DEMO">Demo</option></Select></Field>
+          <Field label="Verification" className="w-40"><Select value={status} onChange={(e) => reset(setStatus)(e.target.value)}><option value="">All</option><option value="VERIFIED">Verified</option><option value="UNVERIFIED">Not verified</option></Select></Field>
         </FilterBar>
         {loading && !data ? <TableSkeleton /> : error ? <ErrorState message={error} onRetry={reload} /> : !data?.items.length ? (
           <EmptyState title="No evidence found" description="Adjust the filters or add an evidence record." />

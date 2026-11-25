@@ -1,75 +1,79 @@
-import { ArrowLeft, FlaskConical, Info, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Info, RefreshCw } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { BasisBadge, ClaimStatusBadge, DecisionBadge, ProviderBadge, ScopeBadge, VerdictBadge, VerificationBadge } from '@/components/badges';
-import { BulletList, Detail, EvidenceDetailDialog, PageHeader } from '@/components/shared';
-import { Badge, Button, Card, CardBody, CardHeader, CardTitle, ErrorState, FormError, Progress, Skeleton, Table, Td, Textarea, Th, Tooltip } from '@/components/ui/primitives';
-import { useAsync, usePersona } from '@/hooks/hooks';
-import { formatDate, humanize } from '@/lib/lib';
+import { ScopeBadge, VerificationBadge } from '@/components/badges';
+import { BulletList, EvidenceDetailDialog } from '@/components/shared';
+import { Badge, Button, Card, CardBody, CardHeader, CardTitle, ErrorState, Skeleton, Table, Td, Th, Tooltip } from '@/components/ui/primitives';
+import { useAsync } from '@/hooks/hooks';
+import { formatDate, humanize, VERDICT_LABEL } from '@/lib/lib';
 import { api, errorText } from '@/services/api';
-import type { Assessment, EvidenceNote, ReviewDecision } from '@/types';
+import type { Assessment, AssessmentSummary, EvidenceNote, Verdict } from '@/types';
 
-const Section = ({ title, children }: { title: string; children: ReactNode }) => (
-  <Card><CardHeader><CardTitle>{title}</CardTitle></CardHeader><CardBody>{children}</CardBody></Card>
+const VERDICT_STYLE: Record<Verdict, { text: string; ring: string; blurb: string }> = {
+  SUPPORTED: { text: 'text-sage', ring: '#5f7f68', blurb: 'The available evidence supports this claim as worded.' },
+  NOT_SUPPORTED: { text: 'text-brick', ring: '#a4363b', blurb: 'The available evidence contradicts this claim or does not reach its size.' },
+  INCONCLUSIVE: { text: 'text-clay', ring: '#b2762a', blurb: 'The available evidence is not enough to decide either way.' },
+};
+
+/** Circular score gauge. The score is a rubric of evidence fit, not a probability. */
+function ScoreRing({ score, color }: { score: number; color: string }) {
+  const radius = 54;
+  const circumference = 2 * Math.PI * radius;
+  return (
+    <div className="relative h-36 w-36 shrink-0" role="img" aria-label={`Evidence sufficiency score ${score} out of 100`}>
+      <svg viewBox="0 0 128 128" className="-rotate-90">
+        <circle cx="64" cy="64" r={radius} fill="none" stroke="#e8ddd2" strokeWidth="9" />
+        <circle cx="64" cy="64" r={radius} fill="none" stroke={color} strokeWidth="9" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - score / 100)} />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="font-display text-4xl font-semibold text-slate-900">{score}</span>
+        <span className="text-[11px] uppercase tracking-widest text-slate-500">of 100</span>
+      </div>
+    </div>
+  );
+}
+
+const Section = ({ title, children, className }: { title: string; children: ReactNode; className?: string }) => (
+  <Card className={className}><CardHeader><CardTitle>{title}</CardTitle></CardHeader><CardBody>{children}</CardBody></Card>
 );
-
-const scoreTone = (score: number) => (score >= 70 ? 'green' : score >= 40 ? 'amber' : 'red');
 
 export default function AssessmentReportPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { persona } = usePersona();
   const { data: a, loading, error, reload } = useAsync(() => api.get<Assessment>(`/assessments/${id}`), [id]);
+  const history = useAsync(() => (a ? api.get<AssessmentSummary[]>(`/claims/${a.claim.id}/assessments`) : Promise.resolve([])), [a?.claim.id]);
   const [openEvidence, setOpenEvidence] = useState<string | null>(null);
-  const [comments, setComments] = useState('');
-  const [error2, setError2] = useState<string | null>(null);
-  const [busy, setBusy] = useState<string | null>(null);
+  const [rerunning, setRerunning] = useState(false);
 
   if (loading && !a) return <Skeleton className="h-96 w-full" />;
   if (error || !a) return <Card><ErrorState message={error ?? 'Assessment not found'} onRetry={reload} /></Card>;
 
+  const style = VERDICT_STYLE[a.verdict];
   const titles = new Map(a.evidence.map((e) => [e.evidenceId, e.evidence.title]));
-  const relations = new Map(a.evidenceSnapshot.map((e) => [e.id, e]));
-  const roleRows = (role: string) => a.evidence.filter((e) => e.role === role);
-  const canReview = persona === 'EVALUATOR';
-
-  const decide = async (decision: ReviewDecision) => {
-    setBusy(decision);
-    setError2(null);
-    try {
-      await api.patch(`/assessments/${a.id}/review`, { decision, comments: comments.trim() || undefined });
-      toast.success('Evaluator decision recorded');
-      setComments('');
-      reload();
-    } catch (e) {
-      setError2(errorText(e));
-    } finally {
-      setBusy(null);
-    }
-  };
+  const relations = new Map(a.evidenceSnapshot.map((e) => [e.id, e.relation]));
+  const claim = a.claim;
 
   const rerun = async () => {
-    setBusy('rerun');
+    setRerunning(true);
     try {
-      const fresh = await api.post<Assessment>('/claims/assess', { claimId: a.claim.id, forceNew: true });
-      toast.success('New assessment saved. The previous one is preserved.');
+      const fresh = await api.post<Assessment>('/claims/assess', { claimId: claim.id, forceNew: true });
+      toast.success('Claude has evaluated this claim again. The earlier result is kept.');
       navigate(`/assessments/${fresh.id}`);
     } catch (e) {
       toast.error(errorText(e));
     } finally {
-      setBusy(null);
+      setRerunning(false);
     }
   };
 
   const NoteList = ({ notes, empty }: { notes: EvidenceNote[]; empty: string }) =>
     notes.length === 0 ? <p className="text-sm text-slate-500">{empty}</p> : (
-      <ul className="space-y-2">
+      <ul className="space-y-3">
         {notes.map((n) => (
-          <li key={n.evidenceId} className="rounded-md border border-slate-200 p-2.5 text-sm">
+          <li key={n.evidenceId} className="rounded-xl border border-slate-200 p-3 text-sm">
             <button className="cursor-pointer text-left font-medium text-teal-800 hover:underline" onClick={() => setOpenEvidence(n.evidenceId)}>{titles.get(n.evidenceId) ?? n.evidenceId}</button>
             <p className="mt-1 text-slate-700">{n.note}</p>
-            <p className="mt-1 font-mono text-[11px] text-slate-400">{n.evidenceId}</p>
           </li>
         ))}
       </ul>
@@ -77,135 +81,97 @@ export default function AssessmentReportPage() {
 
   return (
     <>
-      <Link to="/history" className="mb-2 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-slate-900"><ArrowLeft className="h-4 w-4" />Assessment history</Link>
-      <PageHeader
-        title={a.claim.title}
-        description={`${a.formulation.product.name} - formulation v${a.formulation.version}`}
-        actions={<Button variant="secondary" loading={busy === 'rerun'} onClick={rerun}><RefreshCw className="h-4 w-4" />Re-run assessment</Button>}
-      />
+      <Link to="/claims" className="mb-6 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-slate-900"><ArrowLeft className="h-4 w-4" />All claims</Link>
 
-      {a.provider === 'MOCK' && (
-        <p className="mb-3 flex items-start gap-2 rounded-md border border-violet-200 bg-violet-50 p-3 text-sm text-violet-900">
-          <FlaskConical className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-          <span><strong>Demo / Mock AI.</strong> This assessment was produced by deterministic rules ({a.model}), not by Claude. Set ASSESSMENT_PROVIDER=claude to use the real model.</span>
-        </p>
-      )}
+      {/* Verdict hero */}
+      <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-6 sm:p-10">
+        <p className="eyebrow mb-3">Step 3 of 3 · Result · {a.claim.product.name}</p>
+        <div className="flex flex-wrap items-center justify-between gap-8">
+          <div className="min-w-0 max-w-3xl">
+            <p className="font-display text-2xl italic text-slate-600">“{claim.title}”</p>
+            <h1 className={`mt-4 font-display text-6xl font-semibold leading-none sm:text-7xl ${style.text}`}>{VERDICT_LABEL[a.verdict]}</h1>
+            <p className="mt-4 max-w-xl text-lg text-slate-700">{style.blurb}</p>
+            <p className="mt-4 text-sm text-slate-500">Evaluated by Claude ({a.model}) on {formatDate(a.createdAt)} · {claim.targetValue}{claim.measurementUnit} in {claim.durationWeeks} weeks · {claim.targetPopulation}</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <ScoreRing score={a.evidenceScore} color={style.ring} />
+            <div className="max-w-[10rem] text-sm text-slate-600">
+              <p className="flex items-center gap-1 font-medium text-slate-900">Evidence sufficiency
+                <Tooltip content="A transparent rubric of how well the available evidence matches the claim (quality, relevance, concentration, endpoint, duration, population, finished-product testing, consistency). It is not a probability that the claim is true."><Info className="h-3.5 w-3.5 cursor-help text-slate-400" aria-label="About this score" /></Tooltip>
+              </p>
+              <p className="mt-1 text-xs">Calculated by backend rules, separately from Claude's reasoning.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      {/* Overview + score */}
-      <div className="grid gap-3 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader><CardTitle>Assessment overview</CardTitle><div className="flex gap-2"><ProviderBadge provider={a.provider} /><VerdictBadge verdict={a.verdict} /></div></CardHeader>
-          <CardBody>
-            <dl>
-              <Detail label="Product">{a.formulation.product.name}</Detail>
-              <Detail label="Formulation version">v{a.formulation.version} <span className="ml-1"><BasisBadge basis={a.formulation.basis} /></span></Detail>
-              <Detail label="Proposed claim">{a.claim.title}</Detail>
-              <Detail label="Submitted">{formatDate(a.createdAt)}</Detail>
-              <Detail label="Claim status"><ClaimStatusBadge status={a.claim.status} /></Detail>
-              <Detail label="Model / prompt">{`${a.model ?? '-'} / ${a.promptVersion}`}</Detail>
-            </dl>
-          </CardBody>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Evidence sufficiency</CardTitle>
-            <Tooltip content="Prototype scoring rubric requiring scientific validation. It measures how well available evidence matches the claim. It is not a probability that the claim is true."><Info className="h-4 w-4 cursor-help text-slate-400" aria-label="About this score" /></Tooltip>
-          </CardHeader>
-          <CardBody className="space-y-3">
-            <p><span className="text-4xl font-semibold text-slate-900">{a.evidenceScore}</span><span className="text-lg text-slate-500">/100</span></p>
-            <Progress value={a.evidenceScore} tone={scoreTone(a.evidenceScore)} />
-            <p className="text-xs text-slate-500">Calculated by transparent backend rules ({a.scoringVersion}), separate from the AI reasoning below.</p>
-          </CardBody>
-        </Card>
-      </div>
-
-      <div className="mt-3 space-y-3">
-        <Section title="Scoring criteria">
-          <details>
-            <summary className="cursor-pointer text-sm font-medium text-teal-800">Show how the score was calculated</summary>
-            <div className="mt-3"><Table>
-              <thead><tr><Th>Criterion</Th><Th>Weight</Th><Th>Match</Th><Th>Points</Th><Th>Explanation</Th></tr></thead>
-              <tbody>{a.scoreBreakdown.breakdown.map((c) => (
-                <tr key={c.key}><Td className="font-medium">{c.label}</Td><Td>{c.weight}</Td><Td>{Math.round(c.value * 100)}%</Td><Td>{c.points}</Td><Td className="text-slate-600">{c.explanation}</Td></tr>
-              ))}</tbody>
-            </Table></div>
-            <p className="mt-2 text-xs text-slate-500">{a.scoreBreakdown.disclaimer}</p>
-          </details>
+      <div className="space-y-6">
+        <Section title="Claude's assessment">
+          <p className="text-base leading-relaxed text-slate-800">{a.summary}</p>
+          <h3 className="mb-2 mt-6 text-sm font-semibold uppercase tracking-wider text-slate-500">Reasoning</h3>
+          <p className="whitespace-pre-line text-sm leading-relaxed text-slate-700">{a.reasoning}</p>
+          {a.guardrailNotes.length > 0 && (
+            <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+              <p className="mb-1 font-medium">Adjusted by the scientific safeguards</p>
+              <BulletList items={a.guardrailNotes} empty="" />
+            </div>
+          )}
         </Section>
 
-        {a.guardrailNotes.length > 0 && (
-          <Section title="Backend guardrails applied"><BulletList items={a.guardrailNotes} empty="" /></Section>
-        )}
-
-        <Section title="AI assessment summary">
-          <p className="text-sm text-slate-800">{a.summary}</p>
-          <h3 className="mb-1 mt-4 text-sm font-semibold">Detailed reasoning</h3>
-          <p className="whitespace-pre-line text-sm text-slate-700">{a.reasoning}</p>
-        </Section>
-
-        <div className="grid gap-3 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-2">
           <Section title="Strengths"><BulletList items={a.aiResult.strengths} empty="No strengths identified." /></Section>
-          <Section title="Scientific limitations"><BulletList items={a.aiResult.limitations} empty="No limitations listed." /></Section>
-          <Section title="Ingredient-level evidence analysis">
-            <p className="mb-2 text-xs text-slate-500">Ingredient studies do not by themselves prove the finished formulation delivers the benefit.</p>
+          <Section title="Limitations"><BulletList items={a.aiResult.limitations} empty="No limitations listed." /></Section>
+          <Section title="Ingredient-level evidence">
+            <p className="mb-3 text-xs text-slate-500">Studies of single ingredients do not by themselves prove the finished formula delivers the benefit.</p>
             <NoteList notes={a.aiResult.ingredientEvidenceAnalysis} empty="No ingredient-level evidence was available." />
           </Section>
-          <Section title="Finished-product evidence analysis">
-            <NoteList notes={a.aiResult.formulationEvidenceAnalysis} empty="No finished-product evidence was available for this claim." />
-          </Section>
-          <Section title="Contradictory or neutral evidence"><NoteList notes={a.aiResult.contradictoryEvidence} empty="No contradictory evidence found." /></Section>
+          <Section title="Finished-product evidence"><NoteList notes={a.aiResult.formulationEvidenceAnalysis} empty="No finished-product evidence was available for this formula." /></Section>
+          <Section title="Contradictory or neutral findings"><NoteList notes={a.aiResult.contradictoryEvidence} empty="No contradictory evidence found." /></Section>
           <Section title="Missing evidence"><BulletList items={a.missingEvidence} empty="No gaps identified." /></Section>
         </div>
-        <Section title="Recommended additional tests"><BulletList items={a.recommendedTests} empty="No additional tests recommended." /></Section>
+        <Section title="Recommended next tests"><BulletList items={a.recommendedTests} empty="No additional tests recommended." /></Section>
 
-        <Section title="Evidence traceability">
-          <p className="mb-2 text-xs text-slate-500">Exactly the records used by this assessment (immutable snapshot). Supporting: {roleRows('SUPPORTING').length}, contradictory: {roleRows('CONTRADICTORY').length}, context: {roleRows('CONTEXT').length}.</p>
+        <Section title="How the score was calculated">
           <Table>
-            <thead><tr><Th>Evidence record</Th><Th>Role</Th><Th>Relation to formulation</Th><Th>Status</Th><Th>ID</Th></tr></thead>
+            <thead><tr><Th>Criterion</Th><Th>Weight</Th><Th>Match</Th><Th>Points</Th><Th>Why</Th></tr></thead>
+            <tbody>{a.scoreBreakdown.breakdown.map((c) => (
+              <tr key={c.key}><Td className="font-medium">{c.label}</Td><Td>{c.weight}</Td><Td>{Math.round(c.value * 100)}%</Td><Td>{c.points}</Td><Td className="text-slate-600">{c.explanation}</Td></tr>
+            ))}</tbody>
+          </Table>
+          <p className="mt-3 text-xs text-slate-500">{a.scoreBreakdown.disclaimer}</p>
+        </Section>
+
+        <Section title="Evidence used">
+          <p className="mb-3 text-xs text-slate-500">Exactly the records reviewed. Open any record to see its source.</p>
+          <Table>
+            <thead><tr><Th>Study</Th><Th>Role</Th><Th>Type</Th><Th>Status</Th></tr></thead>
             <tbody>{a.evidence.map((e) => (
               <tr key={e.evidenceId}>
-                <Td className="max-w-md"><button onClick={() => setOpenEvidence(e.evidenceId)} className="cursor-pointer text-left font-medium text-teal-800 hover:underline">{e.evidence.title}</button></Td>
+                <Td className="max-w-lg"><button onClick={() => setOpenEvidence(e.evidenceId)} className="cursor-pointer text-left font-medium text-teal-800 hover:underline">{e.evidence.title}</button></Td>
                 <Td><Badge tone={e.role === 'SUPPORTING' ? 'green' : e.role === 'CONTRADICTORY' ? 'red' : 'neutral'}>{humanize(e.role)}</Badge></Td>
-                <Td><div className="flex flex-wrap gap-1"><ScopeBadge scope={e.evidence.scope} /><span className="text-xs text-slate-500">{humanize(relations.get(e.evidenceId)?.relation)}</span></div></Td>
+                <Td><div className="flex flex-wrap items-center gap-1"><ScopeBadge scope={e.evidence.scope} /><span className="text-xs text-slate-500">{humanize(relations.get(e.evidenceId))}</span></div></Td>
                 <Td><VerificationBadge status={e.evidence.status} /></Td>
-                <Td className="font-mono text-[11px] text-slate-400">{e.evidenceId.slice(0, 8)}</Td>
               </tr>
             ))}</tbody>
           </Table>
         </Section>
 
-        <Section title="Assessed formulation (snapshot)">
-          <p className="mb-2 text-xs text-slate-500">Frozen at assessment time; later edits to ingredients or evidence never change this report.</p>
-          <Table>
-            <thead><tr><Th>Ingredient</Th><Th>INCI</Th><Th>Concentration</Th></tr></thead>
-            <tbody>{a.formulationSnapshot.ingredients.map((i) => <tr key={i.inciName}><Td>{i.name}</Td><Td className="text-slate-600">{i.inciName}</Td><Td>{i.percentage}%</Td></tr>)}</tbody>
-          </Table>
+        <Section title="Formula assessed">
+          <ul className="flex flex-wrap gap-2 text-sm">
+            {a.formulationSnapshot.ingredients.map((i) => <li key={i.inciName} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1">{i.name} <strong>{i.percentage}%</strong></li>)}
+          </ul>
         </Section>
 
-        {/* Human decision, kept visibly separate from the AI recommendation */}
-        <Card className="border-teal-200">
-          <CardHeader><CardTitle>Human evaluator decision</CardTitle><DecisionBadge decision={a.reviewDecision} /></CardHeader>
-          <CardBody className="space-y-3">
-            <div className="flex flex-wrap items-center gap-2 rounded-md bg-slate-50 p-2 text-sm"><span className="text-slate-500">AI recommendation (advisory only):</span><VerdictBadge verdict={a.verdict} /></div>
-            {a.reviewDecision !== 'PENDING' && (
-              <div className="rounded-md border border-slate-200 p-3 text-sm">
-                <p><strong>{humanize(a.reviewDecision)}</strong> by {humanize(a.reviewedBy)} on {formatDate(a.reviewedAt)}</p>
-                {a.reviewComments && <p className="mt-1 text-slate-700">{a.reviewComments}</p>}
-              </div>
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-4">
+          <div className="text-sm text-slate-600">
+            {history.data && history.data.length > 1 && (
+              <>Earlier evaluations of this claim: {history.data.filter((h) => h.id !== a.id).map((h) => (
+                <Link key={h.id} to={`/assessments/${h.id}`} className="mr-3 text-teal-700 hover:underline">{VERDICT_LABEL[h.verdict]} · {formatDate(h.createdAt)}</Link>
+              ))}</>
             )}
-            <p className="text-xs text-slate-500">The AI never approves a claim. Only a human evaluator decision changes the claim's approval state, and it is not legal or regulatory approval.</p>
-            <label className="block space-y-1"><span className="text-xs font-medium text-slate-700">Evaluator comments (required to reject or request evidence)</span>
-              <Textarea value={comments} onChange={(e) => setComments(e.target.value)} disabled={!canReview} /></label>
-            <FormError message={error2} />
-            <div className="flex flex-wrap gap-2">
-              <Button disabled={!canReview} loading={busy === 'APPROVED'} onClick={() => decide('APPROVED')}>Approve</Button>
-              <Button variant="secondary" disabled={!canReview} loading={busy === 'MORE_EVIDENCE_REQUESTED'} onClick={() => decide('MORE_EVIDENCE_REQUESTED')}>Request additional evidence</Button>
-              <Button variant="danger" disabled={!canReview} loading={busy === 'REJECTED'} onClick={() => decide('REJECTED')}>Reject</Button>
-            </div>
-            {!canReview && <p className="text-xs text-amber-800">Switch the demo persona to Evaluator to record a decision (demo gating, not real authorisation).</p>}
-          </CardBody>
-        </Card>
+          </div>
+          <Button variant="secondary" loading={rerunning} onClick={rerun}><RefreshCw className="h-4 w-4" />Evaluate again with Claude</Button>
+        </div>
       </div>
       <EvidenceDetailDialog evidenceId={openEvidence} onClose={() => setOpenEvidence(null)} />
     </>

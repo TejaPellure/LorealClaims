@@ -1,13 +1,7 @@
 // Central API layer. Same-origin URLs only: in production NestJS serves both the SPA and /api,
 // in development Vite proxies /api. No secrets or provider details ever reach the browser.
-import type { Persona } from '@/types';
 
 const BASE = '/api';
-const PERSONA_KEY = 'cie.persona';
-
-export const getPersona = (): Persona => (localStorage.getItem(PERSONA_KEY) as Persona) || 'SCIENTIST';
-export const setPersona = (persona: Persona) => localStorage.setItem(PERSONA_KEY, persona);
-
 export class ApiError extends Error {
   constructor(message: string, public status: number, public details: string[] = []) {
     super(message);
@@ -30,7 +24,6 @@ async function request<T>(path: string, init: RequestInit = {}, query?: Query): 
       ...init,
       headers: {
         ...(init.body && !(init.body instanceof FormData) ? { 'content-type': 'application/json' } : {}),
-        'x-demo-persona': getPersona(), // demo label only, not authentication
         ...init.headers,
       },
     });

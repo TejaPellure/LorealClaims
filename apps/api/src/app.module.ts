@@ -5,11 +5,10 @@ import { join } from 'path';
 import { ApiExceptionFilter } from './common/api-exception.filter';
 import { DecimalInterceptor } from './common/common';
 import { AppConfigModule } from './common/config.module';
+import { HealthController } from './common/health.controller';
 import { AssessmentsModule } from './modules/assessments/assessments.module';
 import { ClaimsModule } from './modules/claims/claims.module';
-import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { EvidenceModule } from './modules/evidence/evidence.module';
-import { FormulationsModule } from './modules/formulations/formulations.module';
 import { IngredientsModule } from './modules/ingredients/ingredients.module';
 import { ProductsModule } from './modules/products/products.module';
 import { PrismaModule } from './prisma/prisma.service';
@@ -23,11 +22,10 @@ import { PrismaModule } from './prisma/prisma.service';
     IngredientsModule,
     EvidenceModule,
     ProductsModule,
-    FormulationsModule,
     ClaimsModule,
     AssessmentsModule,
-    DashboardModule,
   ],
+  controllers: [HealthController],
   providers: [
     { provide: APP_FILTER, useClass: ApiExceptionFilter },
     { provide: APP_INTERCEPTOR, useClass: DecimalInterceptor },

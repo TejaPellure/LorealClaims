@@ -5,7 +5,7 @@ CREATE SCHEMA IF NOT EXISTS "public";
 CREATE TYPE "IngredientCategory" AS ENUM ('BASE', 'HUMECTANT', 'ACTIVE', 'EMOLLIENT', 'BARRIER_LIPID', 'PRESERVATIVE', 'TEXTURIZER', 'ANTIOXIDANT');
 
 -- CreateEnum
-CREATE TYPE "VerificationStatus" AS ENUM ('VERIFIED', 'UNVERIFIED', 'DEMO');
+CREATE TYPE "VerificationStatus" AS ENUM ('VERIFIED', 'UNVERIFIED');
 
 -- CreateEnum
 CREATE TYPE "EvidenceType" AS ENUM ('CLINICAL_STUDY', 'DERMATOLOGICAL_STUDY', 'INSTRUMENTAL_MEASUREMENT', 'IN_VITRO_RESEARCH', 'LITERATURE_REVIEW', 'FINISHED_PRODUCT_TRIAL', 'SAFETY_COMPATIBILITY_STUDY');
@@ -23,22 +23,7 @@ CREATE TYPE "EffectDirection" AS ENUM ('POSITIVE', 'NEUTRAL', 'NEGATIVE');
 CREATE TYPE "BenefitCategory" AS ENUM ('HYDRATION', 'ANTI_WRINKLE', 'BARRIER_REPAIR', 'BRIGHTENING', 'SOOTHING', 'OTHER');
 
 -- CreateEnum
-CREATE TYPE "FormulaBasis" AS ENUM ('DISCLOSED', 'ILLUSTRATIVE');
-
--- CreateEnum
-CREATE TYPE "FormulationStatus" AS ENUM ('DRAFT', 'FINAL');
-
--- CreateEnum
-CREATE TYPE "ClaimStatus" AS ENUM ('DRAFT', 'SUBMITTED', 'UNDER_MANAGER_REVIEW', 'ACCEPTED_FOR_FORMULATION', 'FORMULATION_IN_PROGRESS', 'AWAITING_EVIDENCE', 'READY_FOR_ASSESSMENT', 'ASSESSED', 'APPROVED_BY_EVALUATOR', 'REQUIRES_MORE_EVIDENCE', 'REJECTED');
-
--- CreateEnum
 CREATE TYPE "Verdict" AS ENUM ('SUPPORTED', 'NOT_SUPPORTED', 'INCONCLUSIVE');
-
--- CreateEnum
-CREATE TYPE "AssessmentProviderKind" AS ENUM ('MOCK', 'CLAUDE');
-
--- CreateEnum
-CREATE TYPE "ReviewDecision" AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'MORE_EVIDENCE_REQUESTED');
 
 -- CreateEnum
 CREATE TYPE "EvidenceRole" AS ENUM ('SUPPORTING', 'CONTRADICTORY', 'CONTEXT');
@@ -86,14 +71,12 @@ CREATE TABLE "Evidence" (
     "testedSubject" TEXT NOT NULL,
     "testedConcentration" DECIMAL(7,4),
     "endpoint" TEXT NOT NULL,
-    "methodology" TEXT NOT NULL,
     "resultsSummary" TEXT NOT NULL,
     "effectDirection" "EffectDirection" NOT NULL,
     "effectMagnitude" DECIMAL(7,2),
     "limitations" TEXT NOT NULL,
     "quality" "QualityRating" NOT NULL,
     "status" "VerificationStatus" NOT NULL DEFAULT 'UNVERIFIED',
-    "createdBy" TEXT NOT NULL DEFAULT 'system',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -135,9 +118,6 @@ CREATE TABLE "UploadedDocument" (
 CREATE TABLE "Product" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "category" TEXT NOT NULL,
-    "createdBy" TEXT NOT NULL DEFAULT 'system',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -148,14 +128,7 @@ CREATE TABLE "Product" (
 CREATE TABLE "Formulation" (
     "id" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
-    "version" INTEGER NOT NULL,
-    "notes" TEXT,
-    "status" "FormulationStatus" NOT NULL DEFAULT 'DRAFT',
-    "basis" "FormulaBasis" NOT NULL DEFAULT 'ILLUSTRATIVE',
-    "basisNote" TEXT,
-    "createdBy" TEXT NOT NULL DEFAULT 'system',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Formulation_pkey" PRIMARY KEY ("id")
 );
@@ -175,21 +148,14 @@ CREATE TABLE "FormulationIngredient" (
 CREATE TABLE "Claim" (
     "id" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
-    "formulationId" TEXT,
+    "formulationId" TEXT NOT NULL,
     "title" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
     "benefitCategory" "BenefitCategory" NOT NULL,
-    "targetOutcome" TEXT NOT NULL,
     "measurementEndpoint" TEXT NOT NULL,
     "targetValue" DECIMAL(8,2) NOT NULL,
-    "measurementUnit" TEXT NOT NULL,
+    "measurementUnit" TEXT NOT NULL DEFAULT '%',
     "durationWeeks" INTEGER NOT NULL,
     "targetPopulation" TEXT NOT NULL,
-    "applicationFrequency" TEXT,
-    "scientificContext" TEXT,
-    "status" "ClaimStatus" NOT NULL DEFAULT 'DRAFT',
-    "managerNotes" TEXT,
-    "createdBy" TEXT NOT NULL DEFAULT 'system',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -201,8 +167,7 @@ CREATE TABLE "Assessment" (
     "id" TEXT NOT NULL,
     "claimId" TEXT NOT NULL,
     "formulationId" TEXT NOT NULL,
-    "provider" "AssessmentProviderKind" NOT NULL,
-    "model" TEXT,
+    "model" TEXT NOT NULL,
     "promptVersion" TEXT NOT NULL,
     "scoringVersion" TEXT NOT NULL,
     "inputHash" TEXT NOT NULL,
@@ -219,11 +184,6 @@ CREATE TABLE "Assessment" (
     "claimSnapshot" JSONB NOT NULL,
     "formulationSnapshot" JSONB NOT NULL,
     "evidenceSnapshot" JSONB NOT NULL,
-    "reviewDecision" "ReviewDecision" NOT NULL DEFAULT 'PENDING',
-    "reviewComments" TEXT,
-    "reviewedBy" TEXT,
-    "reviewedAt" TIMESTAMP(3),
-    "createdBy" TEXT NOT NULL DEFAULT 'system',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Assessment_pkey" PRIMARY KEY ("id")
@@ -283,16 +243,10 @@ CREATE UNIQUE INDEX "UploadedDocument_storedName_key" ON "UploadedDocument"("sto
 CREATE INDEX "UploadedDocument_evidenceId_idx" ON "UploadedDocument"("evidenceId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Product_name_key" ON "Product"("name");
-
--- CreateIndex
 CREATE INDEX "Product_createdAt_idx" ON "Product"("createdAt");
 
 -- CreateIndex
 CREATE INDEX "Formulation_productId_idx" ON "Formulation"("productId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Formulation_productId_version_key" ON "Formulation"("productId", "version");
 
 -- CreateIndex
 CREATE INDEX "FormulationIngredient_ingredientId_idx" ON "FormulationIngredient"("ingredientId");
@@ -305,9 +259,6 @@ CREATE INDEX "Claim_productId_idx" ON "Claim"("productId");
 
 -- CreateIndex
 CREATE INDEX "Claim_formulationId_idx" ON "Claim"("formulationId");
-
--- CreateIndex
-CREATE INDEX "Claim_status_idx" ON "Claim"("status");
 
 -- CreateIndex
 CREATE INDEX "Assessment_claimId_createdAt_idx" ON "Assessment"("claimId", "createdAt");

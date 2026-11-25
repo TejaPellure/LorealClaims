@@ -1,5 +1,5 @@
-import { checkComposition } from '../src/modules/formulations/composition';
-import { canTransition, validateClaimReadiness } from '../src/modules/claims/claim-rules';
+import { checkComposition } from '../src/modules/products/composition';
+import { validateClaimReadiness } from '../src/modules/claims/claim-rules';
 
 const line = (ingredientId: string, percentage: number, extra = {}) => ({ ingredientId, percentage, ...extra });
 
@@ -41,17 +41,11 @@ describe('formulation percentage validation', () => {
   });
 });
 
-describe('claim workflow and submission validation', () => {
+describe('claim readiness validation', () => {
   const completeClaim = {
-    title: 'Claim', benefitCategory: 'HYDRATION', targetOutcome: 'o', measurementEndpoint: 'e', targetValue: 10, measurementUnit: '%', durationWeeks: 4, targetPopulation: 'adults',
+    title: 'Claim', benefitCategory: 'HYDRATION', measurementEndpoint: 'e', targetValue: 10, measurementUnit: '%', durationWeeks: 4, targetPopulation: 'adults',
   };
   const validFormulation = { ingredients: [line('a', 10), line('b', 90)] };
-
-  it('allows only the documented transitions', () => {
-    expect(canTransition('DRAFT', 'SUBMITTED')).toBe(true);
-    expect(canTransition('SUBMITTED', 'READY_FOR_ASSESSMENT')).toBe(false);
-    expect(canTransition('REJECTED', 'SUBMITTED')).toBe(false);
-  });
 
   it('passes a complete claim with a valid formulation', () => {
     expect(validateClaimReadiness(completeClaim, validFormulation)).toEqual([]);
@@ -60,7 +54,7 @@ describe('claim workflow and submission validation', () => {
   it('reports a missing formulation and missing fields', () => {
     const problems = validateClaimReadiness({ ...completeClaim, measurementEndpoint: '' }, null);
     expect(problems.join(' ')).toMatch(/measurementEndpoint/);
-    expect(problems.join(' ')).toMatch(/not linked to a saved formulation/);
+    expect(problems.join(' ')).toMatch(/not linked to a formulation/);
   });
 
   it('blocks submission when the formulation does not total 100%', () => {

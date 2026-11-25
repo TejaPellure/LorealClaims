@@ -4,9 +4,8 @@ import { computeFactors } from '../src/modules/assessments/engine/scoring';
 import { ClaimInput, EvidenceCandidate, EvidenceRelation } from '../src/modules/assessments/engine/types';
 
 export const claimInput = (overrides: Partial<ClaimInput> = {}): ClaimInput => ({
-  id: 'claim-1', title: 'Reduces wrinkle depth by 20% in 4 weeks', description: 'd', benefitCategory: 'ANTI_WRINKLE', targetOutcome: 'Reduced wrinkle depth',
-  measurementEndpoint: 'Wrinkle depth', targetValue: 20, measurementUnit: '%', durationWeeks: 4, targetPopulation: 'Women with facial wrinkles',
-  applicationFrequency: null, scientificContext: null, ...overrides,
+  id: 'claim-1', title: 'Reduces wrinkle depth by 20% in 4 weeks', benefitCategory: 'ANTI_WRINKLE', measurementEndpoint: 'Wrinkle depth',
+  targetValue: 20, measurementUnit: '%', durationWeeks: 4, targetPopulation: 'Women with facial wrinkles', ...overrides,
 });
 
 export const weights = DEFAULT_SCORING_WEIGHTS;

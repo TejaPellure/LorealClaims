@@ -25,11 +25,10 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-cie}:${POSTGRES_PASSWORD:-cie_local_password}@db:5432/${POSTGRES_DB:-cie}?schema=public
-      ASSESSMENT_PROVIDER: ${ASSESSMENT_PROVIDER:-mock}
       CLAUDE_BRIDGE_URL: ${CLAUDE_BRIDGE_URL:-http://host.docker.internal:8787}
       CLAUDE_BRIDGE_TOKEN: ${CLAUDE_BRIDGE_TOKEN:-}
       CLAUDE_MODEL: ${CLAUDE_MODEL:-sonnet}
-      CLAUDE_TIMEOUT_MS: ${CLAUDE_TIMEOUT_MS:-120000}
+      CLAUDE_TIMEOUT_MS: ${CLAUDE_TIMEOUT_MS:-180000}
       MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-10}
     extra_hosts:
       - "host.docker.internal:host-gateway" # lets the container reach the Claude bridge on the host (Linux too)

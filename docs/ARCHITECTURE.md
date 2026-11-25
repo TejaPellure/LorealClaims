@@ -1,45 +1,40 @@
 # Architecture
 
-## Overview
 ```
-Browser (React SPA)  --same-origin-->  NestJS (REST /api + static SPA)  --Prisma-->  PostgreSQL
-                                            |
-                                            +--(optional, ASSESSMENT_PROVIDER=claude)-->  Claude bridge (host) --> `claude -p`
+Browser (React SPA) --same origin--> NestJS (REST /api + static SPA) --Prisma--> PostgreSQL
+                                          |
+                                          +--HTTP + bearer token--> Claude bridge (host) --> `claude -p`
 ```
-One deployable application. The browser only ever talks to NestJS on the same origin; the Claude bridge URL and token exist only in the server environment.
+One deployable application. The browser only talks to NestJS on its own origin; the bridge URL and token exist only in the server environment.
 
-## Why this shape (justification)
+## Decisions
 | Decision | Reason |
 |---|---|
-| Single NestJS app serving the SPA | One container to run and secure; no CORS; trivial `docker compose up` |
-| PostgreSQL + Prisma | Relational integrity for versioned formulations, `Decimal` for concentrations, typed migrations |
-| Metadata retrieval, no vector DB | Evidence is small and structured (ingredient, endpoint, duration, concentration). SQL filtering is explainable and auditable; semantic search is a roadmap item |
-| Deterministic score + LLM reasoning | The score must be transparent and reproducible; the LLM adds explanation, not arithmetic |
-| Backend guardrails on the verdict | Scientific rules (ingredient != product evidence) are enforced in code, not only in a prompt |
-| Immutable snapshots | An assessment is a record; later edits must not rewrite it |
-| Provider abstraction (mock / claude) | App is demonstrable offline; other models can be added later |
-| Claude bridge on the host | The Claude CLI authenticates with the user's login, unreachable from a container |
+| Single NestJS app serving the SPA | One container to run and secure; no CORS |
+| PostgreSQL + Prisma | Relational integrity, `Decimal` concentrations, typed migrations |
+| Metadata retrieval, no vector DB | Evidence is small and structured (ingredient, endpoint, duration, concentration); SQL filtering is explainable and auditable |
+| Deterministic score + Claude reasoning | The score must be reproducible; the LLM explains, it does not calculate |
+| Backend guardrails on the verdict | The scientific rules are enforced in code, not only in a prompt |
+| Immutable snapshots | An assessment is a record; later edits never rewrite it |
+| Claude through a host bridge | The Claude CLI uses the user's login, which a container cannot reach |
+| No review stage, statuses or versions | The product needs one short path from formula to answer; every extra step was removed |
 
 ## Backend modules (`apps/api/src/modules`)
-`ingredients`, `evidence` (+ PDF upload/download), `products`, `formulations` (versioning, compare, composition rules), `claims` (workflow rules), `assessments` (engine + controllers), `dashboard` (+ health). Cross-cutting code in `common/` (config, error filter, pagination, persona header, Decimal interceptor) and `prisma/`.
+`ingredients`, `evidence` (+ PDF upload/download), `products` (product + formulation, 100% validation), `claims`, `assessments` (engine + controllers). Cross-cutting code in `common/` (config, error filter, pagination, Decimal interceptor, health) and `prisma/`.
 
 ## Assessment engine (`modules/assessments/engine`)
-`evidence-retrieval.ts` -> `scoring.ts` -> `providers/providers.ts` -> `ai-schema.ts` (validation) -> `guardrails.ts` -> `assessment-pipeline.ts` (orchestrates and persists). Details: [AI_ASSESSMENT_ENGINE.md](AI_ASSESSMENT_ENGINE.md).
+`evidence-retrieval.ts` -> `scoring.ts` -> `providers/providers.ts` (Claude via bridge) -> `ai-schema.ts` (validation) -> `guardrails.ts` -> `assessment-pipeline.ts` (orchestrates and persists). See [AI_ASSESSMENT_ENGINE.md](AI_ASSESSMENT_ENGINE.md).
 
 ## Frontend (`apps/web/src`)
-`pages/` routes, `features/` (studio, claims, evidence, ingredients), `components/ui` primitives, `services/api.ts` (single HTTP layer), `hooks/`, `layouts/`. State is native React; no state library.
+`pages/` (Formulate, Claims, Report, Ingredients, Evidence), `features/` (studio, claims, evidence, ingredients), `components/ui` primitives, `services/api.ts`, `hooks/`, `layouts/`. Native React state only.
 
-## Request flow: `POST /api/claims/assess`
-1. Validate body (`claimId` UUID only).
-2. Load claim + formulation + ingredients from PostgreSQL; check status and readiness (100% total, required fields).
-3. Retrieve and classify evidence; compute match factors and the deterministic score.
-4. Fingerprint inputs; return the existing assessment for an identical duplicate (unless `forceNew`); share one in-flight run for concurrent duplicates.
-5. Provider generates a structured result; validate (retry once with feedback); apply guardrails.
-6. Transaction: save assessment + evidence links + snapshots, set claim `ASSESSED`.
-7. Return the saved assessment.
+## Request flow: submitting a claim
+1. UI `POST /api/claims` (product, wording, benefit, target %, weeks, population). The server binds the product's formulation and derives the endpoint.
+2. UI `POST /api/claims/assess { claimId }`.
+3. Server loads claim + formulation + ingredients, checks readiness (100%, required fields), retrieves and classifies evidence, scores it.
+4. Duplicate inputs return the stored assessment; concurrent identical runs share one call.
+5. Claude returns structured JSON (via the bridge); the server validates it (one retry with feedback), applies guardrails, saves assessment + evidence links + snapshots.
+6. The saved assessment is returned; the UI shows the report.
 
-## Extensibility
-Provider interface, versioned prompt/rubric, evidence relations and snapshot JSON leave room for literature search, PDF extraction, regulatory checks, RBAC/SSO and audit trails without restructuring (see [PRODUCT_ROADMAP.md](PRODUCT_ROADMAP.md)).
-
-## Known limitations
-Persona selector is not authentication. No rate limiting, audit log or background jobs. The seed script runs TypeScript with `tsx` inside the image. Single-instance in-flight duplicate protection (in memory) would need a DB lock for multiple replicas.
+## Limitations
+No authentication, rate limiting or audit log. The Claude bridge targets a trusted local machine. In-flight duplicate protection is in memory (a database lock would be needed for several replicas). Evaluations take about 1-2 minutes and run inside the HTTP request (a job queue would be the next step).

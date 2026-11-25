@@ -16,7 +16,7 @@ import { open, unlink } from 'fs/promises';
 import { diskStorage } from 'multer';
 import { join } from 'path';
 import { APP_CONFIG, AppConfig, loadConfig } from '../../common/config';
-import { pageArgs, paged, PaginationQueryDto, Persona } from '../../common/common';
+import { pageArgs, paged, PaginationQueryDto } from '../../common/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 // ───────────────────────────── DTOs ─────────────────────────────
@@ -38,7 +38,6 @@ export class CreateEvidenceDto {
   @IsString() testedSubject: string;
   @IsOptional() @Type(() => Number) @IsNumber({ maxDecimalPlaces: 4 }) @Min(0) @Max(100) testedConcentration?: number;
   @IsString() endpoint: string;
-  @IsString() methodology: string;
   @IsString() resultsSummary: string;
   @IsEnum(EffectDirection) effectDirection: EffectDirection;
   @IsOptional() @Type(() => Number) @IsNumber({ maxDecimalPlaces: 2 }) effectMagnitude?: number;
@@ -64,7 +63,7 @@ const PDF_MAGIC = '%PDF-';
 
 const evidenceInclude = {
   ingredientLinks: { include: { ingredient: { select: { id: true, name: true, inciName: true } } } },
-  formulationLinks: { include: { formulation: { select: { id: true, version: true, product: { select: { id: true, name: true } } } } } },
+  formulationLinks: { include: { formulation: { select: { id: true, product: { select: { id: true, name: true } } } } } },
   documents: { select: { id: true, originalName: true, sizeBytes: true, createdAt: true } },
 } satisfies Prisma.EvidenceInclude;
 
@@ -99,13 +98,12 @@ export class EvidenceService {
     return evidence;
   }
 
-  create(dto: CreateEvidenceDto, createdBy: string) {
+  create(dto: CreateEvidenceDto) {
     const { ingredientIds = [], formulationIds = [], publishedAt, ...fields } = dto;
     return this.prisma.evidence.create({
       data: {
         ...fields,
         publishedAt: publishedAt ? new Date(publishedAt) : undefined,
-        createdBy,
         ingredientLinks: { create: ingredientIds.map((ingredientId) => ({ ingredientId })) },
         formulationLinks: { create: formulationIds.map((formulationId) => ({ formulationId })) },
       },
@@ -176,7 +174,7 @@ export class EvidenceController {
 
   @Get() list(@Query() query: EvidenceQueryDto) { return this.service.list(query); }
   @Get(':id') get(@Param('id', ParseUUIDPipe) id: string) { return this.service.get(id); }
-  @Post() create(@Body() dto: CreateEvidenceDto, @Persona() persona: string) { return this.service.create(dto, persona); }
+  @Post() create(@Body() dto: CreateEvidenceDto) { return this.service.create(dto); }
   @Patch(':id') update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateEvidenceDto) { return this.service.update(id, dto); }
 
   @Post(':id/upload')

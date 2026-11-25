@@ -11,16 +11,16 @@ import { cn } from '@/lib/lib';
 
 // ───────── Button ─────────
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
   {
     variants: {
       variant: {
-        primary: 'bg-teal-700 text-white hover:bg-teal-800',
-        secondary: 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-50',
+        primary: 'bg-teal-700 text-white shadow-sm hover:bg-teal-800',
+        secondary: 'border border-slate-300 bg-white text-slate-800 hover:border-teal-700 hover:text-teal-800',
         ghost: 'text-slate-700 hover:bg-slate-100',
         danger: 'bg-red-600 text-white hover:bg-red-700',
       },
-      size: { sm: 'h-8 px-3', md: 'h-9 px-4', icon: 'h-8 w-8' },
+      size: { sm: 'h-8 px-4', md: 'h-10 px-6', icon: 'h-8 w-8' },
     },
     defaultVariants: { variant: 'primary', size: 'md' },
   },
@@ -40,9 +40,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ className, v
 Button.displayName = 'Button';
 
 // ───────── Form controls ─────────
-const controlClass = 'w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-2 focus-visible:outline-teal-600 disabled:bg-slate-100';
+const controlClass = 'w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-2 focus-visible:outline-teal-600 disabled:bg-slate-100';
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(({ className, ...props }, ref) => (
-  <input ref={ref} className={cn(controlClass, 'h-9', className)} {...props} />
+  <input ref={ref} className={cn(controlClass, 'h-10', className)} {...props} />
 ));
 Input.displayName = 'Input';
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(({ className, ...props }, ref) => (
@@ -51,7 +51,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<H
 Textarea.displayName = 'Textarea';
 /** Native <select> styled like shadcn Select: fully keyboard/screen-reader accessible with zero extra JS. */
 export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(({ className, ...props }, ref) => (
-  <select ref={ref} className={cn(controlClass, 'h-9 pr-8', className)} {...props} />
+  <select ref={ref} className={cn(controlClass, 'h-10 pr-8', className)} {...props} />
 ));
 Select.displayName = 'Select';
 
@@ -67,7 +67,7 @@ export function Field({ label, hint, error, children, className }: { label: stri
 }
 
 // ───────── Badge ─────────
-const badgeVariants = cva('inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium whitespace-nowrap', {
+const badgeVariants = cva('inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium whitespace-nowrap', {
   variants: {
     tone: {
       neutral: 'border-slate-200 bg-slate-100 text-slate-700',
@@ -87,13 +87,13 @@ export function Badge({ className, tone, ...props }: HTMLAttributes<HTMLSpanElem
 
 // ───────── Card ─────────
 export const Card = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn('rounded-lg border border-slate-200 bg-white', className)} {...props} />
+  <div className={cn('rounded-2xl border border-slate-200 bg-white', className)} {...props} />
 );
 export const CardHeader = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
   <div className={cn('flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-3', className)} {...props} />
 );
 export const CardTitle = ({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) => (
-  <h2 className={cn('text-sm font-semibold text-slate-900', className)} {...props} />
+  <h2 className={cn('font-display text-base font-semibold text-slate-900', className)} {...props} />
 );
 export const CardBody = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => <div className={cn('p-4', className)} {...props} />;
 
@@ -115,11 +115,11 @@ export function Dialog({ open, onOpenChange, title, description, children, wide 
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-40 bg-slate-900/40" />
         <DialogPrimitive.Content
-          className={cn('fixed left-1/2 top-1/2 z-50 flex max-h-[90vh] w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg border border-slate-200 bg-white shadow-lg', wide ? 'max-w-4xl' : 'max-w-xl')}
+          className={cn('fixed left-1/2 top-1/2 z-50 flex max-h-[90vh] w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl border border-slate-200 bg-white shadow-lg', wide ? 'max-w-4xl' : 'max-w-xl')}
         >
           <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4">
             <div>
-              <DialogPrimitive.Title className="text-base font-semibold text-slate-900">{title}</DialogPrimitive.Title>
+              <DialogPrimitive.Title className="font-display text-xl font-semibold text-slate-900">{title}</DialogPrimitive.Title>
               <DialogPrimitive.Description className={description ? 'mt-0.5 text-sm text-slate-500' : 'sr-only'}>{description ?? title}</DialogPrimitive.Description>
             </div>
             <DialogPrimitive.Close asChild>
@@ -149,11 +149,11 @@ export function ConfirmDialog({ open, onOpenChange, title, description, confirmL
 // ───────── Tabs ─────────
 export const Tabs = TabsPrimitive.Root;
 export const TabsList = ({ className, ...props }: TabsPrimitive.TabsListProps) => (
-  <TabsPrimitive.List className={cn('inline-flex items-center gap-1 rounded-md bg-slate-100 p-1', className)} {...props} />
+  <TabsPrimitive.List className={cn('inline-flex items-center gap-1 rounded-full bg-slate-100 p-1', className)} {...props} />
 );
 export const TabsTrigger = ({ className, ...props }: TabsPrimitive.TabsTriggerProps) => (
   <TabsPrimitive.Trigger
-    className={cn('cursor-pointer rounded px-3 py-1 text-sm font-medium text-slate-600 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm', className)}
+    className={cn('cursor-pointer rounded-full px-4 py-1 text-sm font-medium text-slate-600 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm', className)}
     {...props}
   />
 );
@@ -219,7 +219,7 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
 }
 
 export function Progress({ value, className, tone = 'teal' }: { value: number; className?: string; tone?: 'teal' | 'amber' | 'red' | 'green' }) {
-  const color = { teal: 'bg-teal-600', amber: 'bg-amber-500', red: 'bg-red-500', green: 'bg-emerald-500' }[tone];
+  const color = { teal: 'bg-teal-700', amber: 'bg-amber-500', red: 'bg-red-500', green: 'bg-emerald-500' }[tone];
   return (
     <div className={cn('h-2 w-full overflow-hidden rounded-full bg-slate-200', className)} role="progressbar" aria-valuenow={Math.round(value)} aria-valuemin={0} aria-valuemax={100}>
       <div className={cn('h-full rounded-full transition-all', color)} style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />

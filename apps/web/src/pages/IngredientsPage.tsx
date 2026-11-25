@@ -26,11 +26,7 @@ export default function IngredientsPage() {
 
   return (
     <>
-      <PageHeader
-        title="Ingredient Library"
-        description="Central catalogue of cosmetic ingredients. Only source-verified facts are marked Verified."
-        actions={<Button onClick={() => setForm({ open: true, ingredient: null })}><Plus className="h-4 w-4" />Add ingredient</Button>}
-      />
+      <PageHeader eyebrow="Library" title="Ingredients" description="Every ingredient you can formulate with. Only source-backed facts are marked Verified." actions={<Button onClick={() => setForm({ open: true, ingredient: null })}><Plus className="h-4 w-4" />Add ingredient</Button>} />
       <Card>
         <FilterBar>
           <Field label="Search" className="w-64"><Input placeholder="Name, INCI or function" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} /></Field>
@@ -38,7 +34,7 @@ export default function IngredientsPage() {
             <Select value={category} onChange={(e) => { setCategory(e.target.value); setPage(1); }}><option value="">All categories</option>{INGREDIENT_CATEGORIES.map((c) => <option key={c} value={c}>{humanize(c)}</option>)}</Select>
           </Field>
           <Field label="Status" className="w-40">
-            <Select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}><option value="">All statuses</option><option value="VERIFIED">Verified</option><option value="UNVERIFIED">Unverified</option><option value="DEMO">Demo</option></Select>
+            <Select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}><option value="">All statuses</option><option value="VERIFIED">Verified</option><option value="UNVERIFIED">Not verified</option></Select>
           </Field>
         </FilterBar>
         {loading && !data ? <TableSkeleton /> : error ? <ErrorState message={error} onRetry={reload} /> : !data?.items.length ? (

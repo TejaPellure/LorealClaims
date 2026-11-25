@@ -1,78 +1,92 @@
+import { Loader2, Sparkles } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
-import { toast } from 'sonner';
-import { Button, Field, FormError, Input, Select, Textarea } from '@/components/ui/primitives';
-import { useAsync, useFormState } from '@/hooks/hooks';
+import { useNavigate } from 'react-router-dom';
+import { Button, Field, Input, Select } from '@/components/ui/primitives';
 import { BENEFIT_CATEGORIES, humanize } from '@/lib/lib';
 import { api, errorText } from '@/services/api';
-import type { Claim, Formulation, Product } from '@/types';
+import type { Assessment, Claim, Product } from '@/types';
 
-const EMPTY = {
-  title: '', description: '', benefitCategory: 'ANTI_WRINKLE', targetOutcome: '', measurementEndpoint: '', targetValue: '', measurementUnit: '%',
-  durationWeeks: '', targetPopulation: '', applicationFrequency: '', scientificContext: '',
-};
+type Phase = { name: 'idle' } | { name: 'working'; step: 'saving' | 'evaluating' } | { name: 'failed'; claimId: string; message: string };
 
 /**
- * Structured claim creation. The claim text is stored together with its measurable parts
- * (endpoint, target, unit, duration, population) so the assessment never has to parse free text.
- * When `formulationId` is provided the claim is bound to that exact formulation version.
+ * One short form. Submitting creates the claim and immediately sends it to Claude;
+ * the user lands on the finished report. If Claude fails, the claim is kept and the evaluation can be retried.
  */
-export function ClaimForm({ products, productId: fixedProductId, formulationId: fixedFormulationId, onCreated, submitLabel = 'Create claim' }: {
-  products: Product[]; productId?: string; formulationId?: string; onCreated: (claim: Claim) => void; submitLabel?: string;
-}) {
-  const { values, bind, set } = useFormState(EMPTY);
-  const [productId, setProductId] = useState(fixedProductId ?? products[0]?.id ?? '');
-  const [formulationId, setFormulationId] = useState(fixedFormulationId ?? '');
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const formulations = useAsync(() => (productId && !fixedFormulationId ? api.get<Formulation[]>(`/products/${productId}/formulations`) : Promise.resolve([])), [productId, fixedFormulationId]);
+export function ClaimForm({ products, initialProductId }: { products: Product[]; initialProductId?: string }) {
+  const navigate = useNavigate();
+  const [productId, setProductId] = useState(products.find((p) => p.id === initialProductId)?.id ?? products[0]?.id ?? '');
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('ANTI_WRINKLE');
+  const [target, setTarget] = useState('');
+  const [weeks, setWeeks] = useState('');
+  const [population, setPopulation] = useState('Adults');
+  const [phase, setPhase] = useState<Phase>({ name: 'idle' });
 
-  const submit = async (event: FormEvent) => {
-    event.preventDefault();
-    setSaving(true);
-    setError(null);
+  const product = products.find((p) => p.id === productId);
+  const evaluate = async (claimId: string) => {
+    setPhase({ name: 'working', step: 'evaluating' });
     try {
-      const claim = await api.post<Claim>('/claims', {
-        productId, formulationId: formulationId || undefined, title: values.title, description: values.description, benefitCategory: values.benefitCategory,
-        targetOutcome: values.targetOutcome, measurementEndpoint: values.measurementEndpoint, targetValue: Number(values.targetValue), measurementUnit: values.measurementUnit,
-        durationWeeks: Number(values.durationWeeks), targetPopulation: values.targetPopulation,
-        applicationFrequency: String(values.applicationFrequency).trim() || undefined, scientificContext: String(values.scientificContext).trim() || undefined,
-      });
-      toast.success('Claim created');
-      onCreated(claim);
+      const assessment = await api.post<Assessment>('/claims/assess', { claimId });
+      navigate(`/assessments/${assessment.id}`);
     } catch (e) {
-      setError(errorText(e));
-    } finally {
-      setSaving(false);
+      setPhase({ name: 'failed', claimId, message: errorText(e) });
     }
   };
 
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    setPhase({ name: 'working', step: 'saving' });
+    try {
+      const claim = await api.post<Claim>('/claims', {
+        productId, title, benefitCategory: category, targetValue: Number(target), durationWeeks: Number(weeks), targetPopulation: population,
+      });
+      await evaluate(claim.id);
+    } catch (e) {
+      setPhase({ name: 'idle' });
+      setPhase({ name: 'failed', claimId: '', message: errorText(e) });
+    }
+  };
+
+  if (phase.name === 'working') {
+    return (
+      <div className="flex flex-col items-center gap-4 px-6 py-14 text-center" role="status" aria-live="polite">
+        <Loader2 className="h-9 w-9 animate-spin text-teal-700" aria-hidden />
+        <p className="font-display text-2xl text-slate-900">{phase.step === 'saving' ? 'Saving your claim…' : 'Claude is reviewing the evidence…'}</p>
+        <p className="max-w-md text-sm text-slate-600">
+          {phase.step === 'evaluating' ? `Comparing "${title}" with the ingredients, concentrations and studies for ${product?.name}. This usually takes one to two minutes.` : 'One moment.'}
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={submit} className="grid gap-3 sm:grid-cols-2">
-      {!fixedProductId && (
-        <Field label="Product *"><Select required value={productId} onChange={(e) => { setProductId(e.target.value); setFormulationId(''); }}>{products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</Select></Field>
-      )}
-      {!fixedFormulationId && (
-        <Field label="Formulation version" hint="Optional for proposals; required before assessment">
-          <Select value={formulationId} onChange={(e) => setFormulationId(e.target.value)}>
-            <option value="">Not assigned yet</option>
-            {formulations.data?.map((f) => <option key={f.id} value={f.id}>v{f.version} ({f.status.toLowerCase()})</option>)}
-          </Select>
+    <form onSubmit={submit} className="space-y-5 p-6 sm:p-8">
+      <Field label="Claim wording">
+        <Input required minLength={5} maxLength={300} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Reduces wrinkle depth by 20% in 4 weeks" className="h-12 text-base" />
+      </Field>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <Field label="Product" className="lg:col-span-2">
+          <Select required value={productId} onChange={(e) => setProductId(e.target.value)}>{products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</Select>
         </Field>
+        <Field label="Benefit"><Select value={category} onChange={(e) => setCategory(e.target.value)}>{BENEFIT_CATEGORIES.map((c) => <option key={c} value={c}>{humanize(c)}</option>)}</Select></Field>
+        <Field label="Improvement (%)"><Input required type="number" min="0" step="0.1" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="20" /></Field>
+        <Field label="Within (weeks)"><Input required type="number" min="1" max="520" value={weeks} onChange={(e) => setWeeks(e.target.value)} placeholder="4" /></Field>
+      </div>
+      <Field label="Target population"><Input required minLength={2} value={population} onChange={(e) => setPopulation(e.target.value)} placeholder="Women with facial wrinkles" /></Field>
+
+      {product && (
+        <p className="rounded-xl bg-slate-100 px-4 py-3 text-xs text-slate-600">
+          Formula: {product.formulations[0]?.ingredients.map((l) => `${l.ingredient.name} ${l.percentage}%`).join(' · ')}
+        </p>
       )}
-      <Field label="Claim title *" className="sm:col-span-2"><Input required minLength={5} placeholder="Reduces wrinkle depth by 20% in 4 weeks" {...bind('title')} /></Field>
-      <Field label="Claim description *" className="sm:col-span-2"><Textarea required {...bind('description')} /></Field>
-      <Field label="Benefit category *"><Select {...bind('benefitCategory')}>{BENEFIT_CATEGORIES.map((c) => <option key={c} value={c}>{humanize(c)}</option>)}</Select></Field>
-      <Field label="Target outcome *"><Input required placeholder="Reduced wrinkle depth" {...bind('targetOutcome')} /></Field>
-      <Field label="Measurement endpoint *" className="sm:col-span-2"><Input required placeholder="Wrinkle depth by skin profilometry" {...bind('measurementEndpoint')} /></Field>
-      <Field label="Expected improvement / target *"><Input required type="number" step="0.01" min="0" {...bind('targetValue')} /></Field>
-      <Field label="Measurement unit *"><Input required {...bind('measurementUnit')} onChange={(e) => set('measurementUnit', e.target.value)} /></Field>
-      <Field label="Expected duration (weeks) *"><Input required type="number" min="1" max="520" {...bind('durationWeeks')} /></Field>
-      <Field label="Target population *"><Input required placeholder="Women with facial wrinkles" {...bind('targetPopulation')} /></Field>
-      <Field label="Application frequency"><Input placeholder="Twice daily" {...bind('applicationFrequency')} /></Field>
-      <Field label="Additional scientific context"><Input {...bind('scientificContext')} /></Field>
-      <div className="space-y-2 sm:col-span-2">
-        <FormError message={error} />
-        <div className="flex justify-end"><Button type="submit" loading={saving} disabled={!productId}>{submitLabel}</Button></div>
+      {phase.name === 'failed' && (
+        <div role="alert" className="space-y-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
+          <p>{phase.message}</p>
+          {phase.claimId && <Button type="button" size="sm" variant="secondary" onClick={() => evaluate(phase.claimId)}>Try the evaluation again</Button>}
+        </div>
+      )}
+      <div className="flex justify-end">
+        <Button type="submit" size="md" disabled={!productId}><Sparkles className="h-4 w-4" />Evaluate with Claude</Button>
       </div>
     </form>
   );

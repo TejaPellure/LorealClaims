@@ -1,6 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { api, errorText, getPersona, setPersona as storePersona } from '@/services/api';
-import type { AssessmentMeta, Persona } from '@/types';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { errorText } from '@/services/api';
 
 /** Loads data on mount / when deps change, with loading + error state and a manual reload. */
 export function useAsync<T>(load: () => Promise<T>, deps: unknown[] = []) {
@@ -42,23 +41,4 @@ export function useFormState<T extends Record<string, unknown>>(initial: T) {
     onChange: (e: { target: { value: string } }) => set(key, e.target.value as T[keyof T]),
   });
   return { values, set, bind, reset: (next: T = initial) => setValues(next) };
-}
-
-// ── Demo persona (NOT authentication; see docs/BUSINESS_WORKFLOW.md) ──
-interface PersonaContextValue { persona: Persona; setPersona: (p: Persona) => void }
-const PersonaContext = createContext<PersonaContextValue>({ persona: 'SCIENTIST', setPersona: () => undefined });
-
-export function PersonaProvider({ children }: { children: ReactNode }) {
-  const [persona, setState] = useState<Persona>(getPersona());
-  const setPersona = (p: Persona) => {
-    storePersona(p);
-    setState(p);
-  };
-  return <PersonaContext.Provider value={{ persona, setPersona }}>{children}</PersonaContext.Provider>;
-}
-export const usePersona = () => useContext(PersonaContext);
-
-/** Active assessment provider (mock vs Claude), used for the Demo/Mock AI indicator. */
-export function useAssessmentMeta() {
-  return useAsync(() => api.get<AssessmentMeta>('/assessments/meta'), []);
 }

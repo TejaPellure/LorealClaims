@@ -1,9 +1,9 @@
 // Backend guardrails applied to EVERY verdict, whichever provider produced it.
-// They keep the scientific rules enforceable even if a model (or the mock) is too generous or too harsh.
+// They keep the scientific rules enforceable even if the model is too generous or too harsh.
 import { Verdict } from '@prisma/client';
 import { EvidenceCandidate } from './types';
 
-/** Facts about the evidence set that drive both the mock provider and the guardrails. */
+/** Facts about the evidence set that drive the guardrails. */
 export function evidenceFacts(candidates: EvidenceCandidate[]) {
   const exact = candidates.filter((c) => c.relation === 'FINISHED_EXACT' && c.categoryMatch);
   return {

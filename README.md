@@ -1,132 +1,99 @@
-# Claims Intelligence Engine
+# Claims Intelligence
 
-A cosmetic formulation research and **claims substantiation** platform. Business teams propose claims, claim managers screen them, scientists build formulations, evaluators attach evidence, and an AI assessment engine checks whether the evidence supports each claim, with an explainable, traceable report that a human evaluator then accepts or rejects.
+Formulate a cosmetic product, write the claim you want to make, and **Claude evaluates whether the available scientific evidence supports it**, with an explainable, traceable report.
 
-> **Decision support, not approval.** The AI never approves a cosmetic claim. All scores are prototype rubrics requiring scientific validation. Demo formulas are illustrative, not manufacturer recipes.
+> Decision support, not approval. The score is a prototype rubric needing scientific validation, and an evaluation never constitutes regulatory approval.
 
-## Main features
+## The flow (3 steps)
 
-| Area | What it does |
-|---|---|
-| Dashboard | Live KPIs, outcome distribution, pending workflow actions, recent products / assessments / uploads |
-| Ingredient Library | Search + filters, full profile, add/edit, evidence links, sources; verified vs unverified is always shown |
-| Evidence Library | 7 evidence categories, ingredient + formulation links, PDF upload (persistent volume), traceable records |
-| Formulation Studio | Three-panel workspace with drag-and-drop (`@dnd-kit`), live 100% validation, versioning, claim creation |
-| Claims Assessment | 11-state workflow, structured claims bound to an exact formulation version, one-click AI assessment |
-| Assessment Report | Verdict, transparent 0-100 evidence score, reasoning, traceable evidence, human evaluator decision |
-| Assessment History | Searchable history, immutable snapshots, formulation version comparison |
+1. **Formulate**: type a product name, add ingredients (drag or click Add), set concentrations so they total 100%, save.
+2. **Claim**: write the claim, pick the product, benefit, target %, weeks and population. Submitting sends it to Claude immediately.
+3. **Result**: the report shows the verdict (Supported / Not supported / Inconclusive), a transparent 0-100 evidence score, Claude's reasoning, strengths, limitations, missing evidence, recommended tests and the exact studies used.
 
-## Technology stack
+Plus two libraries: **Ingredients** (11 ingredients) and **Evidence** (6 real, PubMed-verified studies; add your own and upload PDFs).
 
-NestJS 11 + TypeScript, Prisma 6 + PostgreSQL 16, React 19 + Vite 7, Tailwind CSS v4, shadcn/ui-style components (Radix), Lucide icons, React Router 7, `@dnd-kit`, Docker + Docker Compose. One NestJS app serves both the API and the compiled React SPA.
+## Technology
+
+NestJS 11 + TypeScript, Prisma 6 + PostgreSQL 16, React 19 + Vite 7, Tailwind CSS v4, Radix-based shadcn-style components, Lucide icons, `@dnd-kit`, Docker Compose. One NestJS app serves the API and the compiled React app.
 
 ## Prerequisites
 
-Only **Docker** and **Docker Compose**. No local Node.js or PostgreSQL needed.
+- **Docker + Docker Compose** (runs the app and database; no local Node/PostgreSQL needed).
+- **Claude Code CLI logged in on your machine** (Claude evaluates every claim through it) and **Node.js 22+ on the host** only to run the small Claude bridge.
 
-## Quick start
+## Run
 
-```powershell
-docker compose up --build
-```
-
-Then open:
-
-- App: http://localhost:3000
-- API: http://localhost:3000/api
-- Health: http://localhost:3000/api/health
-
-The first start builds the image, waits for PostgreSQL, applies migrations (`prisma migrate deploy`), seeds demo data **only if the database is empty**, and starts the server. It runs in **mock AI mode** by default, so no API key is required.
-
-Optional: `copy .env.example .env` to change database credentials or the provider. Compose also works with no `.env` at all.
-
-## AI assessment modes
-
-`ASSESSMENT_PROVIDER` selects the engine:
-
-- `mock` (default): deterministic, evidence-aware rules. The UI shows a **Demo / Mock AI** badge everywhere, and reports state they were not produced by Claude.
-- `claude`: real Claude assessment through the **Claude bridge**.
-
-### Enabling Claude
-
-Docker containers cannot reach your logged-in `claude` CLI, so a tiny bridge (`apps/claude-bridge/server.mjs`, no dependencies) runs **on your machine** and turns `claude -p` into an HTTP API. NestJS calls it through `host.docker.internal`.
-
-1. Make sure the Claude Code CLI is installed and signed in on the host (`claude --version`, then run `claude` once to log in).
-2. Create `.env` from `.env.example` and set a bridge token (treat it like an API key; `.env` is git-ignored):
+1. One-time Claude login (opens your browser):
    ```powershell
+   claude auth login
+   ```
+2. Create `.env` with a bridge token (treat it like an API key; `.env` is git-ignored):
+   ```powershell
+   copy .env.example .env
    node -e "console.log('cie_'+require('crypto').randomBytes(24).toString('hex'))"
    ```
-   Put the output in `CLAUDE_BRIDGE_TOKEN=` and set `ASSESSMENT_PROVIDER=claude`.
-3. Start the bridge on the host (needs Node.js 22+ on the host, for this optional step only):
+   Paste the output into `CLAUDE_BRIDGE_TOKEN=` in `.env`.
+3. Start the Claude bridge (leave it running):
    ```powershell
    npm run bridge
    ```
-4. Restart the stack: `docker compose up -d --force-recreate app`.
+4. Start the app:
+   ```powershell
+   docker compose up --build
+   ```
+5. Open http://localhost:3000 (API: http://localhost:3000/api, health: http://localhost:3000/api/health).
 
-The token and bridge URL never reach the browser. The bridge listens on `127.0.0.1`, requires the bearer token, and runs the CLI with tools disabled. See [docs/AI_ASSESSMENT_ENGINE.md](docs/AI_ASSESSMENT_ENGINE.md).
+### Why a bridge?
+Docker containers cannot use your logged-in `claude` CLI. `apps/claude-bridge/server.mjs` (no dependencies) runs on your machine, turns `claude -p` into a small authenticated HTTP API, and NestJS calls it through `host.docker.internal`. It listens on 127.0.0.1, requires the bearer token, and runs the CLI with tools disabled. The token and URL never reach the browser.
 
-## Demo walkthrough
+If the bridge is not running or Claude is not logged in, evaluating a claim shows a clear error and the claim is kept so you can retry. Nothing is faked.
 
-1. **Dashboard**: all numbers come from the database.
-2. **Claims**: open *"Reduces wrinkle depth by 20% in 12 weeks"* (Ready for assessment) and click **Run AI assessment**.
-3. Read the report: the score, why the verdict is *Inconclusive* (ingredient evidence only), missing evidence and recommended tests.
-4. Open *"Increases skin hydration by 25% in 4 weeks"*: finished-product evidence exists, so it is *Supported*. Switch persona to **Evaluator** to record a decision.
-5. **Formulation Studio**: pick *Revitalizing Skin Serum*, drag in ingredients, watch the 100% meter, save a new version.
-6. **Assessment History > Formulation versions**: compare v1 and v2.
+## Database and data
 
-## Sample data
-
-`prisma/seed-data/demo-data.json`: 11 ingredients, 13 evidence records, 3 products (4 formulation versions), 6 claims, and 4 mock assessments with evaluator comments.
-
-- **6 evidence records are real publications** whose DOI/PMID were checked against PubMed on 2026-11-25; summaries restate only what each abstract says.
-- **7 records are fictitious DEMO studies** (no DOI/PMID, flagged "Demo data" in the UI) so the demo can show finished-product evidence, conflicting evidence and weak evidence.
-- **All formulas are `ILLUSTRATIVE`** reconstructions with round example percentages. Manufacturers do not publish exact percentages, and none are claimed.
-
-Details and sources: [docs/RESEARCH_AND_ASSUMPTIONS.md](docs/RESEARCH_AND_ASSUMPTIONS.md).
-
-## Database behaviour
-
-- Migrations are committed in `prisma/migrations` and applied with `prisma migrate deploy` at startup. Nothing destructive ever runs automatically.
-- The seed runs only when ingredients, evidence and products are all empty. Restarts never reseed or overwrite data.
-- Data lives in the named volume `pgdata`; uploaded PDFs live in `uploads`.
+- Migrations (`prisma/migrations`) are applied with `prisma migrate deploy` at startup; nothing destructive ever runs.
+- The seed loads the ingredient library and the verified evidence **only when the database is empty**. Restarts never reseed or overwrite data. Products, claims and assessments are created by you.
+- Data lives in the Docker volumes `pgdata` and `uploads`.
 
 ```powershell
-docker compose down          # stop; data is kept
-docker compose up -d         # start again, data intact
-docker compose down -v       # DELETES the database and uploads (fresh start, reseeds)
+docker compose down        # stop, keep data
+docker compose up -d       # start again
+docker compose down -v     # DELETE all data (fresh start, reseeds)
 ```
+
+## About the data
+
+`prisma/seed-data/reference-data.json`:
+- **Evidence**: 6 real publications. DOI/PMID were checked against PubMed on 2026-11-25 and summaries restate only what each abstract says. None of these studies tested *your* formulas, so most claims will correctly come back **Inconclusive** until finished-product evidence for your formula is added in the Evidence library (link it to the product).
+- **Ingredients**: general descriptions; only those with an attached source are marked Verified.
+
+See [docs/RESEARCH_AND_ASSUMPTIONS.md](docs/RESEARCH_AND_ASSUMPTIONS.md).
 
 ## API
 
-All endpoints are under `/api`; see [docs/API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md). The core endpoint is `POST /api/claims/assess` with `{ "claimId": "<uuid>" }`: the server loads the claim, formulation and evidence from PostgreSQL itself, so the client can never supply evidence.
+`POST /api/claims/assess` with `{ "claimId": "<uuid>" }` loads the claim, formula and evidence from PostgreSQL itself (the client can never supply evidence), calls Claude, saves and returns the assessment. Full list: [docs/API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md).
 
 ## Tests
 
-Tests run without a database or API key (Prisma and Claude are mocked):
+Tests need no database and no Claude login (Prisma and the bridge are replaced by test doubles):
 
 ```powershell
-docker run --rm -v "${PWD}:/app" -w /app node:22-bookworm-slim sh -c "npm ci && npx prisma generate && npm test"
+npm ci; npx prisma generate; npm test
 ```
 
-Or, if Node.js 22+ is installed locally: `npm ci; npx prisma generate; npm test`.
+## Security notes
 
-## Security and demo limitations
-
-Implemented: Helmet headers, global input validation (`whitelist` + `forbidNonWhitelisted`), 1 MB JSON limit, PDF-only uploads with size limit and signature check, server-generated file names, safe errors, non-root container, secrets only in server environment.
-
-**Demo-only, needs work before production:** the persona selector is a label (`x-demo-persona` header), **not authentication or authorisation**; there is no rate limiting, audit log, SSO or RBAC; the Claude bridge is intended for a trusted local machine.
+Helmet headers, strict input validation (unknown fields rejected), 1 MB JSON limit, PDF-only uploads with size limit and signature check, server-generated file names, safe errors, non-root container. **Not production-ready**: there is no user authentication or authorisation, rate limiting or audit log, and the Claude bridge is meant for a trusted local machine.
 
 ## Troubleshooting
 
 | Symptom | Fix |
 |---|---|
-| `Cannot reach the server` in UI | `docker compose ps`; check `docker compose logs app` |
-| App restarts repeatedly | Database unhealthy: `docker compose logs db`; verify `.env` credentials match the existing volume (`docker compose down -v` resets) |
-| Port 3000 busy | Change the mapping in `docker-compose.yml` (`"3001:3000"`) |
-| Claude assessment returns 503 | Bridge not running, wrong `CLAUDE_BRIDGE_TOKEN`, or `claude` not logged in on the host |
-| Claude assessment returns 502 | Model returned invalid JSON twice; retry. Nothing unvalidated is saved |
-| Windows line-ending error in entrypoint | The repo stores `docker-entrypoint.sh` with LF; keep `core.autocrlf=input` |
+| "Cannot reach the Claude bridge" | Run `npm run bridge` on the host; check `CLAUDE_BRIDGE_TOKEN` is the same for the bridge and the app (`.env`), then `docker compose up -d --force-recreate app` |
+| "Failed to authenticate" / OAuth expired | Run `claude auth login` again on the host |
+| Evaluation takes ~1-2 minutes | Normal: Claude reviews the full evidence package; the timeout is 3 minutes (`CLAUDE_TIMEOUT_MS`) |
+| App restarts repeatedly | `docker compose logs db app`; credentials in `.env` must match an existing `pgdata` volume (or `down -v`) |
+| Port 3000 busy | Change the mapping in `docker-compose.yml` |
 
 ## Documentation
 
-[Architecture](docs/ARCHITECTURE.md) · [Database](docs/DATABASE_DESIGN.md) · [API](docs/API_DOCUMENTATION.md) · [AI engine](docs/AI_ASSESSMENT_ENGINE.md) · [Business workflow](docs/BUSINESS_WORKFLOW.md) · [Research](docs/RESEARCH_AND_ASSUMPTIONS.md) · [Docker](docs/DOCKER_AND_DEPLOYMENT.md) · [Technical proposal](docs/TECHNICAL_PROPOSAL.md) · [Roadmap](docs/PRODUCT_ROADMAP.md)
+[Architecture](docs/ARCHITECTURE.md) · [Database](docs/DATABASE_DESIGN.md) · [API](docs/API_DOCUMENTATION.md) · [AI engine](docs/AI_ASSESSMENT_ENGINE.md) · [Business flow](docs/BUSINESS_WORKFLOW.md) · [Research](docs/RESEARCH_AND_ASSUMPTIONS.md) · [Docker](docs/DOCKER_AND_DEPLOYMENT.md) · [Technical proposal](docs/TECHNICAL_PROPOSAL.md) · [Roadmap](docs/PRODUCT_ROADMAP.md)

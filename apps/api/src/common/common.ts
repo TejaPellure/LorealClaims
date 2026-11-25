@@ -1,5 +1,5 @@
-// Small shared helpers: pagination, demo persona header, Decimal serialisation.
-import { createParamDecorator, ExecutionContext, Injectable, NestInterceptor, CallHandler } from '@nestjs/common';
+// Small shared helpers: pagination and Decimal serialisation.
+import { ExecutionContext, Injectable, NestInterceptor, CallHandler } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
@@ -25,18 +25,6 @@ export const paged = <T>(items: T[], total: number, q: PaginationQueryDto): Page
   total,
   page: q.page,
   pageSize: q.pageSize,
-});
-
-export const DEMO_PERSONAS = ['BUSINESS', 'CLAIM_MANAGER', 'SCIENTIST', 'EVALUATOR'] as const;
-export type DemoPersona = (typeof DEMO_PERSONAS)[number];
-
-/**
- * Reads the demo persona from the `x-demo-persona` header.
- * DEMO ONLY: this is a label for audit columns, NOT authentication or authorisation.
- */
-export const Persona = createParamDecorator((_: unknown, ctx: ExecutionContext): string => {
-  const header = ctx.switchToHttp().getRequest().headers['x-demo-persona'];
-  return DEMO_PERSONAS.includes(header) ? header : 'UNKNOWN';
 });
 
 /** Prisma Decimals serialise as strings; the UI wants numbers. Convert every Decimal in a response. */

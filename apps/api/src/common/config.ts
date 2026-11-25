@@ -1,8 +1,6 @@
 // Central configuration. Every environment variable the API reads is parsed here, once.
 import { join } from 'path';
 
-export type ProviderName = 'mock' | 'claude';
-
 /** Scoring rubric weights; must add up to 100. See docs/AI_ASSESSMENT_ENGINE.md. */
 export interface ScoringWeights {
   methodologicalQuality: number;
@@ -42,13 +40,11 @@ function parseWeights(raw: string | undefined): ScoringWeights {
 
 export function loadConfig() {
   const env = process.env;
-  const provider = (env.ASSESSMENT_PROVIDER ?? 'mock').toLowerCase() === 'claude' ? 'claude' : 'mock';
   return {
     port: Number(env.PORT ?? 3000),
     uploadDir: env.UPLOAD_DIR ?? join(process.cwd(), 'uploads'),
     maxUploadBytes: Number(env.MAX_UPLOAD_MB ?? 10) * 1024 * 1024,
     assessment: {
-      provider: provider as ProviderName,
       weights: parseWeights(env.SCORING_WEIGHTS),
       /** Minimum score before the backend lets a SUPPORTED verdict stand. */
       supportedMinScore: Number(env.SUPPORTED_MIN_SCORE ?? 60),

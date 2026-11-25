@@ -17,7 +17,7 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   await app.listen(config.port, '0.0.0.0');
-  new Logger('Bootstrap').log(`Claims Intelligence Engine on :${config.port} (assessment provider: ${config.assessment.provider})`);
+  new Logger('Bootstrap').log(`Claims Intelligence Engine on :${config.port} (Claude via ${config.claude.bridgeUrl})`);
 }
 
 bootstrap().catch((error) => {

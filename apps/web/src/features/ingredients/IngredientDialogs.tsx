@@ -29,7 +29,7 @@ export function IngredientProfileDialog({ ingredientId, onClose, onEdit, onOpenE
           </div>
           {data.status !== 'VERIFIED' && (
             <p className="rounded-md border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800">
-              {data.status === 'DEMO' ? 'Demo information.' : 'Not source-verified.'} Treat this profile as a general summary, not as a verified scientific or regulatory statement.
+              Not source-verified. Treat this profile as a general summary, not as a verified scientific or regulatory statement.
             </p>
           )}
           <dl>
@@ -145,7 +145,7 @@ function IngredientForm({ initial, editingId, onClose, onSaved }: { initial: typ
         </Field>
         <Field label="Primary functionality *"><Input required {...bind('primaryFunction')} /></Field>
         <Field label="Verification status">
-          <Select {...bind('status')}><option value="UNVERIFIED">Unverified</option><option value="VERIFIED">Verified (source attached)</option><option value="DEMO">Demo</option></Select>
+          <Select {...bind('status')}><option value="UNVERIFIED">Not verified</option><option value="VERIFIED">Verified (source attached)</option></Select>
         </Field>
         <Field label="Description *" className="sm:col-span-2"><Textarea required minLength={5} {...bind('description')} /></Field>
         <Field label="Common applications" hint="Comma separated" className="sm:col-span-2"><Input {...bind('commonApplications')} /></Field>

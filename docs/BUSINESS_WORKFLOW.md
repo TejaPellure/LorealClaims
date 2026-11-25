@@ -1,34 +1,30 @@
-# Business workflow
+# Business flow
 
-## Process
+The original process had several handoffs (business proposal, claim manager screening, scientist formulation, evaluator evidence and review). This version collapses it into one short path that a scientist can run alone, while keeping the substance of each step.
+
 ```
-Business team proposes product / claim
-  -> Claim manager reviews applicability and feasibility
-  -> Scientist creates the formulation (ingredients + concentrations)
-  -> Evaluator attaches scientific evidence
-  -> AI claim assessment (decision support)
-  -> Human evaluator review
-  -> Final decision, or additional testing
+Formulate (scientist)        Claim (scientist / evaluator)           Result
+product name + ingredients   wording + benefit + target + weeks   Claude's evaluation of the
+= 100%, save                 + population, submit                 evidence, with a score
 ```
 
-## Roles and what each does in the app
-| Persona | Main screens | Typical actions |
-|---|---|---|
-| Business team | Claims | Create claim proposal, submit it |
-| Claim manager | Claims | Start review; accept (applicable and feasible) or reject |
-| Scientist | Formulation Studio, Claims | Start formulation, build and version formulas, submit for assessment |
-| Evaluator | Evidence Library, Assessment Report | Add/verify evidence, run assessment, approve / reject / request more evidence |
+| Original step | Now |
+|---|---|
+| Business proposes product and claim | You type the product name and the claim wording |
+| Claim manager checks applicability and feasibility | Claude's report states whether the evidence supports the claim as worded, and what is missing |
+| Scientist formulates | Formulate page, with live 100% validation |
+| Evaluator attaches evidence | Evidence library: add studies, upload PDFs, link them to ingredients and to the products they tested |
+| Evaluator tests product against the claim | Submitting the claim sends it to Claude immediately |
+| Review and decision | Removed. The report itself is the outcome; humans act on it (add evidence, re-evaluate, change the claim) |
 
-## Claim statuses
-`DRAFT` -> `SUBMITTED` -> `UNDER_MANAGER_REVIEW` -> `ACCEPTED_FOR_FORMULATION` (or `REJECTED`) -> `FORMULATION_IN_PROGRESS` -> `AWAITING_EVIDENCE` -> `READY_FOR_ASSESSMENT` -> `ASSESSED` -> `APPROVED_BY_EVALUATOR` | `REQUIRES_MORE_EVIDENCE` | `REJECTED`.
-`REQUIRES_MORE_EVIDENCE` can return to `AWAITING_EVIDENCE` or `READY_FOR_ASSESSMENT`; `ASSESSED` can be reopened for re-assessment (for example after adding evidence or a new formulation version). The server enforces the transition table in `claims/claim-rules.ts`.
+## Reading a result
+- **Supported**: finished-product evidence for this exact formula supports the claim as worded.
+- **Not supported**: evidence contradicts the claim or does not reach its size or scope.
+- **Inconclusive**: not enough applicable evidence. This is the normal outcome when only ingredient-level studies exist.
+- The **evidence score** (0-100) shows how well the available evidence matches the claim. It is a prototype rubric, not a probability.
 
-Submitting for assessment validates the formulation exists, totals 100%, and the claim has all structured fields; it also locks the formulation version.
+## Improving a result
+Add finished-product evidence for the formula in the Evidence library (link it to the product), then use "Evaluate again with Claude". Every earlier evaluation is kept.
 
-## AI versus human
-The AI verdict (Supported / Not supported / Inconclusive) and the evaluator decision are stored and displayed separately. Only the evaluator changes the claim to Approved/Rejected/Requires more evidence. The platform never states legal or regulatory approval.
-
-## Demo persona selector (not security)
-The top-bar persona selector simulates the four roles: it sets an `x-demo-persona` header used to label records, and the UI enables only the actions that persona would take. **It is not authentication or authorisation**: anyone can switch persona and the API does not enforce roles. The data model (`createdBy`, `reviewedBy`) is ready for real RBAC/SSO later.
-
-A "Fast-track to assessment (demo)" button on a claim walks it through every step so a demo needs one click.
+## Not in scope
+Authentication, roles, approval workflows and regulatory sign-off. The report is decision support and never legal or regulatory approval.

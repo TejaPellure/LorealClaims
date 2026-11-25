@@ -1,0 +1,399 @@
+{
+  "meta": {
+    "notice": "Ingredients are general descriptions (only those with sources attached are VERIFIED). Evidence records are real publications whose DOI/PMID were checked against PubMed on 2026-11-25; summaries restate only what each abstract says."
+  },
+  "ingredients": [
+    {
+      "key": "aqua",
+      "name": "Purified Water",
+      "inciName": "Aqua",
+      "description": "Solvent and base component of most cosmetic emulsions and serums. Used to bring a formulation to 100%.",
+      "category": "BASE",
+      "primaryFunction": "Solvent / base",
+      "commonApplications": [
+        "Serums",
+        "Lotions",
+        "Creams"
+      ],
+      "solubility": "Universal cosmetic solvent for water-soluble ingredients.",
+      "status": "UNVERIFIED",
+      "sources": []
+    },
+    {
+      "key": "glycerin",
+      "name": "Glycerin",
+      "inciName": "Glycerin",
+      "chemicalName": "Propane-1,2,3-triol",
+      "description": "Widely used humectant that attracts and retains water in the stratum corneum.",
+      "category": "HUMECTANT",
+      "primaryFunction": "Humectant",
+      "commonApplications": [
+        "Moisturisers",
+        "Serums",
+        "Cleansers"
+      ],
+      "solubility": "Miscible with water.",
+      "status": "UNVERIFIED",
+      "sources": []
+    },
+    {
+      "key": "niacinamide",
+      "name": "Niacinamide",
+      "inciName": "Niacinamide",
+      "chemicalName": "Pyridine-3-carboxamide (vitamin B3 amide)",
+      "description": "Vitamin B3 derivative studied for effects on the appearance of ageing facial skin. The cited clinical study tested a 5% niacinamide formulation; this is not a recommended or proven range for other formulas.",
+      "category": "ACTIVE",
+      "primaryFunction": "Skin-conditioning active",
+      "commonApplications": [
+        "Anti-ageing serums",
+        "Moisturisers",
+        "Tone-evening products"
+      ],
+      "solubility": "Water soluble.",
+      "compatibilityNotes": "Compatibility with other actives and pH must be confirmed by formulation stability testing.",
+      "status": "VERIFIED",
+      "sources": [
+        {
+          "name": "PubMed 16029679 - Bissett et al., Dermatol Surg 2005",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/16029679/"
+        },
+        {
+          "name": "PubMed 16209160 - Draelos et al., Cutis 2005",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/16209160/"
+        }
+      ]
+    },
+    {
+      "key": "sodium-hyaluronate",
+      "name": "Sodium Hyaluronate",
+      "inciName": "Sodium Hyaluronate",
+      "description": "Sodium salt of hyaluronic acid, a high-water-binding polysaccharide used for hydration claims. Published topical studies use different molecular weights, which affects results.",
+      "category": "HUMECTANT",
+      "primaryFunction": "Humectant / hydration active",
+      "commonApplications": [
+        "Hydrating serums",
+        "Anti-ageing creams"
+      ],
+      "solubility": "Water soluble; viscosity rises with molecular weight.",
+      "status": "VERIFIED",
+      "sources": [
+        {
+          "name": "PubMed 22052267 - Pavicic et al., J Drugs Dermatol 2011",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/22052267/"
+        },
+        {
+          "name": "PubMed 24688623 - Jegasothy et al., J Clin Aesthet Dermatol 2014",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/24688623/"
+        }
+      ]
+    },
+    {
+      "key": "panthenol",
+      "name": "Panthenol",
+      "inciName": "Panthenol",
+      "chemicalName": "2,4-Dihydroxy-N-(3-hydroxypropyl)-3,3-dimethylbutanamide",
+      "description": "Provitamin B5 used as a moisturising and skin-conditioning ingredient.",
+      "category": "ACTIVE",
+      "primaryFunction": "Moisturising / skin conditioning",
+      "commonApplications": [
+        "Moisturisers",
+        "Soothing products",
+        "Serums"
+      ],
+      "solubility": "Water soluble.",
+      "status": "UNVERIFIED",
+      "sources": []
+    },
+    {
+      "key": "ceramide-np",
+      "name": "Ceramide NP",
+      "inciName": "Ceramide NP",
+      "description": "Skin-identical lipid used in barrier-supporting moisturisers, usually combined with cholesterol and fatty acids.",
+      "category": "BARRIER_LIPID",
+      "primaryFunction": "Barrier lipid",
+      "commonApplications": [
+        "Barrier creams",
+        "Dry-skin moisturisers"
+      ],
+      "solubility": "Oil/lipid phase; needs a suitable emulsion system.",
+      "compatibilityNotes": "Lipid ratios (ceramide : cholesterol : fatty acid) influence barrier performance; confirm with finished-product testing.",
+      "status": "UNVERIFIED",
+      "sources": [
+        {
+          "name": "PubMed 22507050 - Draelos, Clin Dermatol 2012 (review of barrier repair creams)",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/22507050/"
+        }
+      ]
+    },
+    {
+      "key": "cholesterol",
+      "name": "Cholesterol",
+      "inciName": "Cholesterol",
+      "description": "Skin-identical lipid used alongside ceramides in barrier-oriented formulations.",
+      "category": "BARRIER_LIPID",
+      "primaryFunction": "Barrier lipid",
+      "commonApplications": [
+        "Barrier creams"
+      ],
+      "status": "UNVERIFIED",
+      "sources": []
+    },
+    {
+      "key": "squalane",
+      "name": "Squalane",
+      "inciName": "Squalane",
+      "description": "Stable hydrocarbon emollient that softens skin and improves spreadability.",
+      "category": "EMOLLIENT",
+      "primaryFunction": "Emollient",
+      "commonApplications": [
+        "Creams",
+        "Serums",
+        "Oils"
+      ],
+      "solubility": "Oil soluble.",
+      "status": "UNVERIFIED",
+      "sources": []
+    },
+    {
+      "key": "tocopherol",
+      "name": "Tocopherol",
+      "inciName": "Tocopherol",
+      "description": "Vitamin E, used as an antioxidant to help protect oils in a formulation.",
+      "category": "ANTIOXIDANT",
+      "primaryFunction": "Antioxidant",
+      "commonApplications": [
+        "Creams",
+        "Serums"
+      ],
+      "solubility": "Oil soluble.",
+      "status": "UNVERIFIED",
+      "sources": []
+    },
+    {
+      "key": "phenoxyethanol",
+      "name": "Phenoxyethanol",
+      "inciName": "Phenoxyethanol",
+      "description": "Preservative used to protect water-containing formulations from microbial growth.",
+      "category": "PRESERVATIVE",
+      "primaryFunction": "Preservative",
+      "commonApplications": [
+        "Serums",
+        "Creams",
+        "Lotions"
+      ],
+      "maxConcentration": 1,
+      "concentrationSource": "EU Cosmetics Regulation (EC) No 1223/2009, Annex V (maximum 1.0% as a preservative)",
+      "regulatoryNotes": "Maximum 1.0% in finished EU cosmetic products. Verify the current Annex V entry for each target market.",
+      "status": "VERIFIED",
+      "sources": [
+        {
+          "name": "EU CosIng database (ingredient and Annex V lookup)",
+          "url": "https://ec.europa.eu/growth/tools-databases/cosing/"
+        }
+      ]
+    },
+    {
+      "key": "xanthan-gum",
+      "name": "Xanthan Gum",
+      "inciName": "Xanthan Gum",
+      "description": "Polysaccharide thickener used to give serums and creams viscosity and suspension stability.",
+      "category": "TEXTURIZER",
+      "primaryFunction": "Viscosity controlling agent",
+      "commonApplications": [
+        "Serums",
+        "Gels",
+        "Creams"
+      ],
+      "solubility": "Disperses in water to form viscous solutions.",
+      "status": "UNVERIFIED",
+      "sources": []
+    }
+  ],
+  "evidence": [
+    {
+      "key": "ev-bissett-2005",
+      "title": "Niacinamide: A B vitamin that improves aging facial skin appearance",
+      "evidenceType": "CLINICAL_STUDY",
+      "scope": "INGREDIENT",
+      "benefitCategories": [
+        "ANTI_WRINKLE"
+      ],
+      "sourceName": "Dermatologic Surgery",
+      "doi": "10.1111/j.1524-4725.2005.31732",
+      "pmid": "16029679",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16029679/",
+      "publishedAt": "2005-07-01",
+      "studyDesign": "Double-blind, left-right randomised vehicle-controlled (split-face). Applied twice daily for 12 weeks; facial images and instrumental measures at baseline and 4-week intervals.",
+      "sampleSize": 50,
+      "population": "Female white subjects with clinical signs of facial photoaging",
+      "durationWeeks": 12,
+      "testedSubject": "5% niacinamide formulation vs its vehicle",
+      "testedConcentration": 5,
+      "endpoint": "Fine lines and wrinkles, hyperpigmented spots, red blotchiness, yellowing, elasticity (cutometry)",
+      "resultsSummary": "Abstract reports significant improvements for niacinamide in fine lines and wrinkles, hyperpigmented spots, red blotchiness, skin yellowing and elasticity. The abstract does not state a percentage wrinkle reduction.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Ingredient-level (single 5% test vehicle), not the finished formulation. Single population (female, white). 12-week duration. Authors are affiliated with a cosmetics manufacturer.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "niacinamide"
+      ]
+    },
+    {
+      "key": "ev-pavicic-2011",
+      "title": "Efficacy of cream-based novel formulations of hyaluronic acid of different molecular weights in anti-wrinkle treatment",
+      "evidenceType": "CLINICAL_STUDY",
+      "scope": "INGREDIENT",
+      "benefitCategories": [
+        "ANTI_WRINKLE",
+        "HYDRATION"
+      ],
+      "sourceName": "Journal of Drugs in Dermatology",
+      "doi": null,
+      "pmid": "22052267",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/22052267/",
+      "publishedAt": "2011-09-01",
+      "studyDesign": "Randomised, vehicle-controlled (periocular area, vehicle on the other eye). Twice-daily application for 60 days; measurements at baseline, 30 and 60 days.",
+      "sampleSize": 76,
+      "population": "Female subjects aged 30-60 with periocular wrinkles",
+      "durationWeeks": 9,
+      "testedSubject": "0.1% hyaluronan creams of 50, 130, 300, 800 and 2000 kDa",
+      "testedConcentration": 0.1,
+      "endpoint": "Skin hydration, elasticity, wrinkle depth (replica morphometry, Ra and Rz)",
+      "resultsSummary": "All HA creams significantly improved hydration and elasticity vs placebo. Wrinkle depth improved significantly only for the 130 kDa and 50 kDa (low molecular weight) HA groups after 60 days.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Tested 0.1% hyaluronan creams; effect depends on molecular weight. Periocular area only. Not the finished formulation under assessment.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "sodium-hyaluronate"
+      ]
+    },
+    {
+      "key": "ev-draelos-2005-rosacea",
+      "title": "Niacinamide-containing facial moisturizer improves skin barrier and benefits subjects with rosacea",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL",
+      "scope": "FINISHED_PRODUCT",
+      "benefitCategories": [
+        "BARRIER_REPAIR",
+        "HYDRATION",
+        "SOOTHING"
+      ],
+      "sourceName": "Cutis",
+      "doi": null,
+      "pmid": "16209160",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16209160/",
+      "publishedAt": "2005-08-01",
+      "studyDesign": "Randomised, investigator-blind, controlled observational study (untreated forearm control). Moisturizer applied twice daily to face and one forearm for 4 weeks; other forearm untreated.",
+      "sampleSize": 50,
+      "population": "Subjects with rosacea",
+      "durationWeeks": 4,
+      "testedSubject": "A niacinamide-containing facial moisturizer (a different commercial formulation)",
+      "testedConcentration": null,
+      "endpoint": "Stratum corneum barrier function (instrumental and DMSO probe), hydration, rosacea severity",
+      "resultsSummary": "The abstract states instruments provided objective measures of improved barrier function and hydration; it does not give numeric effect sizes.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Finished product is a different formulation with undisclosed niacinamide level. Population limited to rosacea. Observational design with untreated control.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "niacinamide"
+      ]
+    },
+    {
+      "key": "ev-jegasothy-2014",
+      "title": "Efficacy of a New Topical Nano-hyaluronic Acid in Humans",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL",
+      "scope": "FINISHED_PRODUCT",
+      "benefitCategories": [
+        "ANTI_WRINKLE",
+        "HYDRATION"
+      ],
+      "sourceName": "Journal of Clinical and Aesthetic Dermatology",
+      "doi": null,
+      "pmid": "24688623",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24688623/",
+      "publishedAt": "2014-03-01",
+      "studyDesign": "Open evaluation of a product range with instrumental and rater assessment (control not described in the abstract). Periorbital measurements over 8 weeks plus image rating by six trained raters.",
+      "sampleSize": 33,
+      "population": "Women, average age 45.2",
+      "durationWeeks": 8,
+      "testedSubject": "A nano-hyaluronic acid product range (lotion, serum, cream) - a different commercial formulation",
+      "testedConcentration": null,
+      "endpoint": "Wrinkle depth (DermaTOP), hydration (Corneometer), elasticity (Cutometer), erythema",
+      "resultsSummary": "Abstract reports significant moisturising effects after 2, 4 and 8 weeks and concludes wrinkle depth decreased by up to 40% and hydration increased by up to 96% at 8 weeks. The 'up to' figures are best-case values, not average effects.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Different formulation and undisclosed HA concentration. Small sample. Control group not described in the abstract. 'Up to' maxima overstate typical response.",
+      "quality": "LOW",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "sodium-hyaluronate"
+      ]
+    },
+    {
+      "key": "ev-draelos-2012-review",
+      "title": "New treatments for restoring impaired epidermal barrier permeability: skin barrier repair creams",
+      "evidenceType": "LITERATURE_REVIEW",
+      "scope": "INGREDIENT",
+      "benefitCategories": [
+        "BARRIER_REPAIR"
+      ],
+      "sourceName": "Clinics in Dermatology",
+      "doi": "10.1016/j.clindermatol.2011.08.018",
+      "pmid": "22507050",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/22507050/",
+      "publishedAt": "2012-05-01",
+      "studyDesign": "Narrative review. Reviews the formulation and effect of skin barrier creams.",
+      "sampleSize": null,
+      "population": "Not applicable (review)",
+      "durationWeeks": null,
+      "testedSubject": "Barrier repair creams containing ceramides, hyaluronic acid and other substances",
+      "testedConcentration": null,
+      "endpoint": "Skin barrier repair (qualitative)",
+      "resultsSummary": "Reviews externally applied substances such as ceramides and hyaluronic acid used to treat damaged skin barrier. The abstract is descriptive and gives no quantitative claim-level results.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Narrative review, no pooled quantitative estimate; cannot substantiate a specific numeric claim.",
+      "quality": "LOW",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "ceramide-np",
+        "sodium-hyaluronate"
+      ]
+    },
+    {
+      "key": "ev-draelos-2023-ceramide",
+      "title": "Ceramide-Containing Adjunctive Skin Care for Skin Barrier Restoration During Acne Vulgaris Treatment",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL",
+      "scope": "FINISHED_PRODUCT",
+      "benefitCategories": [
+        "BARRIER_REPAIR"
+      ],
+      "sourceName": "Journal of Drugs in Dermatology",
+      "doi": "10.36849/JDD.7142",
+      "pmid": "37276158",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37276158/",
+      "publishedAt": "2023-06-01",
+      "studyDesign": "Double-blind, controlled (ceramide cleanser + lotion vs basic cleanser). Participants used the acne gel once daily plus the ceramide routine or a basic cleanser twice daily; TEWL measured over 12 weeks.",
+      "sampleSize": null,
+      "population": "Acne vulgaris patients treated with adapalene 0.3% / benzoyl peroxide 2.5% gel",
+      "durationWeeks": 12,
+      "testedSubject": "A ceramide-containing foaming cleanser and facial lotion (different formulation)",
+      "testedConcentration": null,
+      "endpoint": "Transepidermal water loss (TEWL), dryness, lesion counts",
+      "resultsSummary": "Abstract states TEWL in the ceramide group remained significantly lower than control at all timepoints and improved from baseline by week 12. No numeric TEWL percentage is given in the abstract.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Acne population with irritating drug treatment, not general dry skin. Different formulation and undisclosed ceramide level. Barrier damage was induced by the acne drugs.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "ceramide-np"
+      ]
+    }
+  ]
+}

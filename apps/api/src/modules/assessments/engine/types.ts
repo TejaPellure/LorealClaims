@@ -6,8 +6,8 @@ import { EffectDirection, EvidenceRole, EvidenceScope, EvidenceType, QualityRati
  * This distinction is the heart of the scientific rules: ingredient evidence is never finished-product proof.
  */
 export type EvidenceRelation =
-  | 'FINISHED_EXACT' // finished-product study of THIS formulation version
-  | 'FINISHED_OTHER' // finished-product study of a DIFFERENT formulation/version
+  | 'FINISHED_EXACT' // finished-product study of THIS formulation
+  | 'FINISHED_OTHER' // finished-product study of a DIFFERENT formulation
   | 'INGREDIENT'; // study of an ingredient or simple vehicle
 
 /** 0..1 match factors between one evidence record and the claim/formulation. */
@@ -55,24 +55,18 @@ export interface EvidenceCandidate {
 
 export interface ClaimInput {
   id: string;
-  title: string;
-  description: string;
+  title: string; // the claim wording
   benefitCategory: string;
-  targetOutcome: string;
   measurementEndpoint: string;
   targetValue: number;
   measurementUnit: string;
   durationWeeks: number;
   targetPopulation: string;
-  applicationFrequency: string | null;
-  scientificContext: string | null;
 }
 
 export interface FormulationInput {
   id: string;
   productName: string;
-  version: number;
-  basis: string;
   ingredients: { ingredientId: string; name: string; inciName: string; percentage: number }[];
 }
 

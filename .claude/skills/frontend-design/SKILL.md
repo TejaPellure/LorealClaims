@@ -1,29 +1,23 @@
 ---
 name: frontend-design
-description: Visual system, component conventions, responsive layout, interaction patterns and accessibility rules for the Claims Intelligence Engine React UI. Use when creating or restyling pages and components in apps/web.
+description: Brand visual system, component conventions, layout and accessibility rules for the Claims Intelligence React UI. Use when creating or restyling pages and components in apps/web.
 ---
 
 # Frontend design system
 
-**Direction:** Clinical Research Workspace + Modern AI Laboratory. Calm, dense, scientific. Not a generic admin dashboard.
+**Direction:** a cosmetic-science brand, editorial and calm. Not an admin dashboard.
 
-## Visual tokens
-- Surfaces: white cards on `slate-50` page, `slate-200` 1px borders, shadows only on dialogs.
-- Text: `slate-900` headings, `slate-600/500` secondary. Accent: `teal-700` (primary actions, active nav). Status colours only for meaning: emerald (good), amber (caution), red (problem), violet (demo/mock), sky (in progress).
-- Font: Inter with system fallbacks. Headings `text-xl` max on pages, `text-sm font-semibold` in cards. Card radius 8px.
-- Never: gradients, glassmorphism, neon, emoji icons, large empty hero areas, decorative animation.
-
-## Components (`components/ui/primitives.tsx`)
-Button, Input, Textarea, Select (native, styled), Field, Badge, Card, Table (Th/Td), Dialog, ConfirmDialog, Tabs, Tooltip, DropdownMenu, Skeleton, TableSkeleton, EmptyState, ErrorState, Progress, FormError. Toasts via `sonner`. Reuse these before adding anything new. Domain badges live in `components/badges.tsx`.
+## Tokens (defined in `src/index.css`)
+- Surfaces: ivory page (`slate-50`), white cards, warm hairline borders (`slate-200`). Ink: aubergine (`slate-900`). Brand: deep plum (`teal-700`, hover `teal-800`). Status colours only for meaning: sage (supported), clay (inconclusive), brick (not supported).
+- Type: Playfair Display (`font-display`) for titles and numbers, Inter for UI. Page titles `text-4xl/5xl`; small uppercase `.eyebrow` labels above headings (e.g. "Step 1 of 3 · Formulate").
+- Shape: pill buttons and badges, `rounded-xl` inputs, `rounded-2xl` cards, verdict hero `rounded-3xl`.
+- Never: gradients, glassmorphism, neon, emoji icons, admin sidebars, decorative animation.
 
 ## Layout
-App shell: left sidebar (collapses under `lg` into a drawer), top bar with breadcrumb, search, mock/Claude indicator, notifications placeholder, demo persona selector, profile menu. Formulation Studio: `lg` two columns, `xl` three panels (explorer | canvas | properties). Must stay usable at tablet width (768px).
+Top bar only: wordmark + four destinations (Formulate, Claims, Ingredients, Evidence). Centered content, max width 7xl. Three numbered steps guide the main flow. Studio: ingredient picker left, canvas right, one Save.
 
-## Interaction
-- Every data view: loading skeleton, error with retry, empty state with guidance.
-- Forms: labelled fields, HTML validation, server error text via `errorText()` in `FormError`.
-- Drag and drop (`@dnd-kit`) always has a keyboard/button alternative. Final/locked states are explained in text.
-- Mock AI results always show the "Demo / Mock AI" badge; illustrative formulas and demo evidence are always labelled.
+## Components (`components/ui/primitives.tsx`)
+Button, Input, Textarea, Select (native), Field, Badge, Card, Table, Dialog, Tabs, Tooltip, Skeleton, EmptyState, ErrorState, Progress, FormError. Toasts via `sonner`. Reuse before adding.
 
-## Accessibility
-Visible focus ring (global), `aria-label` on icon buttons, table rows with `tabIndex` + Enter, `aria-live` for the composition meter, colour never the only signal (badges carry text).
+## Interaction and accessibility
+Every data view has loading, error (with retry) and empty states. Long operations (Claude evaluation, about 1-2 minutes) show a clear in-progress state and keep the claim if they fail. Drag and drop always has a button alternative. Visible focus rings, labelled inputs, `aria-live` on the composition meter and evaluation progress, `prefers-reduced-motion` respected, colour never the only signal.

@@ -6,65 +6,65 @@ import request from 'supertest';
 import { ApiExceptionFilter } from '../src/common/api-exception.filter';
 import { AssessmentsController, AssessmentsService, ClaimAssessmentController } from '../src/modules/assessments/assessments.module';
 import { ClaimsController, ClaimsService } from '../src/modules/claims/claims.module';
-import { FormulationsController, FormulationsService } from '../src/modules/formulations/formulations.module';
-import { seedIfEmpty, validateDemoData } from '../../../prisma/seed';
+import { ProductsController, ProductsService } from '../src/modules/products/products.module';
+import { seedIfEmpty, validateReferenceData } from '../../../prisma/seed';
 
-const demoData = JSON.parse(readFileSync(join(__dirname, '../../../prisma/seed-data/demo-data.json'), 'utf8'));
+const referenceData = JSON.parse(readFileSync(join(__dirname, '../../../prisma/seed-data/reference-data.json'), 'utf8'));
 
-describe('demo dataset and seeding', () => {
-  it('is a valid dataset: references resolve and every formula totals 100%', () => {
-    expect(() => validateDemoData(demoData)).not.toThrow();
-    expect(demoData.ingredients.length).toBeGreaterThanOrEqual(10);
-    expect(demoData.evidence.length).toBeGreaterThanOrEqual(12);
-    expect(demoData.products.length).toBe(3);
-    expect(demoData.claims.length).toBeGreaterThanOrEqual(4);
+describe('reference dataset and seeding', () => {
+  it('is a valid dataset with at least 10 ingredients and real, traceable evidence', () => {
+    expect(() => validateReferenceData(referenceData)).not.toThrow();
+    expect(referenceData.ingredients.length).toBeGreaterThanOrEqual(10);
+    expect(referenceData.evidence.length).toBeGreaterThanOrEqual(5);
   });
 
-  it('never presents invented DOIs: every demo record has no DOI/PMID, and formulas are ILLUSTRATIVE', () => {
-    for (const e of demoData.evidence.filter((e: any) => e.status === 'DEMO')) expect([e.doi, e.pmid]).toEqual([null, null]);
-    for (const p of demoData.products) for (const f of p.formulations) expect(f.basis).toBe('ILLUSTRATIVE');
+  it('contains only verified, source-backed evidence (no sample or fictitious records)', () => {
+    for (const e of referenceData.evidence) {
+      expect(e.status).toBe('VERIFIED');
+      expect(e.doi || e.pmid).toBeTruthy();
+      expect(e.title).not.toMatch(/demo|mock|sample/i);
+    }
   });
 
-  it('rejects a dataset whose formula does not total 100%', () => {
-    const broken = JSON.parse(JSON.stringify(demoData));
-    broken.products[0].formulations[0].ingredients[0].percentage = 50;
-    expect(() => validateDemoData(broken)).toThrow(/Under-allocated|Over-allocated/);
+  it('rejects evidence that cannot be traced to a source or references a missing ingredient', () => {
+    const untraceable = JSON.parse(JSON.stringify(referenceData));
+    untraceable.evidence[0].doi = null; untraceable.evidence[0].pmid = null; untraceable.evidence[0].sourceUrl = null;
+    expect(() => validateReferenceData(untraceable)).toThrow(/needs a DOI, PMID or source URL/);
+    const dangling = JSON.parse(JSON.stringify(referenceData));
+    dangling.evidence[0].ingredientKeys = ['nope'];
+    expect(() => validateReferenceData(dangling)).toThrow(/unknown ingredient/);
   });
 
-  /** Fake client exposing only the calls seedIfEmpty makes before deciding to skip. */
-  const clientWithCounts = (counts: { ingredient: number; evidence: number; product: number }) =>
+  const clientWithCounts = (counts: { ingredient: number; evidence: number }) =>
     ({
       ingredient: { count: jest.fn().mockResolvedValue(counts.ingredient) },
       evidence: { count: jest.fn().mockResolvedValue(counts.evidence) },
-      product: { count: jest.fn().mockResolvedValue(counts.product) },
-      assessment: { count: jest.fn().mockResolvedValue(1) }, // already has assessments: nothing to recover
-      $transaction: jest.fn(),
+      $transaction: jest.fn().mockResolvedValue(undefined),
     }) as any;
 
   it('is idempotent: a non-empty database is left completely untouched', async () => {
-    const prisma = clientWithCounts({ ingredient: 3, evidence: 0, product: 0 });
-    expect(await seedIfEmpty(prisma, demoData, () => undefined)).toBe(false);
+    const prisma = clientWithCounts({ ingredient: 3, evidence: 0 });
+    expect(await seedIfEmpty(prisma, referenceData, () => undefined)).toBe(false);
     expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 
   it('seeds an empty database in a single transaction', async () => {
-    const prisma = clientWithCounts({ ingredient: 0, evidence: 0, product: 0 });
-    prisma.$transaction.mockResolvedValue(undefined);
-    expect(await seedIfEmpty(prisma, demoData, () => undefined)).toBe(true);
+    const prisma = clientWithCounts({ ingredient: 0, evidence: 0 });
+    expect(await seedIfEmpty(prisma, referenceData, () => undefined)).toBe(true);
     expect(prisma.$transaction).toHaveBeenCalledTimes(1);
   });
 });
 
 describe('HTTP API (services mocked)', () => {
   let app: INestApplication;
-  const assessments = { assess: jest.fn(), get: jest.fn(), list: jest.fn(), meta: jest.fn(), forClaim: jest.fn(), review: jest.fn() };
-  const claims = { setStatus: jest.fn(), list: jest.fn(), get: jest.fn(), create: jest.fn(), update: jest.fn() };
-  const formulations = { compare: jest.fn(), get: jest.fn(), create: jest.fn(), createVersion: jest.fn(), update: jest.fn(), listForProduct: jest.fn() };
+  const assessments = { assess: jest.fn(), get: jest.fn(), list: jest.fn(), meta: jest.fn(), forClaim: jest.fn() };
+  const claims = { list: jest.fn(), get: jest.fn(), create: jest.fn() };
+  const products = { list: jest.fn(), get: jest.fn(), create: jest.fn() };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      controllers: [ClaimAssessmentController, AssessmentsController, ClaimsController, FormulationsController],
-      providers: [{ provide: AssessmentsService, useValue: assessments }, { provide: ClaimsService, useValue: claims }, { provide: FormulationsService, useValue: formulations }],
+      controllers: [ClaimAssessmentController, AssessmentsController, ClaimsController, ProductsController],
+      providers: [{ provide: AssessmentsService, useValue: assessments }, { provide: ClaimsService, useValue: claims }, { provide: ProductsService, useValue: products }],
     }).compile();
     app = moduleRef.createNestApplication();
     app.setGlobalPrefix('api');
@@ -75,53 +75,49 @@ describe('HTTP API (services mocked)', () => {
   afterAll(() => app.close());
   beforeEach(() => jest.clearAllMocks());
 
-  const claimId = '3f0c1f5e-2b1a-4c3d-9e8f-1a2b3c4d5e6f';
+  const id = '3f0c1f5e-2b1a-4c3d-9e8f-1a2b3c4d5e6f';
 
-  it('POST /api/claims/assess passes only the claim id and persona to the service and returns its result', async () => {
+  it('POST /api/claims/assess passes only the claim id to the service and returns its result', async () => {
     assessments.assess.mockResolvedValue({ id: 'a1', verdict: 'INCONCLUSIVE', evidenceScore: 40 });
-    const res = await request(app.getHttpServer()).post('/api/claims/assess').set('x-demo-persona', 'EVALUATOR').send({ claimId }).expect(201);
+    const res = await request(app.getHttpServer()).post('/api/claims/assess').send({ claimId: id }).expect(201);
     expect(res.body).toMatchObject({ id: 'a1', verdict: 'INCONCLUSIVE' });
-    expect(assessments.assess).toHaveBeenCalledWith({ claimId }, 'EVALUATOR');
+    expect(assessments.assess).toHaveBeenCalledWith({ claimId: id });
   });
 
   it('POST /api/claims/assess rejects invalid input and client-supplied evidence with a consistent error body', async () => {
     const bad = await request(app.getHttpServer()).post('/api/claims/assess').send({ claimId: 'not-a-uuid' }).expect(400);
     expect(bad.body).toMatchObject({ statusCode: 400, message: 'Validation failed', path: '/api/claims/assess' });
     expect(bad.body.details.length).toBeGreaterThan(0);
-    await request(app.getHttpServer()).post('/api/claims/assess').send({ claimId, evidence: [{ id: 'fake' }] }).expect(400); // client may not supply evidence
+    await request(app.getHttpServer()).post('/api/claims/assess').send({ claimId: id, evidence: [{ id: 'fake' }] }).expect(400); // client may not supply evidence
     expect(assessments.assess).not.toHaveBeenCalled();
   });
 
-  it('GET /api/assessments/meta is routed before /:id', async () => {
-    assessments.meta.mockReturnValue({ provider: 'MOCK', isMock: true });
+  it('POST /api/claims validates the claim fields', async () => {
+    await request(app.getHttpServer()).post('/api/claims').send({ productId: id, title: 'x', benefitCategory: 'MAGIC', targetValue: -1, durationWeeks: 0, targetPopulation: '' }).expect(400);
+    claims.create.mockResolvedValue({ id: 'c1' });
+    const ok = { productId: id, title: 'Reduces wrinkle depth by 20% in 4 weeks', benefitCategory: 'ANTI_WRINKLE', targetValue: 20, durationWeeks: 4, targetPopulation: 'Adults' };
+    await request(app.getHttpServer()).post('/api/claims').send(ok).expect(201);
+    expect(claims.create).toHaveBeenCalledWith(expect.objectContaining({ title: ok.title, durationWeeks: 4 }));
+  });
+
+  it('POST /api/products validates the name and percentage ranges', async () => {
+    await request(app.getHttpServer()).post('/api/products').send({ name: 'Serum', ingredients: [{ ingredientId: id, percentage: 150 }] }).expect(400);
+    await request(app.getHttpServer()).post('/api/products').send({ name: 'Serum', ingredients: [] }).expect(400);
+    products.create.mockResolvedValue({ id: 'p1' });
+    await request(app.getHttpServer()).post('/api/products').send({ name: 'Serum', ingredients: [{ ingredientId: id, percentage: 100 }] }).expect(201);
+  });
+
+  it('GET /api/assessments/meta is routed before /:id and shows no review/persona concepts', async () => {
+    assessments.meta.mockReturnValue({ model: 'sonnet' });
     const res = await request(app.getHttpServer()).get('/api/assessments/meta').expect(200);
-    expect(res.body.isMock).toBe(true);
+    expect(res.body.model).toBe('sonnet');
     expect(assessments.get).not.toHaveBeenCalled();
-  });
-
-  it('PATCH /api/assessments/:id/review validates the decision enum', async () => {
-    await request(app.getHttpServer()).patch('/api/assessments/' + claimId + '/review').send({ decision: 'MAYBE' }).expect(400);
-    assessments.review.mockResolvedValue({ id: claimId, reviewDecision: 'APPROVED' });
-    await request(app.getHttpServer()).patch('/api/assessments/' + claimId + '/review').set('x-demo-persona', 'EVALUATOR').send({ decision: 'APPROVED' }).expect(200);
-    expect(assessments.review).toHaveBeenCalledWith(claimId, { decision: 'APPROVED' }, 'EVALUATOR');
-  });
-
-  it('PATCH /api/claims/:id/status validates the status value', async () => {
-    await request(app.getHttpServer()).patch(`/api/claims/${claimId}/status`).send({ status: 'NOPE' }).expect(400);
-    claims.setStatus.mockResolvedValue({ id: claimId, status: 'SUBMITTED' });
-    await request(app.getHttpServer()).patch(`/api/claims/${claimId}/status`).send({ status: 'SUBMITTED' }).expect(200);
-  });
-
-  it('POST /api/formulations validates percentages and GET /api/formulations/compare is routed before /:id', async () => {
-    await request(app.getHttpServer()).post('/api/formulations').send({ productId: claimId, ingredients: [{ ingredientId: claimId, percentage: 150 }] }).expect(400);
-    formulations.compare.mockResolvedValue({ added: [] });
-    await request(app.getHttpServer()).get(`/api/formulations/compare?from=${claimId}&to=${claimId}`).expect(200);
-    expect(formulations.get).not.toHaveBeenCalled();
+    await request(app.getHttpServer()).patch(`/api/assessments/${id}/review`).send({ decision: 'APPROVED' }).expect(404); // no review stage
   });
 
   it('returns the shared error shape for unexpected failures without leaking internals', async () => {
     assessments.get.mockRejectedValue(new Error('SELECT secret FROM ...'));
-    const res = await request(app.getHttpServer()).get(`/api/assessments/${claimId}`).expect(500);
+    const res = await request(app.getHttpServer()).get(`/api/assessments/${id}`).expect(500);
     expect(res.body).toMatchObject({ statusCode: 500, error: 'Internal Server Error', message: 'Unexpected server error.' });
     expect(JSON.stringify(res.body)).not.toMatch(/secret/);
   });
