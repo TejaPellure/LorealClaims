@@ -62,12 +62,15 @@ export class AssessmentPipeline {
     if (problems.length) throw new BadRequestException({ message: 'This claim cannot be assessed yet.', details: problems });
 
     const claimInput: ClaimInput = {
-      id: claim.id, title: claim.title, benefitCategory: claim.benefitCategory, measurementEndpoint: claim.measurementEndpoint,
-      targetValue: claim.targetValue.toNumber(), measurementUnit: claim.measurementUnit, durationWeeks: claim.durationWeeks, targetPopulation: claim.targetPopulation,
+      id: claim.id, title: claim.title, description: claim.description, benefits: claim.benefits, targetValue: claim.targetValue?.toNumber() ?? null,
+      measurementUnit: claim.measurementUnit, durationWeeks: claim.durationWeeks, targetPopulation: claim.targetPopulation,
     };
     const formulation = {
       id: claim.formulation.id, productName: claim.product.name,
-      ingredients: claim.formulation.ingredients.map((l) => ({ ingredientId: l.ingredientId, name: l.ingredient.name, inciName: l.ingredient.inciName, percentage: l.percentage.toNumber() })),
+      ingredients: claim.formulation.ingredients.map((l) => ({
+        ingredientId: l.ingredientId, name: l.ingredient.name, inciName: l.ingredient.inciName, percentage: l.percentage.toNumber(), function: l.ingredient.primaryFunction,
+        minConcentration: l.ingredient.minConcentration?.toNumber() ?? null, maxConcentration: l.ingredient.maxConcentration?.toNumber() ?? null,
+      })),
     };
     const evidence = await retrieveEvidence(this.prisma, claimInput, formulation);
     return { claim: claimInput, formulation, evidence };

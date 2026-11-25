@@ -6,7 +6,7 @@ import { ScopeBadge, VerificationBadge } from '@/components/badges';
 import { BulletList, EvidenceDetailDialog } from '@/components/shared';
 import { Badge, Button, Card, CardBody, CardHeader, CardTitle, ErrorState, Skeleton, Table, Td, Th, Tooltip } from '@/components/ui/primitives';
 import { useAsync } from '@/hooks/hooks';
-import { formatDate, humanize, VERDICT_LABEL } from '@/lib/lib';
+import { benefitLabel, formatDate, humanize, VERDICT_LABEL } from '@/lib/lib';
 import { api, errorText } from '@/services/api';
 import type { Assessment, AssessmentSummary, EvidenceNote, Verdict } from '@/types';
 
@@ -34,6 +34,8 @@ function ScoreRing({ score, color }: { score: number; color: string }) {
   );
 }
 
+const ID_PATTERN = /\b[0-9a-f]{8}(?:-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?\b/g;
+
 const Section = ({ title, children, className }: { title: string; children: ReactNode; className?: string }) => (
   <Card className={className}><CardHeader><CardTitle>{title}</CardTitle></CardHeader><CardBody>{children}</CardBody></Card>
 );
@@ -54,6 +56,23 @@ export default function AssessmentReportPage() {
   const relations = new Map(a.evidenceSnapshot.map((e) => [e.id, e.relation]));
   const claim = a.claim;
 
+  const numbers = new Map(a.evidence.map((e, i) => [e.evidenceId, i + 1]));
+  /** Replaces evidence ids in Claude's prose with clickable numbered citations. */
+  const withCitations = (raw: string): ReactNode[] => {
+    const text = raw.replace(/\\n/g, String.fromCharCode(10)); // older saved results may contain a literal backslash-n
+    const parts: ReactNode[] = [];
+    let last = 0;
+    for (const match of text.matchAll(ID_PATTERN)) {
+      const evidenceId = [...numbers.keys()].find((id) => id.startsWith(match[0]));
+      if (!evidenceId) continue;
+      parts.push(text.slice(last, match.index));
+      parts.push(<button key={`${match.index}-${evidenceId}`} className="mx-0.5 cursor-pointer rounded-full bg-teal-50 px-1.5 text-xs font-semibold text-teal-800 hover:bg-teal-100" onClick={() => setOpenEvidence(evidenceId)} aria-label={`Open study ${numbers.get(evidenceId)}`}>[{numbers.get(evidenceId)}]</button>);
+      last = match.index! + match[0].length;
+    }
+    parts.push(text.slice(last));
+    return parts;
+  };
+
   const rerun = async () => {
     setRerunning(true);
     try {
@@ -73,7 +92,7 @@ export default function AssessmentReportPage() {
         {notes.map((n) => (
           <li key={n.evidenceId} className="rounded-xl border border-slate-200 p-3 text-sm">
             <button className="cursor-pointer text-left font-medium text-teal-800 hover:underline" onClick={() => setOpenEvidence(n.evidenceId)}>{titles.get(n.evidenceId) ?? n.evidenceId}</button>
-            <p className="mt-1 text-slate-700">{n.note}</p>
+            <p className="mt-1 text-slate-700">{withCitations(n.note)}</p>
           </li>
         ))}
       </ul>
@@ -91,7 +110,9 @@ export default function AssessmentReportPage() {
             <p className="font-display text-2xl italic text-slate-600">“{claim.title}”</p>
             <h1 className={`mt-4 font-display text-6xl font-semibold leading-none sm:text-7xl ${style.text}`}>{VERDICT_LABEL[a.verdict]}</h1>
             <p className="mt-4 max-w-xl text-lg text-slate-700">{style.blurb}</p>
-            <p className="mt-4 text-sm text-slate-500">Evaluated by Claude ({a.model}) on {formatDate(a.createdAt)} · {claim.targetValue}{claim.measurementUnit} in {claim.durationWeeks} weeks · {claim.targetPopulation}</p>
+            {claim.description && <p className="mt-3 max-w-2xl text-sm text-slate-600">{claim.description}</p>}
+            {claim.benefits.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{claim.benefits.map((b) => <Badge key={b} tone="teal">{benefitLabel(b)}</Badge>)}</div>}
+            <p className="mt-4 text-sm text-slate-500">Evaluated by Claude ({a.model}) on {formatDate(a.createdAt)}{claim.targetValue != null && ` · ${claim.targetValue}${claim.measurementUnit}`}{claim.durationWeeks != null && ` in ${claim.durationWeeks} weeks`}{claim.targetPopulation && ` · ${claim.targetPopulation}`}</p>
           </div>
           <div className="flex items-center gap-4">
             <ScoreRing score={a.evidenceScore} color={style.ring} />
@@ -107,9 +128,9 @@ export default function AssessmentReportPage() {
 
       <div className="space-y-6">
         <Section title="Claude's assessment">
-          <p className="text-base leading-relaxed text-slate-800">{a.summary}</p>
+          <p className="text-base leading-relaxed text-slate-800">{withCitations(a.summary)}</p>
           <h3 className="mb-2 mt-6 text-sm font-semibold uppercase tracking-wider text-slate-500">Reasoning</h3>
-          <p className="whitespace-pre-line text-sm leading-relaxed text-slate-700">{a.reasoning}</p>
+          <p className="whitespace-pre-line text-sm leading-relaxed text-slate-700">{withCitations(a.reasoning)}</p>
           {a.guardrailNotes.length > 0 && (
             <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
               <p className="mb-1 font-medium">Adjusted by the scientific safeguards</p>
@@ -144,9 +165,10 @@ export default function AssessmentReportPage() {
         <Section title="Evidence used">
           <p className="mb-3 text-xs text-slate-500">Exactly the records reviewed. Open any record to see its source.</p>
           <Table>
-            <thead><tr><Th>Study</Th><Th>Role</Th><Th>Type</Th><Th>Status</Th></tr></thead>
-            <tbody>{a.evidence.map((e) => (
+            <thead><tr><Th>#</Th><Th>Study</Th><Th>Role</Th><Th>Type</Th><Th>Status</Th></tr></thead>
+            <tbody>{a.evidence.map((e, i) => (
               <tr key={e.evidenceId}>
+                <Td className="text-slate-500">[{i + 1}]</Td>
                 <Td className="max-w-lg"><button onClick={() => setOpenEvidence(e.evidenceId)} className="cursor-pointer text-left font-medium text-teal-800 hover:underline">{e.evidence.title}</button></Td>
                 <Td><Badge tone={e.role === 'SUPPORTING' ? 'green' : e.role === 'CONTRADICTORY' ? 'red' : 'neutral'}>{humanize(e.role)}</Badge></Td>
                 <Td><div className="flex flex-wrap items-center gap-1"><ScopeBadge scope={e.evidence.scope} /><span className="text-xs text-slate-500">{humanize(relations.get(e.evidenceId))}</span></div></Td>

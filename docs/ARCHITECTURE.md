@@ -23,15 +23,15 @@ One deployable application. The browser only talks to NestJS on its own origin; 
 `ingredients`, `evidence` (+ PDF upload/download), `products` (product + formulation, 100% validation), `claims`, `assessments` (engine + controllers). Cross-cutting code in `common/` (config, error filter, pagination, Decimal interceptor, health) and `prisma/`.
 
 ## Assessment engine (`modules/assessments/engine`)
-`evidence-retrieval.ts` -> `scoring.ts` -> `providers/providers.ts` (Claude via bridge) -> `ai-schema.ts` (validation) -> `guardrails.ts` -> `assessment-pipeline.ts` (orchestrates and persists). See [AI_ASSESSMENT_ENGINE.md](AI_ASSESSMENT_ENGINE.md).
+`evidence-retrieval.ts` (+ `benefit-match.ts`) -> `scoring.ts` -> `providers/providers.ts` (Claude via bridge) -> `ai-schema.ts` (validation) -> `guardrails.ts` -> `assessment-pipeline.ts` (orchestrates and persists). See [AI_ASSESSMENT_ENGINE.md](AI_ASSESSMENT_ENGINE.md).
 
 ## Frontend (`apps/web/src`)
 `pages/` (Formulate, Claims, Report, Ingredients, Evidence), `features/` (studio, claims, evidence, ingredients), `components/ui` primitives, `services/api.ts`, `hooks/`, `layouts/`. Native React state only.
 
 ## Request flow: submitting a claim
-1. UI `POST /api/claims` (product, wording, benefit, target %, weeks, population). The server binds the product's formulation and derives the endpoint.
+1. UI `POST /api/claims` (product, title; optionally description, benefit chips, improvement %, weeks, population). The server binds the product's formulation.
 2. UI `POST /api/claims/assess { claimId }`.
-3. Server loads claim + formulation + ingredients, checks readiness (100%, required fields), retrieves and classifies evidence, scores it.
+3. Server loads claim + formulation + ingredients, checks readiness (title present, formulation = 100%), retrieves and classifies evidence, scores it.
 4. Duplicate inputs return the stored assessment; concurrent identical runs share one call.
 5. Claude returns structured JSON (via the bridge); the server validates it (one retry with feedback), applies guardrails, saves assessment + evidence links + snapshots.
 6. The saved assessment is returned; the UI shows the report.

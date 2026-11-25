@@ -2,7 +2,6 @@
 
 export type Verdict = 'SUPPORTED' | 'NOT_SUPPORTED' | 'INCONCLUSIVE';
 export type VerificationStatus = 'VERIFIED' | 'UNVERIFIED';
-export type BenefitCategory = 'HYDRATION' | 'ANTI_WRINKLE' | 'BARRIER_REPAIR' | 'BRIGHTENING' | 'SOOTHING' | 'OTHER';
 export type EvidenceScope = 'INGREDIENT' | 'FINISHED_PRODUCT';
 export type QualityRating = 'HIGH' | 'MODERATE' | 'LOW' | 'VERY_LOW';
 
@@ -17,7 +16,7 @@ export interface Ingredient {
 }
 
 export interface Evidence {
-  id: string; title: string; evidenceType: string; scope: EvidenceScope; benefitCategories: BenefitCategory[]; sourceName: string;
+  id: string; title: string; evidenceType: string; scope: EvidenceScope; benefits: string[]; sourceName: string;
   doi?: string | null; pmid?: string | null; sourceUrl?: string | null; publishedAt?: string | null; studyDesign: string;
   sampleSize?: number | null; population: string; durationWeeks?: number | null; testedSubject: string; testedConcentration?: number | null;
   endpoint: string; resultsSummary: string; effectDirection: 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE';
@@ -33,8 +32,8 @@ export interface Product {
 }
 
 export interface Claim {
-  id: string; productId: string; title: string; benefitCategory: BenefitCategory; measurementEndpoint: string; targetValue: number;
-  measurementUnit: string; durationWeeks: number; targetPopulation: string; createdAt: string;
+  id: string; productId: string; title: string; description?: string | null; benefits: string[]; targetValue?: number | null;
+  measurementUnit: string; durationWeeks?: number | null; targetPopulation?: string | null; createdAt: string;
   product: { id: string; name: string };
   assessments: { id: string; verdict: Verdict; evidenceScore: number; createdAt: string }[];
   _count: { assessments: number };
@@ -58,7 +57,7 @@ export interface AssessmentSummary {
 export interface Assessment extends AssessmentSummary {
   promptVersion: string; scoringVersion: string; scoreBreakdown: ScoreResult; summary: string; reasoning: string;
   missingEvidence: string[]; recommendedTests: string[]; guardrailNotes: string[]; aiResult: AiResult;
-  claim: AssessmentSummary['claim'] & { targetValue: number; measurementUnit: string; durationWeeks: number; targetPopulation: string; benefitCategory: BenefitCategory };
+  claim: AssessmentSummary['claim'] & { description?: string | null; benefits: string[]; targetValue?: number | null; measurementUnit: string; durationWeeks?: number | null; targetPopulation?: string | null };
   formulationSnapshot: { productName: string; ingredients: { name: string; inciName: string; percentage: number }[] };
   evidenceSnapshot: { id: string; relation: string; role: string; title: string; ingredientNames: string[] }[];
   evidence: { evidenceId: string; role: 'SUPPORTING' | 'CONTRADICTORY' | 'CONTEXT'; relevanceScore: number; note?: string | null; evidence: { id: string; title: string; scope: EvidenceScope; status: VerificationStatus; doi?: string | null; pmid?: string | null; documents: { id: string }[] } }[];

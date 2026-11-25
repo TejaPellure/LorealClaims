@@ -1,4 +1,4 @@
----
+ (tags)---
 name: domain-model
 description: Domain entities, relationships and the simplified formulate-claim-result flow of Claims Intelligence. Use when changing the Prisma schema, services, seed data or anything touching products, claims, evidence or assessments.
 ---
@@ -9,7 +9,7 @@ description: Domain entities, relationships and the simplified formulate-claim-r
 - **Ingredient**: library item (unique INCI name, category, optional sourced reference range, `VERIFIED|UNVERIFIED`).
 - **Evidence**: one study. `scope` INGREDIENT or FINISHED_PRODUCT; `benefitCategories[]`; `effectDirection`; optional `effectMagnitude` (only if the source states it); `quality`. Linked to ingredients (`IngredientEvidence`) and, for finished-product studies, to the exact formulation tested (`FormulationEvidence`). PDFs: `UploadedDocument` (server-generated stored name).
 - **Product** -> **Formulation** (created together, immutable; schema allows several for the future) -> **FormulationIngredient** (`Decimal` percentage, `position`; must total 100).
-- **Claim**: wording + structured fields (benefit category, derived endpoint, target %, weeks, population), bound to one formulation.
+- **Claim**: wording (required) + optional description, benefit tags (presets or custom), improvement %, weeks and population, bound to one formulation. Claude reads the text and the fields together.
 - **Assessment**: result for one claim: Claude model, prompt/rubric versions, verdict, deterministic score + breakdown, validated `aiResult`, guardrail notes, immutable snapshots (claim, formulation, evidence). **AssessmentEvidence** lists the evidence used and its role (SUPPORTING / CONTRADICTORY / CONTEXT).
 
 ## Flow

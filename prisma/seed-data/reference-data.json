@@ -1,6 +1,6 @@
 {
   "meta": {
-    "notice": "Ingredients are general descriptions (only those with sources attached are VERIFIED). Evidence records are real publications whose DOI/PMID were checked against PubMed on 2026-11-25; summaries restate only what each abstract says."
+    "notice": "Evidence records are real publications whose DOI/PMID were checked against PubMed on 2026-11-25; summaries restate only what each abstract says and numbers are included only when the abstract states them. An ingredient is marked VERIFIED only when at least one such study or regulatory source is attached; water and xanthan gum are vehicle/texturiser ingredients with no efficacy studies in this library."
   },
   "ingredients": [
     {
@@ -33,8 +33,17 @@
         "Cleansers"
       ],
       "solubility": "Miscible with water.",
-      "status": "UNVERIFIED",
-      "sources": []
+      "status": "VERIFIED",
+      "sources": [
+        {
+          "name": "PubMed 18510666 - Fluhr et al., Glycerol and the skin, Br J Dermatol 2008",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/18510666/"
+        },
+        {
+          "name": "PubMed 10598752 - Fluhr et al., Acta Derm Venereol 1999",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/10598752/"
+        }
+      ]
     },
     {
       "key": "niacinamide",
@@ -60,6 +69,22 @@
         {
           "name": "PubMed 16209160 - Draelos et al., Cutis 2005",
           "url": "https://pubmed.ncbi.nlm.nih.gov/16209160/"
+        },
+        {
+          "name": "PubMed 7657446 - Shalita et al., Int J Dermatol 1995",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/7657446/"
+        },
+        {
+          "name": "PubMed 16766489 - Draelos et al., J Cosmet Laser Ther 2006",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/16766489/"
+        },
+        {
+          "name": "PubMed 12100180 - Hakozaki et al., Br J Dermatol 2002",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/12100180/"
+        },
+        {
+          "name": "PubMed 21822427 - Navarrete-Solis et al., Dermatol Res Pract 2011",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/21822427/"
         }
       ]
     },
@@ -101,8 +126,17 @@
         "Serums"
       ],
       "solubility": "Water soluble.",
-      "status": "UNVERIFIED",
-      "sources": []
+      "status": "VERIFIED",
+      "sources": [
+        {
+          "name": "PubMed 21982351 - Camargo et al., J Cosmet Sci 2011",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/21982351/"
+        },
+        {
+          "name": "PubMed 29577586 - Pavlackova et al., J Cosmet Dermatol 2019",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/29577586/"
+        }
+      ]
     },
     {
       "key": "ceramide-np",
@@ -117,11 +151,27 @@
       ],
       "solubility": "Oil/lipid phase; needs a suitable emulsion system.",
       "compatibilityNotes": "Lipid ratios (ceramide : cholesterol : fatty acid) influence barrier performance; confirm with finished-product testing.",
-      "status": "UNVERIFIED",
+      "status": "VERIFIED",
       "sources": [
         {
           "name": "PubMed 22507050 - Draelos, Clin Dermatol 2012 (review of barrier repair creams)",
           "url": "https://pubmed.ncbi.nlm.nih.gov/22507050/"
+        },
+        {
+          "name": "PubMed 22507050 - Draelos, Clin Dermatol 2012",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/22507050/"
+        },
+        {
+          "name": "PubMed 37276158 - Draelos et al., J Drugs Dermatol 2023",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/37276158/"
+        },
+        {
+          "name": "PubMed 33984185 - ceramide-dominant regimen in eczema, Dermatol Ther 2021",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/33984185/"
+        },
+        {
+          "name": "PubMed 30410378 - ceramide cream hydration, Clin Cosmet Investig Dermatol 2018",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/30410378/"
         }
       ]
     },
@@ -135,8 +185,13 @@
       "commonApplications": [
         "Barrier creams"
       ],
-      "status": "UNVERIFIED",
-      "sources": []
+      "status": "VERIFIED",
+      "sources": [
+        {
+          "name": "PubMed 9308554 - Zettersten et al., J Am Acad Dermatol 1997",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/9308554/"
+        }
+      ]
     },
     {
       "key": "squalane",
@@ -151,8 +206,13 @@
         "Oils"
       ],
       "solubility": "Oil soluble.",
-      "status": "UNVERIFIED",
-      "sources": []
+      "status": "VERIFIED",
+      "sources": [
+        {
+          "name": "PubMed 40363772 - Squalane and UVA-induced collagen inhibition in fibroblasts, Molecules 2025",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/40363772/"
+        }
+      ]
     },
     {
       "key": "tocopherol",
@@ -166,8 +226,17 @@
         "Serums"
       ],
       "solubility": "Oil soluble.",
-      "status": "UNVERIFIED",
-      "sources": []
+      "status": "VERIFIED",
+      "sources": [
+        {
+          "name": "PubMed 16029671 - Thiele et al., Vitamin E review, Dermatol Surg 2005",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/16029671/"
+        },
+        {
+          "name": "PubMed 27559512 - Keen and Hassan, Vitamin E in dermatology, Indian Dermatol Online J 2016",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/27559512/"
+        }
+      ]
     },
     {
       "key": "phenoxyethanol",
@@ -189,6 +258,10 @@
         {
           "name": "EU CosIng database (ingredient and Annex V lookup)",
           "url": "https://ec.europa.eu/growth/tools-databases/cosing/"
+        },
+        {
+          "name": "PubMed 31588615 - Dreno et al., Safety review of phenoxyethanol, J Eur Acad Dermatol Venereol 2019",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/31588615/"
         }
       ]
     },
@@ -207,6 +280,119 @@
       "solubility": "Disperses in water to form viscous solutions.",
       "status": "UNVERIFIED",
       "sources": []
+    },
+    {
+      "key": "retinol",
+      "name": "Retinol",
+      "inciName": "Retinol",
+      "chemicalName": "Vitamin A alcohol",
+      "description": "Vitamin A alcohol used in anti-ageing products. In the cited studies a minority of users withdrew because of irritation, and lower concentrations were less irritating.",
+      "category": "ACTIVE",
+      "primaryFunction": "Anti-ageing active",
+      "commonApplications": [
+        "Anti-wrinkle creams",
+        "Night serums"
+      ],
+      "status": "VERIFIED",
+      "sources": [
+        {
+          "name": "PubMed 17515510 - Kafi et al., Arch Dermatol 2007",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/17515510/"
+        },
+        {
+          "name": "PubMed 20078381 - Kikuchi et al., J Dermatolog Treat 2009",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/20078381/"
+        }
+      ]
+    },
+    {
+      "key": "salicylic-acid",
+      "name": "Salicylic Acid",
+      "inciName": "Salicylic Acid",
+      "chemicalName": "2-Hydroxybenzoic acid",
+      "description": "Beta-hydroxy acid used in blemish-prone and oily-skin products for its comedolytic (pore-clearing) action. Adverse reactions in the cited review were mild local irritation in a minority of patients.",
+      "category": "ACTIVE",
+      "primaryFunction": "Exfoliant / comedolytic",
+      "commonApplications": [
+        "Blemish treatments",
+        "Pore-care serums",
+        "Cleansers"
+      ],
+      "status": "VERIFIED",
+      "sources": [
+        {
+          "name": "PubMed 1535287 - Treatment of acne vulgaris with salicylic acid pads, Clin Ther 1992",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/1535287/"
+        },
+        {
+          "name": "PubMed 36999489 - Salicylic acid and lipohydroxy acid serum and mask RCT, J Cosmet Dermatol 2023",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/36999489/"
+        }
+      ]
+    },
+    {
+      "key": "ascorbic-acid",
+      "name": "Ascorbic Acid",
+      "inciName": "Ascorbic Acid",
+      "chemicalName": "L-ascorbic acid (vitamin C)",
+      "description": "Vitamin C, a potent antioxidant used topically for photoageing and hyperpigmentation. It is unstable and hard to deliver into the dermis, so formulation stability matters.",
+      "category": "ANTIOXIDANT",
+      "primaryFunction": "Antioxidant / brightening active",
+      "commonApplications": [
+        "Brightening serums",
+        "Anti-ageing serums"
+      ],
+      "status": "VERIFIED",
+      "sources": [
+        {
+          "name": "PubMed 23741676 - Telang, Vitamin C in dermatology, Indian Dermatol Online J 2013",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/23741676/"
+        },
+        {
+          "name": "PubMed 18503551 - ascorbic acid and madecassoside in photoaged skin, Exp Dermatol 2008",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/18503551/"
+        }
+      ]
+    },
+    {
+      "key": "urea",
+      "name": "Urea",
+      "inciName": "Urea",
+      "chemicalName": "Carbamide",
+      "description": "Humectant, emollient and keratolytic agent used for dry and scaly skin. Mild irritation is the most common adverse event reported in the cited review.",
+      "category": "HUMECTANT",
+      "primaryFunction": "Humectant / keratolytic",
+      "commonApplications": [
+        "Dry-skin creams",
+        "Foot and hand care"
+      ],
+      "status": "VERIFIED",
+      "sources": [
+        {
+          "name": "PubMed 24314769 - Pan et al., Urea: a comprehensive review, Dermatol Online J 2013",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/24314769/"
+        }
+      ]
+    },
+    {
+      "key": "azelaic-acid",
+      "name": "Azelaic Acid",
+      "inciName": "Azelaic Acid",
+      "chemicalName": "Nonanedioic acid",
+      "description": "Dicarboxylic acid used for blemish-prone skin and uneven pigmentation. In the cited review it was usually studied as a 20% cream and was generally well tolerated, with mild transient local irritation.",
+      "category": "ACTIVE",
+      "primaryFunction": "Blemish and pigmentation active",
+      "commonApplications": [
+        "Blemish treatments",
+        "Tone-evening products"
+      ],
+      "status": "VERIFIED",
+      "sources": [
+        {
+          "name": "PubMed 1712709 - Fitton and Goa, Azelaic acid review, Drugs 1991",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/1712709/"
+        }
+      ]
     }
   ],
   "evidence": [
@@ -215,9 +401,6 @@
       "title": "Niacinamide: A B vitamin that improves aging facial skin appearance",
       "evidenceType": "CLINICAL_STUDY",
       "scope": "INGREDIENT",
-      "benefitCategories": [
-        "ANTI_WRINKLE"
-      ],
       "sourceName": "Dermatologic Surgery",
       "doi": "10.1111/j.1524-4725.2005.31732",
       "pmid": "16029679",
@@ -238,6 +421,12 @@
       "status": "VERIFIED",
       "ingredientKeys": [
         "niacinamide"
+      ],
+      "benefits": [
+        "anti-wrinkle",
+        "anti-pigmentation",
+        "brightening",
+        "firmness-elasticity"
       ]
     },
     {
@@ -245,10 +434,6 @@
       "title": "Efficacy of cream-based novel formulations of hyaluronic acid of different molecular weights in anti-wrinkle treatment",
       "evidenceType": "CLINICAL_STUDY",
       "scope": "INGREDIENT",
-      "benefitCategories": [
-        "ANTI_WRINKLE",
-        "HYDRATION"
-      ],
       "sourceName": "Journal of Drugs in Dermatology",
       "doi": null,
       "pmid": "22052267",
@@ -269,6 +454,11 @@
       "status": "VERIFIED",
       "ingredientKeys": [
         "sodium-hyaluronate"
+      ],
+      "benefits": [
+        "anti-wrinkle",
+        "hydration",
+        "firmness-elasticity"
       ]
     },
     {
@@ -276,11 +466,6 @@
       "title": "Niacinamide-containing facial moisturizer improves skin barrier and benefits subjects with rosacea",
       "evidenceType": "FINISHED_PRODUCT_TRIAL",
       "scope": "FINISHED_PRODUCT",
-      "benefitCategories": [
-        "BARRIER_REPAIR",
-        "HYDRATION",
-        "SOOTHING"
-      ],
       "sourceName": "Cutis",
       "doi": null,
       "pmid": "16209160",
@@ -301,6 +486,11 @@
       "status": "VERIFIED",
       "ingredientKeys": [
         "niacinamide"
+      ],
+      "benefits": [
+        "barrier-repair",
+        "hydration",
+        "soothing"
       ]
     },
     {
@@ -308,10 +498,6 @@
       "title": "Efficacy of a New Topical Nano-hyaluronic Acid in Humans",
       "evidenceType": "FINISHED_PRODUCT_TRIAL",
       "scope": "FINISHED_PRODUCT",
-      "benefitCategories": [
-        "ANTI_WRINKLE",
-        "HYDRATION"
-      ],
       "sourceName": "Journal of Clinical and Aesthetic Dermatology",
       "doi": null,
       "pmid": "24688623",
@@ -332,6 +518,11 @@
       "status": "VERIFIED",
       "ingredientKeys": [
         "sodium-hyaluronate"
+      ],
+      "benefits": [
+        "anti-wrinkle",
+        "hydration",
+        "firmness-elasticity"
       ]
     },
     {
@@ -339,9 +530,6 @@
       "title": "New treatments for restoring impaired epidermal barrier permeability: skin barrier repair creams",
       "evidenceType": "LITERATURE_REVIEW",
       "scope": "INGREDIENT",
-      "benefitCategories": [
-        "BARRIER_REPAIR"
-      ],
       "sourceName": "Clinics in Dermatology",
       "doi": "10.1016/j.clindermatol.2011.08.018",
       "pmid": "22507050",
@@ -363,6 +551,9 @@
       "ingredientKeys": [
         "ceramide-np",
         "sodium-hyaluronate"
+      ],
+      "benefits": [
+        "barrier-repair"
       ]
     },
     {
@@ -370,9 +561,6 @@
       "title": "Ceramide-Containing Adjunctive Skin Care for Skin Barrier Restoration During Acne Vulgaris Treatment",
       "evidenceType": "FINISHED_PRODUCT_TRIAL",
       "scope": "FINISHED_PRODUCT",
-      "benefitCategories": [
-        "BARRIER_REPAIR"
-      ],
       "sourceName": "Journal of Drugs in Dermatology",
       "doi": "10.36849/JDD.7142",
       "pmid": "37276158",
@@ -393,6 +581,728 @@
       "status": "VERIFIED",
       "ingredientKeys": [
         "ceramide-np"
+      ],
+      "benefits": [
+        "barrier-repair"
+      ]
+    },
+    {
+      "key": "ev-shalita-1995",
+      "title": "Topical nicotinamide compared with clindamycin gel in the treatment of inflammatory acne vulgaris",
+      "evidenceType": "CLINICAL_STUDY",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "acne-blemishes"
+      ],
+      "sourceName": "International Journal of Dermatology",
+      "doi": "10.1111/j.1365-4362.1995.tb04449.x",
+      "pmid": "7657446",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/7657446/",
+      "publishedAt": "1995-06-01",
+      "studyDesign": "Double-blind randomised comparison of 4% nicotinamide gel versus 1% clindamycin gel, applied twice daily for 8 weeks; Physician's Global Evaluation, lesion counts and acne severity rating at 4 and 8 weeks",
+      "sampleSize": 76,
+      "population": "Patients with moderate inflammatory acne vulgaris",
+      "durationWeeks": 8,
+      "testedSubject": "4% nicotinamide (niacinamide) gel",
+      "testedConcentration": 4,
+      "endpoint": "Inflammatory acne lesion counts (papules/pustules) and acne severity",
+      "resultsSummary": "After 8 weeks 82% of patients on nicotinamide gel were improved on the Physician's Global Evaluation versus 68% on clindamycin (not significantly different, P=0.19). Papules/pustules fell by 60% with nicotinamide versus 43% with clindamycin (P=0.168) and acne severity by 52% versus 38% (P=0.161). The authors conclude 4% nicotinamide gel has comparable efficacy to 1% clindamycin gel.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": 60,
+      "limitations": "Compared with an active drug, not with a vehicle control. Inflammatory acne in patients, not general blemish-prone skin. A 4% gel, not a finished cosmetic formula. Differences between the two treatments were not statistically significant.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "niacinamide"
+      ]
+    },
+    {
+      "key": "ev-draelos-2006-sebum",
+      "title": "The effect of 2% niacinamide on facial sebum production",
+      "evidenceType": "CLINICAL_STUDY",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "oil-control",
+        "pores"
+      ],
+      "sourceName": "Journal of Cosmetic and Laser Therapy",
+      "doi": "10.1080/14764170600717704",
+      "pmid": "16766489",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16766489/",
+      "publishedAt": "2006-06-01",
+      "studyDesign": "Two trials. Japan: double-blind, placebo-controlled, 50 vs 50 subjects using a 2% niacinamide moisturizer for 4 weeks, sebum excretion rate (SER) at baseline, week 2 and week 4. USA: randomised split-face study in 30 Caucasian subjects for 6 weeks, SER and casual sebum level (CSL)",
+      "sampleSize": 130,
+      "population": "100 Japanese and 30 Caucasian adult subjects",
+      "durationWeeks": 4,
+      "testedSubject": "2% niacinamide moisturizer",
+      "testedConcentration": 2,
+      "endpoint": "Facial sebum excretion rate and casual sebum level",
+      "resultsSummary": "In the Japanese study the 2% niacinamide group had significantly lower sebum excretion rate after 2 and 4 weeks. In the Caucasian study, after 6 weeks casual sebum level was significantly reduced but sebum excretion rate was not. The authors conclude 2% niacinamide may lower SER in Japanese individuals and CSL in Caucasian individuals. The abstract does not state a percentage reduction or pore-size change.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Measures sebum production, not pore appearance or pimples directly. Results differed between ethnic groups and between measures. Tested in a moisturizer at 2%, not the formula under assessment. Authors are affiliated with a cosmetics manufacturer.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "niacinamide"
+      ]
+    },
+    {
+      "key": "ev-hakozaki-2002",
+      "title": "The effect of niacinamide on reducing cutaneous pigmentation and suppression of melanosome transfer",
+      "evidenceType": "CLINICAL_STUDY",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "brightening",
+        "anti-pigmentation"
+      ],
+      "sourceName": "British Journal of Dermatology",
+      "doi": "10.1046/j.1365-2133.2002.04834.x",
+      "pmid": "12100180",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/12100180/",
+      "publishedAt": "2002-07-01",
+      "studyDesign": "In-vitro melanogenesis models plus two clinical trials: 18 subjects with hyperpigmentation using 5% niacinamide moisturizer vs vehicle in a paired design, and 120 subjects with facial tanning using vehicle, sunscreen, or 2% niacinamide + sunscreen; images analysed by computer and visual grading",
+      "sampleSize": 138,
+      "population": "Japanese women with facial hyperpigmentation or facial tanning",
+      "durationWeeks": 4,
+      "testedSubject": "5% niacinamide moisturizer (and 2% niacinamide with sunscreen)",
+      "testedConcentration": 5,
+      "endpoint": "Facial hyperpigmentation and skin lightness (image analysis)",
+      "resultsSummary": "Niacinamide gave 35-68% inhibition of melanosome transfer in a coculture model. In the clinical studies niacinamide significantly decreased hyperpigmentation and increased skin lightness compared with vehicle after 4 weeks of use. It did not affect tyrosinase activity or melanogenesis in cultured melanocytes.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "The 35-68% figure is an in-vitro result, not a clinical improvement. Japanese women only. Authors are affiliated with a cosmetics manufacturer. Clinical percentage improvement is not given in the abstract.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "niacinamide"
+      ]
+    },
+    {
+      "key": "ev-navarrete-2011",
+      "title": "A Double-Blind, Randomized Clinical Trial of Niacinamide 4% versus Hydroquinone 4% in the Treatment of Melasma",
+      "evidenceType": "CLINICAL_STUDY",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "brightening",
+        "anti-pigmentation"
+      ],
+      "sourceName": "Dermatology Research and Practice",
+      "doi": "10.1155/2011/379173",
+      "pmid": "21822427",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21822427/",
+      "publishedAt": "2011-07-21",
+      "studyDesign": "Double-blind randomised split-face trial: 4% niacinamide cream on one side and 4% hydroquinone cream on the other for 8 weeks, with sunscreen; colorimetry, subjective scales and histology",
+      "sampleSize": 27,
+      "population": "Patients with melasma",
+      "durationWeeks": 8,
+      "testedSubject": "4% niacinamide cream (vs 4% hydroquinone)",
+      "testedConcentration": 4,
+      "endpoint": "Skin colour (colorimetry), subjective improvement, histology",
+      "resultsSummary": "All patients showed pigment improvement with both treatments and colorimetric measures did not differ between sides. Good to excellent improvement was seen in 44% with niacinamide versus 55% with hydroquinone. Niacinamide reduced mast-cell infiltrate and improved solar elastosis. Side effects occurred in 18% with niacinamide versus 29% with hydroquinone.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Small sample, melasma patients rather than general skin. Compared with hydroquinone, with no vehicle-only arm. Not a finished cosmetic formula.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "niacinamide"
+      ]
+    },
+    {
+      "key": "ev-fluhr-2008-glycerol",
+      "title": "Glycerol and the skin: holistic approach to its origin and functions",
+      "evidenceType": "LITERATURE_REVIEW",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "hydration",
+        "barrier-repair"
+      ],
+      "sourceName": "British Journal of Dermatology",
+      "doi": "10.1111/j.1365-2133.2008.08643.x",
+      "pmid": "18510666",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18510666/",
+      "publishedAt": "2008-07-01",
+      "studyDesign": "Narrative review of the effects, mechanisms and applications of glycerol in the skin",
+      "sampleSize": null,
+      "population": "Not applicable (review)",
+      "durationWeeks": null,
+      "testedSubject": "Glycerol (glycerin) in topical products",
+      "testedConcentration": null,
+      "endpoint": "Stratum corneum hydration, barrier function, mechanical properties",
+      "resultsSummary": "The review reports that glycerol improves stratum corneum hydration, skin barrier function and mechanical properties, protects against irritating stimuli, and improves skin properties in xerosis and atopic dermatitis. It does not give a single quantified effect size.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Narrative review with no pooled quantitative estimate. Cannot substantiate a specific percentage or timeframe.",
+      "quality": "LOW",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "glycerin"
+      ]
+    },
+    {
+      "key": "ev-fluhr-1999-glycerol",
+      "title": "Glycerol accelerates recovery of barrier function in vivo",
+      "evidenceType": "INSTRUMENTAL_MEASUREMENT",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "barrier-repair",
+        "hydration"
+      ],
+      "sourceName": "Acta Dermato-Venereologica",
+      "doi": "10.1080/000155599750009825",
+      "pmid": "10598752",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/10598752/",
+      "publishedAt": "1999-11-01",
+      "studyDesign": "Two in-vivo studies measuring transepidermal water loss and capacitance: a 3-day follow-up after tape stripping, and a 7-day follow-up after repeated sodium lauryl sulphate washing; glycerol sites compared with untreated and base-treated sites",
+      "sampleSize": null,
+      "population": "Not stated in the abstract",
+      "durationWeeks": 1,
+      "testedSubject": "Glycerol applied to damaged stratum corneum",
+      "testedConcentration": null,
+      "endpoint": "Transepidermal water loss (barrier recovery) and stratum corneum hydration",
+      "resultsSummary": "Barrier recovery was faster at glycerol-treated sites and stratum corneum hydration was higher, with differences still seen 7 days after treatment ended. The authors state the effects were based on modulation of barrier repair, not just the humectant effect.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Barrier-damage models (tape stripping, detergent), not normal skin. Sample size and glycerol concentration are not stated in the abstract. Short follow-up.",
+      "quality": "LOW",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "glycerin"
+      ]
+    },
+    {
+      "key": "ev-camargo-2011",
+      "title": "Skin moisturizing effects of panthenol-based formulations",
+      "evidenceType": "INSTRUMENTAL_MEASUREMENT",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "hydration",
+        "barrier-repair"
+      ],
+      "sourceName": "Journal of Cosmetic Science",
+      "doi": null,
+      "pmid": "21982351",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21982351/",
+      "publishedAt": "2011-07-01",
+      "studyDesign": "Formulations with 0%, 0.5%, 1.0% or 5.0% panthenol applied daily to the forearms; skin moisture and TEWL measured before and after 15 and 30 days, plus effects after skin washing with sodium laureth sulphate",
+      "sampleSize": null,
+      "population": "Healthy subjects",
+      "durationWeeks": 4,
+      "testedSubject": "Formulations containing 0.5%, 1.0% and 5.0% panthenol",
+      "testedConcentration": 1,
+      "endpoint": "Transepidermal water loss and skin moisture",
+      "resultsSummary": "Formulations with 1.0% and 5.0% panthenol produced significant decreases in TEWL after 30 days of application. In skin washed with SLES, TEWL was significantly reduced two hours after applying panthenol formulations compared with control and vehicle. The authors conclude 1.0% panthenol improves protective effect on skin integrity.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Sample size not stated in the abstract. Forearm application on healthy skin. The abstract reports a TEWL decrease but no percentage.",
+      "quality": "LOW",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "panthenol"
+      ]
+    },
+    {
+      "key": "ev-pavlackova-2019",
+      "title": "In vivo efficacy and properties of semisolid formulations containing panthenol",
+      "evidenceType": "INSTRUMENTAL_MEASUREMENT",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "hydration",
+        "barrier-repair"
+      ],
+      "sourceName": "Journal of Cosmetic Dermatology",
+      "doi": "10.1111/jocd.12527",
+      "pmid": "29577586",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29577586/",
+      "publishedAt": "2019-02-01",
+      "studyDesign": "Non-invasive in-vivo measurements over 48 hours on 40 women comparing o/w and w/o emulsions containing 5-13 wt% panthenol with the same formulations without panthenol; rheology and sensory evaluation",
+      "sampleSize": 40,
+      "population": "Women (healthy skin)",
+      "durationWeeks": null,
+      "testedSubject": "O/w and w/o emulsions with 5-13 wt% panthenol",
+      "testedConcentration": 7,
+      "endpoint": "Skin hydration and transepidermal water loss",
+      "resultsSummary": "After applying formulations containing 7-11 wt% panthenol, skin hydration increased and transepidermal water loss decreased, and skin pH shifted toward neutral.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Only a 48-hour observation window, so it says nothing about weeks of use. Effective range was 7-11 wt%, higher than the 1% often used in cosmetics.",
+      "quality": "LOW",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "panthenol"
+      ]
+    },
+    {
+      "key": "ev-ceramide-eczema-2021",
+      "title": "A daily regimen of a ceramide-dominant moisturizing cream and cleanser restores the skin permeability barrier in adults with moderate eczema: A randomized trial",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL",
+      "scope": "FINISHED_PRODUCT",
+      "benefits": [
+        "barrier-repair",
+        "hydration"
+      ],
+      "sourceName": "Dermatologic Therapy",
+      "doi": "10.1111/dth.14970",
+      "pmid": "33984185",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33984185/",
+      "publishedAt": "2021-05-24",
+      "studyDesign": "Randomised, placebo-controlled trial of a ceramide-dominant moisturizing cream and cleanser used daily for 28 days, assessed at baseline and every 7 days",
+      "sampleSize": null,
+      "population": "Adults with moderate eczema",
+      "durationWeeks": 4,
+      "testedSubject": "A ceramide-dominant physiological-lipid moisturizing cream and cleanser (a different formulation)",
+      "testedConcentration": null,
+      "endpoint": "Transepidermal water loss, skin hydration, eczema severity score",
+      "resultsSummary": "Transepidermal water loss and skin hydration improved significantly over time in the active group, while staying the same or worsening in placebo (P=.0342 and P<.0001). Eczema severity decreased in both groups with no significant difference between groups at day 28. Patient satisfaction (itch relief, dry skin, softness) was greater with the active product.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Population has eczema, not healthy dry skin. Different formulation with undisclosed ceramide level. Sample size not stated in the abstract. No numeric percentage change in the abstract.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "ceramide-np"
+      ]
+    },
+    {
+      "key": "ev-ceramide-hydration-2018",
+      "title": "Skin hydration is significantly increased by a cream formulated to mimic the skin's own natural moisturizing systems",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL",
+      "scope": "FINISHED_PRODUCT",
+      "benefits": [
+        "hydration",
+        "barrier-repair"
+      ],
+      "sourceName": "Clinical, Cosmetic and Investigational Dermatology",
+      "doi": "10.2147/CCID.S177697",
+      "pmid": "30410378",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/30410378/",
+      "publishedAt": "2018-10-15",
+      "studyDesign": "Corneometry at baseline, 2, 4, 6 and 24 hours after a single application of a ceramide cream, compared with three reference moisturizers and placebo; TEWL after a single application; repeat insult patch and ophthalmologist/paediatric safety testing",
+      "sampleSize": null,
+      "population": "Healthy adults (hydration); adults and children (safety)",
+      "durationWeeks": 1,
+      "testedSubject": "A ceramide-containing moisturizing cream (a different formulation)",
+      "testedConcentration": null,
+      "endpoint": "Skin hydration (corneometry) over 24 hours and transepidermal water loss",
+      "resultsSummary": "A single application of the ceramide cream significantly increased skin hydration (P<0.001), and at 24 hours hydration was significantly greater than for all three reference moisturizers. The placebo did not significantly increase hydration. TEWL decreased significantly over 24 hours, and the cream was non-sensitizing and non-irritating.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Single-application, 24-hour measurement: it does not show benefits after weeks of use. Different formulation with undisclosed ceramide level. Sample size not stated in the abstract.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "ceramide-np"
+      ]
+    },
+    {
+      "key": "ev-zettersten-1997",
+      "title": "Optimal ratios of topical stratum corneum lipids improve barrier recovery in chronologically aged skin",
+      "evidenceType": "CLINICAL_STUDY",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "barrier-repair"
+      ],
+      "sourceName": "Journal of the American Academy of Dermatology",
+      "doi": "10.1016/s0190-9622(97)70140-3",
+      "pmid": "9308554",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/9308554/",
+      "publishedAt": "1997-09-01",
+      "studyDesign": "Equimolar and cholesterol- or free-fatty-acid-dominant lipid mixtures (2% in propylene glycol/n-propanol) versus vehicle; barrier recovery after tape stripping measured up to 1 week in aged hairless mice and in aged human skin",
+      "sampleSize": 6,
+      "population": "Aged hairless mice and chronologically aged human skin (80 +/- 5 years)",
+      "durationWeeks": 1,
+      "testedSubject": "2% lipid mixture of cholesterol, ceramides and free fatty acids (3:1:1:1, cholesterol-dominant)",
+      "testedConcentration": 2,
+      "endpoint": "Permeability barrier recovery rate after tape stripping",
+      "resultsSummary": "A cholesterol-dominant 3:1:1:1 mixture further accelerated barrier recovery in aged mice at 3 and 6 hours, and significantly accelerated barrier recovery in aged human skin at 6 hours (p<0.005; n=6).",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Very small human sample (n=6) in very old subjects. Tested a lipid mixture applied once, not cholesterol alone and not a finished product. 2% is the total lipid concentration.",
+      "quality": "LOW",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "cholesterol",
+        "ceramide-np"
+      ]
+    },
+    {
+      "key": "ev-thiele-2005",
+      "title": "Vitamin E: critical review of its current use in cosmetic and clinical dermatology",
+      "evidenceType": "LITERATURE_REVIEW",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "antioxidant",
+        "barrier-repair"
+      ],
+      "sourceName": "Dermatologic Surgery",
+      "doi": "10.1111/j.1524-4725.2005.31724",
+      "pmid": "16029671",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/16029671/",
+      "publishedAt": "2005-07-01",
+      "studyDesign": "Critical review of cutaneous vitamin E research",
+      "sampleSize": null,
+      "population": "Not applicable (review)",
+      "durationWeeks": null,
+      "testedSubject": "Topical and oral vitamin E (tocopherol)",
+      "testedConcentration": null,
+      "endpoint": "Antioxidant, photoprotective and skin barrier-stabilising properties",
+      "resultsSummary": "The review states experimental evidence suggests topical and oral vitamin E has anticarcinogenic, photoprotective and skin barrier-stabilising properties, but that controlled clinical studies providing a rationale for indications and dosage are lacking. Its current use is largely limited to cosmetics.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Mostly experimental evidence; the authors explicitly note a lack of controlled clinical studies. Cannot substantiate a specific numeric claim.",
+      "quality": "LOW",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "tocopherol"
+      ]
+    },
+    {
+      "key": "ev-keen-2016",
+      "title": "Vitamin E in dermatology",
+      "evidenceType": "LITERATURE_REVIEW",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "antioxidant"
+      ],
+      "sourceName": "Indian Dermatology Online Journal",
+      "doi": "10.4103/2229-5178.185494",
+      "pmid": "27559512",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27559512/",
+      "publishedAt": "2016-07-01",
+      "studyDesign": "Narrative review of cosmetic and clinical implications of vitamin E",
+      "sampleSize": null,
+      "population": "Not applicable (review)",
+      "durationWeeks": null,
+      "testedSubject": "Vitamin E (tocopherol)",
+      "testedConcentration": null,
+      "endpoint": "Free-radical scavenging and protection from solar radiation",
+      "resultsSummary": "The review describes vitamin E as a fat-soluble antioxidant that protects skin from the effects of solar radiation by scavenging free radicals, and notes a paucity of controlled clinical studies supporting well-defined dosages and clinical indications.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Narrative review; the authors note few controlled clinical studies. No quantified effect.",
+      "quality": "LOW",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "tocopherol"
+      ]
+    },
+    {
+      "key": "ev-dreno-2019",
+      "title": "Safety review of phenoxyethanol when used as a preservative in cosmetics",
+      "evidenceType": "LITERATURE_REVIEW",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "safety",
+        "preservation"
+      ],
+      "sourceName": "Journal of the European Academy of Dermatology and Venereology",
+      "doi": "10.1111/jdv.15944",
+      "pmid": "31588615",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/31588615/",
+      "publishedAt": "2019-11-01",
+      "studyDesign": "Safety review of toxicological and clinical data on phenoxyethanol as a cosmetic preservative",
+      "sampleSize": null,
+      "population": "Consumers including children (review)",
+      "durationWeeks": null,
+      "testedSubject": "Phenoxyethanol as a preservative",
+      "testedConcentration": 1,
+      "endpoint": "Safety and tolerability as a cosmetic preservative",
+      "resultsSummary": "Per the European Scientific Committee on Consumer Safety, phenoxyethanol is safe for all consumers including children when used as a preservative at a maximum concentration of 1%. It has broad antimicrobial activity, is a rare sensitizer, and adverse systemic effects in animals occurred only at exposures about 200-fold higher than consumer exposure.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Safety evidence only: it says nothing about any skin-benefit claim. Applies to use as a preservative at up to 1%.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "phenoxyethanol"
+      ]
+    },
+    {
+      "key": "ev-kafi-2007",
+      "title": "Improvement of naturally aged skin with vitamin A (retinol)",
+      "evidenceType": "CLINICAL_STUDY",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "anti-wrinkle",
+        "firmness-elasticity"
+      ],
+      "sourceName": "Archives of Dermatology",
+      "doi": "10.1001/archderm.143.5.606",
+      "pmid": "17515510",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17515510/",
+      "publishedAt": "2007-05-01",
+      "studyDesign": "Randomised, double-blind, vehicle-controlled left-right arm comparison: 0.4% retinol lotion or vehicle applied up to 3 times a week for 24 weeks; clinical scoring (0-9) and skin biopsies",
+      "sampleSize": 36,
+      "population": "Elderly subjects (mean age 87) in senior-living facilities",
+      "durationWeeks": 24,
+      "testedSubject": "0.4% retinol lotion",
+      "testedConcentration": 0.4,
+      "endpoint": "Fine wrinkling score and biochemical markers (glycosaminoglycan, procollagen I)",
+      "resultsSummary": "After 24 weeks, fine wrinkling scores changed by -1.64 with retinol versus -0.08 with vehicle (P<.001) on a 0-9 scale. In subgroups, retinol significantly increased glycosaminoglycan expression (P=.02, n=6) and procollagen I immunostaining (P=.049, n=4).",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Arms of very elderly subjects, not the typical cosmetic-user age. Effect reported as a score change on a 0-9 scale, not a percentage. 24 weeks, applied up to 3 times weekly.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "retinol"
+      ]
+    },
+    {
+      "key": "ev-kikuchi-2009",
+      "title": "Improvement of photoaged facial skin in middle-aged Japanese females by topical retinol (vitamin A alcohol): a vehicle-controlled, double-blind study",
+      "evidenceType": "CLINICAL_STUDY",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "anti-wrinkle"
+      ],
+      "sourceName": "Journal of Dermatological Treatment",
+      "doi": "10.1080/09546630902973987",
+      "pmid": "20078381",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/20078381/",
+      "publishedAt": "2009-01-01",
+      "studyDesign": "Randomised, blinded, vehicle-controlled half-face study using a once-nightly regimen: 26 weeks with 0.075% retinol cream in 57 subjects; a similar 13-week trial with 0.04% retinol cream",
+      "sampleSize": 57,
+      "population": "Middle-aged Japanese women with mild photoaging",
+      "durationWeeks": 26,
+      "testedSubject": "0.075% retinol cream (and 0.04% retinol cream for 13 weeks)",
+      "testedConcentration": 0.075,
+      "endpoint": "Rate of improvement in fine and deep wrinkling",
+      "resultsSummary": "After 26 weeks the rate of photoaging improvement was higher on the retinol side: fine wrinkling 50% (27 of 54) versus 24% (13) and deep wrinkling 28% (15 of 54) versus 2% (1). Three of 57 withdrew because of irritation. The 0.04% cream for 13 weeks gave less prominent improvement in fine wrinkling with minimal irritation.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Reports the share of subjects improving, not the percentage reduction in wrinkle depth. Japanese women only. Effect appeared over 13-26 weeks, not 4 weeks.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "retinol"
+      ]
+    },
+    {
+      "key": "ev-zander-1992",
+      "title": "Treatment of acne vulgaris with salicylic acid pads",
+      "evidenceType": "LITERATURE_REVIEW",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "acne-blemishes",
+        "pores",
+        "exfoliation"
+      ],
+      "sourceName": "Clinical Therapeutics",
+      "doi": null,
+      "pmid": "1535287",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/1535287/",
+      "publishedAt": "1992-03-01",
+      "studyDesign": "Review of four clinical studies (three placebo-controlled) and a comedolytic assay of 0.5% and 2% salicylic acid solutions applied as pads",
+      "sampleSize": null,
+      "population": "Patients with mild to moderate acne vulgaris",
+      "durationWeeks": null,
+      "testedSubject": "0.5% and 2% salicylic acid pads",
+      "testedConcentration": 0.5,
+      "endpoint": "Number and severity of acne lesions; comedolytic activity",
+      "resultsSummary": "In three placebo-controlled studies and a comedolytic assay, salicylic acid pads reduced the number of primary lesions and thereby the number and severity of all lesions. Comparative studies showed salicylic acid superior to benzoyl peroxide in reducing the total number of acne lesions. Adverse reactions were generally mild local irritation in a minority of patients.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "1992 review of older studies; the abstract gives no percentage reduction, sample sizes or study durations. Pad/solution format, not a finished serum.",
+      "quality": "LOW",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "salicylic-acid"
+      ]
+    },
+    {
+      "key": "ev-sa-lha-2023",
+      "title": "Efficacy and safety of a facial serum and a mask containing salicylic acid and lipohydroxy acid in acne management: A randomized controlled trial",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL",
+      "scope": "FINISHED_PRODUCT",
+      "benefits": [
+        "acne-blemishes",
+        "pores",
+        "oil-control",
+        "anti-pigmentation",
+        "hydration"
+      ],
+      "sourceName": "Journal of Cosmetic Dermatology",
+      "doi": "10.1111/jocd.15746",
+      "pmid": "36999489",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/36999489/",
+      "publishedAt": "2023-03-31",
+      "studyDesign": "Randomised controlled trial, 1:1: facial serum plus mask versus serum alone for 8 weeks; acne severity, comedones, pores, tone evenness, sebum, hydration and TEWL assessed up to day 56",
+      "sampleSize": 83,
+      "population": "Adults in Shanghai with comedones, post-inflammatory erythema and/or hyperpigmentation",
+      "durationWeeks": 8,
+      "testedSubject": "A serum and mask containing salicylic acid and lipohydroxy acid (a different formulation)",
+      "testedConcentration": null,
+      "endpoint": "Acne severity, skin pore density, sebum secretion, comedones, skin tone evenness, hydration",
+      "resultsSummary": "After 8 weeks of treatment acne severity, density of skin pores, skin tone evenness, hyperpigmentation foci, closed and open comedones, sebum secretion and skin hydration were significantly improved from baseline in both groups (all p<0.05). Adding the mask further improved closed comedones and acne severity.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Both groups used the serum, so there was no untreated or vehicle control. Combination of salicylic acid and lipohydroxy acid, so the effect of salicylic acid alone cannot be isolated. Concentrations undisclosed. Improvements are reported as significant versus baseline without percentages in the abstract.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "salicylic-acid"
+      ]
+    },
+    {
+      "key": "ev-telang-2013",
+      "title": "Vitamin C in dermatology",
+      "evidenceType": "LITERATURE_REVIEW",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "antioxidant",
+        "anti-wrinkle",
+        "brightening",
+        "anti-pigmentation"
+      ],
+      "sourceName": "Indian Dermatology Online Journal",
+      "doi": "10.4103/2229-5178.110593",
+      "pmid": "23741676",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/23741676/",
+      "publishedAt": "2013-04-01",
+      "studyDesign": "Narrative review of topical vitamin C in dermatology",
+      "sampleSize": null,
+      "population": "Not applicable (review)",
+      "durationWeeks": null,
+      "testedSubject": "Topical vitamin C (ascorbic acid)",
+      "testedConcentration": null,
+      "endpoint": "Photoageing and hyperpigmentation",
+      "resultsSummary": "Vitamin C is described as a potent antioxidant that can be used topically to treat and prevent changes associated with photoageing and to treat hyperpigmentation. It is unstable and difficult to deliver into the dermis in optimum dosage, so research is directed at stable compounds and newer delivery methods.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Narrative review with no quantified effect or concentration in the abstract. Stability and delivery of ascorbic acid are flagged as problems.",
+      "quality": "LOW",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "ascorbic-acid"
+      ]
+    },
+    {
+      "key": "ev-vitc-madecassoside-2008",
+      "title": "Clinical, biometric and structural evaluation of the long-term effects of a topical treatment with ascorbic acid and madecassoside in photoaged human skin",
+      "evidenceType": "CLINICAL_STUDY",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "anti-wrinkle",
+        "firmness-elasticity",
+        "hydration"
+      ],
+      "sourceName": "Experimental Dermatology",
+      "doi": "10.1111/j.1600-0625.2008.00732.x",
+      "pmid": "18503551",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18503551/",
+      "publishedAt": "2008-11-01",
+      "studyDesign": "Randomised double-blind study of topical 5% vitamin C with 0.1% madecassoside on photoaged skin for 6 months; clinical scores, elasticity measurements and histology of the elastic fibre network",
+      "sampleSize": 20,
+      "population": "Female volunteers with photoaged skin",
+      "durationWeeks": 26,
+      "testedSubject": "5% vitamin C combined with 0.1% madecassoside",
+      "testedConcentration": 5,
+      "endpoint": "Wrinkles, suppleness, firmness, roughness, hydration, skin elasticity",
+      "resultsSummary": "After 6 months the authors observed a significant improvement in the clinical score for deep and superficial wrinkles, suppleness, firmness, roughness and skin hydration, corroborated by elasticity measurements and histology. Two-thirds of subjects showed an improvement.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Vitamin C was combined with madecassoside, so the effect of vitamin C alone cannot be isolated. Small sample (20). Six-month duration. No percentage change in the abstract.",
+      "quality": "LOW",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "ascorbic-acid"
+      ]
+    },
+    {
+      "key": "ev-pan-2013-urea",
+      "title": "Urea: a comprehensive review of the clinical literature",
+      "evidenceType": "LITERATURE_REVIEW",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "hydration",
+        "exfoliation"
+      ],
+      "sourceName": "Dermatology Online Journal",
+      "doi": null,
+      "pmid": "24314769",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/24314769/",
+      "publishedAt": "2013-11-15",
+      "studyDesign": "Systematic literature review: PubMed search with 81 publications meeting inclusion criteria",
+      "sampleSize": null,
+      "population": "Patients with dry and scaly skin conditions (review)",
+      "durationWeeks": null,
+      "testedSubject": "Topical urea",
+      "testedConcentration": null,
+      "endpoint": "Xerosis and other dry or scaly skin conditions",
+      "resultsSummary": "Effective treatment with urea was reported for conditions including ichthyosis, xerosis, atopic dermatitis/eczema and psoriasis. Urea is described as a potent emollient and keratolytic agent. Mild irritation was the most common adverse event, with no systemic toxicity.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Review of heterogeneous clinical conditions, many of them medical. The abstract gives no concentrations or quantified moisturising effect for healthy skin.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "urea"
+      ]
+    },
+    {
+      "key": "ev-fitton-1991-azelaic",
+      "title": "Azelaic acid. A review of its pharmacological properties and therapeutic efficacy in acne and hyperpigmentary skin disorders",
+      "evidenceType": "LITERATURE_REVIEW",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "acne-blemishes",
+        "brightening",
+        "anti-pigmentation",
+        "pores"
+      ],
+      "sourceName": "Drugs",
+      "doi": "10.2165/00003495-199141050-00007",
+      "pmid": "1712709",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/1712709/",
+      "publishedAt": "1991-05-01",
+      "studyDesign": "Review of pharmacology and controlled clinical studies of topical azelaic acid (usually a 20% cream)",
+      "sampleSize": null,
+      "population": "Patients with acne and hyperpigmentary disorders such as melasma",
+      "durationWeeks": null,
+      "testedSubject": "Topical azelaic acid, usually 20% cream",
+      "testedConcentration": 20,
+      "endpoint": "Comedonal and inflammatory acne; melasma and other hyperpigmentation",
+      "resultsSummary": "Topical azelaic acid (usually 20% cream) was effective in comedonal and inflammatory acne. In controlled studies its anti-acne efficacy was comparable to topical tretinoin, benzoyl peroxide, erythromycin and oral tetracycline, and in melasma it was at least as effective as hydroquinone. Adverse effects were mild and transient local irritation.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "1991 review, drug-level 20% creams in patients, not a cosmetic concentration or finished cosmetic formula. No sample sizes or percentage effects in the abstract.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "azelaic-acid"
+      ]
+    },
+    {
+      "key": "ev-squalane-2025",
+      "title": "Squalane as a Promising Agent Protecting UV-Induced Inhibition of Collagen Biosynthesis and Wound Healing in Human Dermal Fibroblast",
+      "evidenceType": "IN_VITRO_RESEARCH",
+      "scope": "INGREDIENT",
+      "benefits": [
+        "antioxidant",
+        "soothing"
+      ],
+      "sourceName": "Molecules",
+      "doi": "10.3390/molecules30091964",
+      "pmid": "40363772",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40363772/",
+      "publishedAt": "2025-04-29",
+      "studyDesign": "In-vitro study on human dermal fibroblasts exposed to UVA, measuring oxidative stress, collagen biosynthesis, inflammatory markers and migration in a wound-healing model",
+      "sampleSize": null,
+      "population": "Cultured human dermal fibroblasts (in vitro)",
+      "durationWeeks": null,
+      "testedSubject": "Squalane at 0.005-0.015%",
+      "testedConcentration": 0.015,
+      "endpoint": "UVA-induced oxidative stress, collagen biosynthesis, inflammation, fibroblast migration",
+      "resultsSummary": "At 0.005-0.015%, squalane counteracted UVA-induced inhibition of collagen biosynthesis and oxidative stress, counteracted the UVA-induced increase in NF-kB and COX-2 (suggesting anti-inflammatory activity), and stimulated fibroblast migration in a wound-healing model.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": null,
+      "limitations": "Cell-culture study only: no human skin, no clinical endpoint. Cannot substantiate any consumer-perceivable benefit on its own.",
+      "quality": "VERY_LOW",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "squalane"
       ]
     }
   ]

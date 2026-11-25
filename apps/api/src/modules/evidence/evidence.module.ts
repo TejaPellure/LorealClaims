@@ -5,9 +5,9 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PartialType } from '@nestjs/mapped-types';
 import {
-  BenefitCategory, EffectDirection, EvidenceScope, EvidenceType, Prisma, QualityRating, VerificationStatus,
+  EffectDirection, EvidenceScope, EvidenceType, Prisma, QualityRating, VerificationStatus,
 } from '@prisma/client';
-import { ArrayMinSize, IsArray, IsDateString, IsEnum, IsInt, IsNumber, IsOptional, IsString, IsUrl, IsUUID, Max, Min, MinLength } from 'class-validator';
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsDateString, IsEnum, IsInt, IsNumber, IsOptional, IsString, IsUrl, IsUUID, Max, MaxLength, Min, MinLength } from 'class-validator';
 import { Type } from 'class-transformer';
 import { randomUUID } from 'crypto';
 import type { Response } from 'express';
@@ -18,6 +18,7 @@ import { join } from 'path';
 import { APP_CONFIG, AppConfig, loadConfig } from '../../common/config';
 import { pageArgs, paged, PaginationQueryDto } from '../../common/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { normalizeBenefit } from '../assessments/engine/benefit-match';
 
 // ───────────────────────────── DTOs ─────────────────────────────
 
@@ -25,7 +26,8 @@ export class CreateEvidenceDto {
   @IsString() @MinLength(5) title: string;
   @IsEnum(EvidenceType) evidenceType: EvidenceType;
   @IsEnum(EvidenceScope) scope: EvidenceScope;
-  @IsArray() @ArrayMinSize(1) @IsEnum(BenefitCategory, { each: true }) benefitCategories: BenefitCategory[];
+  /** Benefit tags: presets or any custom benefit (normalised on save). */
+  @IsArray() @ArrayMinSize(1) @ArrayMaxSize(12) @IsString({ each: true }) @MaxLength(40, { each: true }) benefits: string[];
   @IsString() sourceName: string;
   @IsOptional() @IsString() doi?: string;
   @IsOptional() @IsString() pmid?: string;
@@ -58,6 +60,8 @@ export class EvidenceQueryDto extends PaginationQueryDto {
 }
 
 // ───────────────────────────── Service ─────────────────────────────
+
+const cleanBenefits = (benefits: string[]) => [...new Set(benefits.map(normalizeBenefit).filter(Boolean))];
 
 const PDF_MAGIC = '%PDF-';
 
@@ -99,10 +103,11 @@ export class EvidenceService {
   }
 
   create(dto: CreateEvidenceDto) {
-    const { ingredientIds = [], formulationIds = [], publishedAt, ...fields } = dto;
+    const { ingredientIds = [], formulationIds = [], publishedAt, benefits, ...fields } = dto;
     return this.prisma.evidence.create({
       data: {
         ...fields,
+        benefits: cleanBenefits(benefits),
         publishedAt: publishedAt ? new Date(publishedAt) : undefined,
         ingredientLinks: { create: ingredientIds.map((ingredientId) => ({ ingredientId })) },
         formulationLinks: { create: formulationIds.map((formulationId) => ({ formulationId })) },
@@ -113,12 +118,13 @@ export class EvidenceService {
 
   async update(id: string, dto: UpdateEvidenceDto) {
     await this.get(id);
-    const { ingredientIds, formulationIds, publishedAt, ...fields } = dto;
+    const { ingredientIds, formulationIds, publishedAt, benefits, ...fields } = dto;
     return this.prisma.evidence.update({
       where: { id },
       data: {
         ...fields,
         ...(publishedAt && { publishedAt: new Date(publishedAt) }),
+        ...(benefits && { benefits: cleanBenefits(benefits) }),
         // Replace link sets only when the client sends them.
         ...(ingredientIds && { ingredientLinks: { deleteMany: {}, create: ingredientIds.map((ingredientId) => ({ ingredientId })) } }),
         ...(formulationIds && { formulationLinks: { deleteMany: {}, create: formulationIds.map((formulationId) => ({ formulationId })) } }),

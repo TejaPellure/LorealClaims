@@ -8,7 +8,8 @@
 // it lives in the git-ignored .env). The bridge listens on 127.0.0.1 by default, runs the CLI with all tools
 // disabled (pure text-in / JSON-out) and never logs prompts.
 import { spawn } from 'node:child_process';
-import { readFileSync, existsSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { createServer } from 'node:http';
 import { timingSafeEqual } from 'node:crypto';
 import { dirname, join } from 'node:path';
@@ -70,36 +71,55 @@ const readBody = (req) =>
     req.on('error', reject);
   });
 
-/** Runs `claude -p` once and returns the parsed CLI JSON envelope. */
+/**
+ * Runs  once and returns the parsed CLI JSON envelope.
+ * - The prompt goes over stdin and the system prompt through a temp file, because Windows limits a command line to
+ *   about 32k characters and an evidence package plus playbook can exceed that.
+ * - The CLI runs in a fixed, empty working folder so it does not load any project instructions (CLAUDE.md, skills):
+ *   every evaluation uses exactly the system prompt the API sends.
+ */
+const WORK_DIR = join(tmpdir(), 'claims-intelligence-bridge');
+mkdirSync(WORK_DIR, { recursive: true });
+
 function runClaude({ prompt, systemPrompt, jsonSchema, model }) {
-  const args = ['-p', prompt, '--output-format', 'json', '--no-session-persistence', '--tools', ''];
-  if (systemPrompt) args.push('--append-system-prompt', systemPrompt);
+  const tempDir = mkdtempSync(join(WORK_DIR, 'run-'));
+  const args = ['-p', '--output-format', 'json', '--no-session-persistence', '--tools', ''];
+  if (systemPrompt) {
+    const file = join(tempDir, 'system.txt');
+    writeFileSync(file, systemPrompt, 'utf8');
+    args.push('--append-system-prompt-file', file);
+  }
   if (jsonSchema) args.push('--json-schema', JSON.stringify(jsonSchema));
   if (model) args.push('--model', model);
 
   return new Promise((resolve, reject) => {
     // shell:false + argument array => no shell injection through prompt text.
-    const child = spawn(CLAUDE_BIN, args, { stdio: ['ignore', 'pipe', 'pipe'], shell: false });
+    const child = spawn(CLAUDE_BIN, args, { stdio: ['pipe', 'pipe', 'pipe'], shell: false, cwd: WORK_DIR });
     let stdout = '';
     let stderr = '';
+    const cleanup = () => { try { rmSync(tempDir, { recursive: true, force: true }); } catch { /* temp files are harmless; never crash the bridge over them */ } };
     const timer = setTimeout(() => {
       child.kill();
+      cleanup();
       reject(Object.assign(new Error('claude CLI timed out'), { code: 'TIMEOUT' }));
     }, RUN_TIMEOUT_MS);
     child.stdout.on('data', (d) => (stdout += d));
     child.stderr.on('data', (d) => (stderr += d));
     child.on('error', (error) => {
       clearTimeout(timer);
+      cleanup();
       reject(error);
     });
     child.on('close', (code) => {
       clearTimeout(timer);
+      cleanup();
       try {
         resolve(JSON.parse(stdout));
       } catch {
         reject(new Error(`claude CLI exited with code ${code}: ${stderr.slice(0, 300) || 'no output'}`));
       }
     });
+    child.stdin.end(prompt);
   });
 }
 

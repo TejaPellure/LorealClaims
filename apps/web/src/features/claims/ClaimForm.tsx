@@ -1,28 +1,36 @@
 import { Loader2, Sparkles } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Field, Input, Select } from '@/components/ui/primitives';
-import { BENEFIT_CATEGORIES, humanize } from '@/lib/lib';
+import { BenefitChips } from '@/components/BenefitChips';
+import { Button, Field, Input, Select, Textarea } from '@/components/ui/primitives';
+import { detectTarget } from '@/lib/lib';
 import { api, errorText } from '@/services/api';
 import type { Assessment, Claim, Product } from '@/types';
 
 type Phase = { name: 'idle' } | { name: 'working'; step: 'saving' | 'evaluating' } | { name: 'failed'; claimId: string; message: string };
 
 /**
- * One short form. Submitting creates the claim and immediately sends it to Claude;
- * the user lands on the finished report. If Claude fails, the claim is kept and the evaluation can be retried.
+ * One short form. Only the claim wording is required: the description, benefit chips and the numbers are optional
+ * and Claude reads whatever is given, from the fields and from the free text. Submitting creates the claim and
+ * immediately sends it to Claude; the user lands on the finished report. If Claude fails the claim is kept and the
+ * evaluation can be retried.
  */
 export function ClaimForm({ products, initialProductId }: { products: Product[]; initialProductId?: string }) {
   const navigate = useNavigate();
   const [productId, setProductId] = useState(products.find((p) => p.id === initialProductId)?.id ?? products[0]?.id ?? '');
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('ANTI_WRINKLE');
+  const [description, setDescription] = useState('');
+  const [benefits, setBenefits] = useState<string[]>([]);
   const [target, setTarget] = useState('');
   const [weeks, setWeeks] = useState('');
-  const [population, setPopulation] = useState('Adults');
+  const [population, setPopulation] = useState('');
   const [phase, setPhase] = useState<Phase>({ name: 'idle' });
 
   const product = products.find((p) => p.id === productId);
+  // Numbers typed into the wording or description fill the optional fields when those are left empty.
+  const detected = detectTarget(`${title} ${description}`);
+  const detectedNote = [!target && detected.percent != null ? `${detected.percent}%` : null, !weeks && detected.weeks != null ? `${detected.weeks} weeks` : null].filter(Boolean).join(' in ');
+
   const evaluate = async (claimId: string) => {
     setPhase({ name: 'working', step: 'evaluating' });
     try {
@@ -36,13 +44,14 @@ export function ClaimForm({ products, initialProductId }: { products: Product[];
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     setPhase({ name: 'working', step: 'saving' });
+    const targetValue = target !== '' ? Number(target) : detected.percent;
+    const durationWeeks = weeks !== '' ? Number(weeks) : detected.weeks;
     try {
       const claim = await api.post<Claim>('/claims', {
-        productId, title, benefitCategory: category, targetValue: Number(target), durationWeeks: Number(weeks), targetPopulation: population,
+        productId, title, description, benefits, targetValue, durationWeeks, targetPopulation: population,
       });
       await evaluate(claim.id);
     } catch (e) {
-      setPhase({ name: 'idle' });
       setPhase({ name: 'failed', claimId: '', message: errorText(e) });
     }
   };
@@ -60,19 +69,31 @@ export function ClaimForm({ products, initialProductId }: { products: Product[];
   }
 
   return (
-    <form onSubmit={submit} className="space-y-5 p-6 sm:p-8">
-      <Field label="Claim wording">
-        <Input required minLength={5} maxLength={300} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Reduces wrinkle depth by 20% in 4 weeks" className="h-12 text-base" />
-      </Field>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <Field label="Product" className="lg:col-span-2">
-          <Select required value={productId} onChange={(e) => setProductId(e.target.value)}>{products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</Select>
+    <form onSubmit={submit} className="space-y-6 p-6 sm:p-8">
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Field label="Claim title" className="sm:col-span-2">
+          <Input required minLength={5} maxLength={300} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Reduces the look of pores by 20% in 4 weeks" className="h-12 text-base" />
         </Field>
-        <Field label="Benefit"><Select value={category} onChange={(e) => setCategory(e.target.value)}>{BENEFIT_CATEGORIES.map((c) => <option key={c} value={c}>{humanize(c)}</option>)}</Select></Field>
-        <Field label="Improvement (%)"><Input required type="number" min="0" step="0.1" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="20" /></Field>
-        <Field label="Within (weeks)"><Input required type="number" min="1" max="520" value={weeks} onChange={(e) => setWeeks(e.target.value)} placeholder="4" /></Field>
+        <Field label="Product">
+          <Select required value={productId} onChange={(e) => setProductId(e.target.value)} className="h-12">{products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</Select>
+        </Field>
       </div>
-      <Field label="Target population"><Input required minLength={2} value={population} onChange={(e) => setPopulation(e.target.value)} placeholder="Women with facial wrinkles" /></Field>
+
+      <Field label="Description" hint="Optional. Say more in your own words: who it is for, how it is used, what exactly changes.">
+        <Textarea value={description} onChange={(e) => setDescription(e.target.value)} maxLength={2000} rows={3} placeholder="Used twice daily on oily, blemish-prone skin; visibly smaller-looking pores and less shine." />
+      </Field>
+
+      <BenefitChips value={benefits} onChange={setBenefits} label="Benefits" hint="Optional. Pick any, or add your own." />
+
+      <div>
+        <p className="mb-2 text-xs font-medium text-slate-700">Details <span className="font-normal text-slate-500">Optional. Claude also reads your title and description.</span></p>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Field label="Improvement (%)"><Input type="number" min="0" step="0.1" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="20" /></Field>
+          <Field label="Within (weeks)"><Input type="number" min="1" max="520" value={weeks} onChange={(e) => setWeeks(e.target.value)} placeholder="4" /></Field>
+          <Field label="Target population"><Input value={population} onChange={(e) => setPopulation(e.target.value)} placeholder="Adults with oily skin" /></Field>
+        </div>
+        {detectedNote && <p className="mt-2 text-xs text-teal-700">Read from your text: {detectedNote}. This will be used unless you fill the field.</p>}
+      </div>
 
       {product && (
         <p className="rounded-xl bg-slate-100 px-4 py-3 text-xs text-slate-600">

@@ -10,7 +10,7 @@ product name + ingredients   wording + benefit + target + weeks   Claude's evalu
 
 | Original step | Now |
 |---|---|
-| Business proposes product and claim | You type the product name and the claim wording |
+| Business proposes product and claim | You type the product name, then the claim: a title, optionally a description and benefit chips (presets or your own), and the numbers you know |
 | Claim manager checks applicability and feasibility | Claude's report states whether the evidence supports the claim as worded, and what is missing |
 | Scientist formulates | Formulate page, with live 100% validation |
 | Evaluator attaches evidence | Evidence library: add studies, upload PDFs, link them to ingredients and to the products they tested |

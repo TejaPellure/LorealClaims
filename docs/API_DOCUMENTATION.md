@@ -15,13 +15,13 @@ Base URL: `http://localhost:3000/api`. JSON in/out.
 `GET /ingredients` (`q`, `category`, `status`) · `GET /ingredients/:id` · `POST /ingredients` · `PATCH /ingredients/:id` · `GET /ingredients/:id/evidence`
 
 ## Evidence
-`GET /evidence` (`q`, `evidenceType`, `scope`, `status`, `ingredientId`) · `GET /evidence/:id` · `POST /evidence` (with `ingredientIds`, `formulationIds`) · `PATCH /evidence/:id` · `POST /evidence/:id/upload` (multipart `file`; PDF only; size limit `MAX_UPLOAD_MB`; signature checked) · `GET /evidence/:id/download`
+`GET /evidence` (`q`, `evidenceType`, `scope`, `status`, `ingredientId`) · `GET /evidence/:id` · `POST /evidence` (with `benefits` tags, `ingredientIds`, `formulationIds`) · `PATCH /evidence/:id` · `POST /evidence/:id/upload` (multipart `file`; PDF only; size limit `MAX_UPLOAD_MB`; signature checked) · `GET /evidence/:id/download`
 
 ## Products
 `GET /products` (`q`) · `GET /products/:id` · `POST /products` with `{ name, ingredients: [{ ingredientId, percentage }] }`. The product and its formulation are created together; the composition must total exactly 100% (tolerance 0.001) with no duplicates, otherwise 400 with details.
 
 ## Claims
-`GET /claims` (`q`, `productId`) · `GET /claims/:id` · `POST /claims` with `{ productId, title, benefitCategory, targetValue, durationWeeks, targetPopulation, measurementUnit? }`. The server uses the product's formulation and derives the measurement endpoint from the benefit category.
+`GET /claims` (`q`, `productId`) · `GET /claims/:id` · `POST /claims` with `{ productId, title, description?, benefits?, targetValue?, durationWeeks?, targetPopulation?, measurementUnit? }`. Only `productId` and `title` are required; blank strings count as missing. `benefits` are tags (presets such as `acne-blemishes` or any custom text, normalised to lower-case hyphenated tags). The server uses the product's formulation.
 
 ## Assessments
 | Method | Path | Notes |

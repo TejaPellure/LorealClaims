@@ -14,8 +14,8 @@ const referenceData = JSON.parse(readFileSync(join(__dirname, '../../../prisma/s
 describe('reference dataset and seeding', () => {
   it('is a valid dataset with at least 10 ingredients and real, traceable evidence', () => {
     expect(() => validateReferenceData(referenceData)).not.toThrow();
-    expect(referenceData.ingredients.length).toBeGreaterThanOrEqual(10);
-    expect(referenceData.evidence.length).toBeGreaterThanOrEqual(5);
+    expect(referenceData.ingredients.length).toBeGreaterThanOrEqual(15);
+    expect(referenceData.evidence.length).toBeGreaterThanOrEqual(25);
   });
 
   it('contains only verified, source-backed evidence (no sample or fictitious records)', () => {
@@ -24,6 +24,14 @@ describe('reference dataset and seeding', () => {
       expect(e.doi || e.pmid).toBeTruthy();
       expect(e.title).not.toMatch(/demo|mock|sample/i);
     }
+  });
+
+  it('has evidence behind every verified ingredient, and benefit tags on every study', () => {
+    const withEvidence = new Set(referenceData.evidence.flatMap((e: any) => e.ingredientKeys));
+    for (const ing of referenceData.ingredients) expect(ing.status === 'VERIFIED' ? withEvidence.has(ing.key) : true).toBe(true);
+    for (const e of referenceData.evidence) expect(e.benefits.length).toBeGreaterThan(0);
+    const niacinamide = referenceData.evidence.filter((e: any) => e.ingredientKeys.includes('niacinamide')).flatMap((e: any) => e.benefits);
+    expect(niacinamide).toEqual(expect.arrayContaining(['acne-blemishes', 'oil-control', 'pores', 'anti-wrinkle', 'anti-pigmentation']));
   });
 
   it('rejects evidence that cannot be traced to a source or references a missing ingredient', () => {
@@ -93,10 +101,12 @@ describe('HTTP API (services mocked)', () => {
   });
 
   it('POST /api/claims validates the claim fields', async () => {
-    await request(app.getHttpServer()).post('/api/claims').send({ productId: id, title: 'x', benefitCategory: 'MAGIC', targetValue: -1, durationWeeks: 0, targetPopulation: '' }).expect(400);
+    await request(app.getHttpServer()).post('/api/claims').send({ productId: id, title: 'x', benefits: 'not-an-array', targetValue: -1, durationWeeks: 0 }).expect(400);
     claims.create.mockResolvedValue({ id: 'c1' });
-    const ok = { productId: id, title: 'Reduces wrinkle depth by 20% in 4 weeks', benefitCategory: 'ANTI_WRINKLE', targetValue: 20, durationWeeks: 4, targetPopulation: 'Adults' };
+    const ok = { productId: id, title: 'Reduces wrinkle depth by 20% in 4 weeks', benefits: ['anti-wrinkle', 'my own benefit'], targetValue: 20, durationWeeks: 4, targetPopulation: 'Adults' };
     await request(app.getHttpServer()).post('/api/claims').send(ok).expect(201);
+    // Only title and product are required; blank strings count as missing.
+    await request(app.getHttpServer()).post('/api/claims').send({ productId: id, title: 'Makes skin look calmer and fresher', description: '', targetValue: '', durationWeeks: '' }).expect(201);
     expect(claims.create).toHaveBeenCalledWith(expect.objectContaining({ title: ok.title, durationWeeks: 4 }));
   });
 

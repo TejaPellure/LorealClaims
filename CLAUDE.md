@@ -4,14 +4,14 @@
 Scientists build a product formula, state a claim, and Claude evaluates whether the evidence library supports it. **Decision support only; never regulatory approval.** Everything is real: there is no mock AI, no demo data, no fake workflow.
 
 ## Flow
-Formulate (product + ingredients = 100%) -> Claim (auto-evaluated by Claude) -> Result report. No review stage, no claim statuses, no personas, no formulation versions: a product is always new and has one immutable formulation.
+Formulate (product + ingredients = 100%) -> Claim (title required; description, benefit chips, numbers optional; auto-evaluated by Claude) -> Result report (History button lists past claims). No review stage, no claim statuses, no personas, no formulation versions: a product is always new and has one immutable formulation.
 
 ## Architecture (keep it this light)
 One NestJS app (REST `/api`) + one PostgreSQL + one compiled React SPA served by NestJS. Prisma ORM. No microservices, Redis, vector DB or agent frameworks. The only extra process is the host-side Claude bridge (`apps/claude-bridge`), which wraps `claude -p`.
 
 ```
 apps/api/src/modules/{ingredients,evidence,products,claims,assessments}
-apps/api/src/modules/assessments/engine/  retrieval, scoring, prompt, ai-schema, guardrails, providers (Claude), pipeline
+apps/api/src/modules/assessments/engine/  retrieval, benefit-match, scoring, playbook, prompt, ai-schema, guardrails, providers (Claude), pipeline
 apps/api/src/common/                      config, error filter, pagination, Decimal interceptor, health
 apps/web/src/{pages,features,components,hooks,services,types,layouts,lib}
 apps/claude-bridge/server.mjs             `claude -p` as authenticated HTTP (host process, zero deps)

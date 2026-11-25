@@ -2,9 +2,10 @@ import { useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
 import { Button, Dialog, Field, FormError, Input, Select, Textarea } from '@/components/ui/primitives';
 import { useAsync, useFormState } from '@/hooks/hooks';
-import { BENEFIT_CATEGORIES, EVIDENCE_TYPES, humanize } from '@/lib/lib';
+import { BenefitChips } from '@/components/BenefitChips';
+import { EVIDENCE_TYPES, humanize } from '@/lib/lib';
 import { api, errorText } from '@/services/api';
-import type { BenefitCategory, Ingredient, Paged, Product } from '@/types';
+import type { Ingredient, Paged, Product } from '@/types';
 
 const EMPTY = {
   title: '', evidenceType: 'CLINICAL_STUDY', scope: 'INGREDIENT', sourceName: '', doi: '', pmid: '', sourceUrl: '', publishedAt: '', studyDesign: '',
@@ -19,7 +20,7 @@ export function EvidenceFormDialog({ open, onClose, onSaved }: { open: boolean; 
 
 function EvidenceForm({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
   const { values, bind } = useFormState(EMPTY);
-  const [categories, setCategories] = useState<BenefitCategory[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [ingredientIds, setIngredientIds] = useState<string[]>([]);
   const [formulationIds, setFormulationIds] = useState<string[]>([]);
   const [file, setFile] = useState<File | null>(null);
@@ -34,12 +35,12 @@ function EvidenceForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!categories.length) return setError('Select at least one benefit category the study measures.');
+    if (!categories.length) return setError('Choose at least one benefit the study measured (or add your own).');
     setSaving(true);
     setError(null);
     try {
       const created = await api.post<{ id: string }>('/evidence', {
-        title: values.title, evidenceType: values.evidenceType, scope: values.scope, benefitCategories: categories, sourceName: values.sourceName,
+        title: values.title, evidenceType: values.evidenceType, scope: values.scope, benefits: categories, sourceName: values.sourceName,
         doi: optionalText(values.doi), pmid: optionalText(values.pmid), sourceUrl: optionalText(values.sourceUrl),
         publishedAt: optionalText(values.publishedAt), studyDesign: values.studyDesign, sampleSize: optionalNumber(values.sampleSize),
         population: values.population, durationWeeks: optionalNumber(values.durationWeeks), testedSubject: values.testedSubject,
@@ -89,11 +90,7 @@ function EvidenceForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =
           <Select {...bind('status')}><option value="VERIFIED">Verified against the source</option><option value="UNVERIFIED">Not verified yet</option></Select>
         </Field>
 
-        <fieldset className="sm:col-span-2"><legend className="mb-1 text-xs font-medium text-slate-700">Benefit categories measured *</legend>
-          <div className="flex flex-wrap gap-3">{BENEFIT_CATEGORIES.map((c) => (
-            <label key={c} className="flex items-center gap-1.5 text-sm"><input type="checkbox" checked={categories.includes(c)} onChange={() => toggle(categories, c, setCategories)} />{humanize(c)}</label>
-          ))}</div>
-        </fieldset>
+        <div className="sm:col-span-2"><BenefitChips value={categories} onChange={setCategories} label="Benefits measured *" hint="Pick the benefits this study measured, or add your own." /></div>
         <fieldset className="sm:col-span-2"><legend className="mb-1 text-xs font-medium text-slate-700">Related ingredients</legend>
           <div className="grid max-h-32 grid-cols-2 gap-1 overflow-y-auto rounded-md border border-slate-200 p-2 sm:grid-cols-3">{ingredients.data?.items.map((i) => (
             <label key={i.id} className="flex items-center gap-1.5 text-sm"><input type="checkbox" checked={ingredientIds.includes(i.id)} onChange={() => toggle(ingredientIds, i.id, setIngredientIds)} />{i.name}</label>

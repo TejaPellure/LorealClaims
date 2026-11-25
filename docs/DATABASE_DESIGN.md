@@ -9,14 +9,14 @@ UUID primary keys, enums for statuses, `Decimal` for scientific values (`Decimal
 | Model | Purpose | Notes |
 |---|---|---|
 | `Ingredient` | Library | unique `inciName`; optional sourced `min/maxConcentration`; `VERIFIED/UNVERIFIED` |
-| `Evidence` | Study record | `scope` INGREDIENT/FINISHED_PRODUCT; `benefitCategories[]`; unique `doi`, `pmid`; `effectDirection`; optional `effectMagnitude`; `studyDesign` holds design and methods |
+| `Evidence` | Study record | `scope` INGREDIENT/FINISHED_PRODUCT; `benefits[]` (tags); unique `doi`, `pmid`; `effectDirection`; optional `effectMagnitude`; `studyDesign` holds design and methods |
 | `IngredientEvidence` | Ingredient <-> evidence (M:N) | composite PK |
 | `FormulationEvidence` | Finished-product evidence <-> the formulation it tested (M:N) | composite PK |
 | `UploadedDocument` | PDF metadata | unique server-generated `storedName` |
 | `Product` | Product name | always new |
 | `Formulation` | A product's composition | immutable once created |
 | `FormulationIngredient` | Line items | unique `(formulationId, ingredientId)`; `percentage` Decimal; `position` |
-| `Claim` | Claim wording + structured fields | bound to one formulation; endpoint derived from `benefitCategory` |
+| `Claim` | Claim wording + optional description, `benefits[]`, `targetValue`, `durationWeeks`, `targetPopulation` | bound to one formulation; only the wording is required |
 | `Assessment` | Claude's result | `model`, prompt/rubric versions, `verdict`, `evidenceScore`, `scoreBreakdown`, `aiResult`, `guardrailNotes`, `inputHash`, three snapshots |
 | `AssessmentEvidence` | Evidence used + role | composite PK; SUPPORTING/CONTRADICTORY/CONTEXT; `relevanceScore` |
 

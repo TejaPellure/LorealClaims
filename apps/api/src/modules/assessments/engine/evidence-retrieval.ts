@@ -1,17 +1,22 @@
 // Structured evidence retrieval: plain PostgreSQL filtering + metadata matching (no vector search in the MVP).
 import { EvidenceRole, PrismaClient } from '@prisma/client';
+import { claimConcepts, studyMatchesClaim } from './benefit-match';
 import { computeFactors } from './scoring';
 import { ClaimInput, EvidenceCandidate, EvidenceRelation, FormulationInput } from './types';
 
-/** Cap on records sent to the model; the most relevant ones win. */
-export const MAX_EVIDENCE_IN_PACKAGE = 12;
+/** Caps on what is sent to the model; the most relevant records win. */
+export const MAX_MATCHING_EVIDENCE = 14;
+const MAX_CONTEXT_EVIDENCE = 4;
+/** When nothing in the claim is recognisable we show more context and let Claude judge relevance itself. */
+const MAX_CONTEXT_EVIDENCE_UNRECOGNISED_CLAIM = 8;
 
 /**
  * Finds evidence that could bear on the claim:
  *  1. studies linked to any ingredient in the formulation,
- *  2. finished-product studies linked directly to this formulation version,
+ *  2. finished-product studies linked directly to this formulation,
  * restricted to records that are not UNVERIFIED, then classified and scored against the claim.
- * Evidence on other endpoints is kept only when it is a finished-product study of THIS version (as context).
+ * Studies about the claimed benefit are SUPPORTING/CONTRADICTORY; the rest are kept as a few CONTEXT records so
+ * Claude can still judge claims worded in ways the keyword matcher does not recognise.
  */
 export async function retrieveEvidence(
   prisma: PrismaClient,
@@ -41,8 +46,7 @@ export async function retrieveEvidence(
     const linkedToThisFormulation = record.formulationLinks.some((l) => l.formulationId === formulation.id);
     const relation: EvidenceRelation =
       record.scope === 'FINISHED_PRODUCT' ? (linkedToThisFormulation ? 'FINISHED_EXACT' : 'FINISHED_OTHER') : 'INGREDIENT';
-    const categoryMatch = record.benefitCategories.includes(claim.benefitCategory as never);
-    if (!categoryMatch && relation !== 'FINISHED_EXACT') continue; // irrelevant to this claim
+    const categoryMatch = studyMatchesClaim(claim, record);
 
     // Concentration of the study's ingredient in THIS formulation (highest if several are linked).
     const linkedPercentages = record.ingredientLinks
@@ -69,9 +73,13 @@ export async function retrieveEvidence(
     });
   }
 
-  // Keep the most relevant evidence; contradictory records are never dropped in favour of supporting ones.
+  // Matching evidence first (contradictory records are never dropped in favour of supporting ones),
+  // then a few context records, best quality first.
   const byFit = (a: EvidenceCandidate, b: EvidenceCandidate) => b.factors.fit - a.factors.fit;
-  const contradictory = candidates.filter((c) => c.role === 'CONTRADICTORY').sort(byFit);
-  const others = candidates.filter((c) => c.role !== 'CONTRADICTORY').sort(byFit);
-  return [...contradictory, ...others].slice(0, MAX_EVIDENCE_IN_PACKAGE);
+  const matching = candidates.filter((c) => c.categoryMatch);
+  const contradictory = matching.filter((c) => c.role === 'CONTRADICTORY').sort(byFit);
+  const supporting = matching.filter((c) => c.role !== 'CONTRADICTORY').sort(byFit);
+  const contextLimit = claimConcepts(claim).size ? MAX_CONTEXT_EVIDENCE : MAX_CONTEXT_EVIDENCE_UNRECOGNISED_CLAIM;
+  const context = candidates.filter((c) => !c.categoryMatch).sort((a, b) => b.factors.quality - a.factors.quality).slice(0, contextLimit);
+  return [...contradictory, ...supporting].slice(0, MAX_MATCHING_EVIDENCE).concat(context);
 }

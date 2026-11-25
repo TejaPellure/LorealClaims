@@ -1,33 +1,45 @@
 # Research and assumptions
 
 ## Method
-Bibliographic records were looked up through PubMed E-utilities on 2026-11-25. Only DOI/PMID values returned by PubMed were used, and each summary restates only what the abstract says (no numbers beyond the abstract). Where the abstract gave no number, the field is empty.
+Bibliographic records were looked up through PubMed E-utilities on 2026-11-25. Only DOI/PMID values returned by PubMed were used, and each summary restates only what the abstract says. A number (concentration, duration, sample size, effect) is entered only when the abstract states it; otherwise the field is empty. `effectMagnitude` (a reported % improvement) is set only where the abstract gives a percentage reduction (currently the niacinamide acne study, -60% papules/pustules). Quality ratings (HIGH/MODERATE/LOW/VERY_LOW) are a curator's preliminary appraisal, not a formal risk-of-bias assessment.
 
-## Evidence in the library (6 real publications)
-| PMID | Reference | Role |
+## Library: 16 ingredients, 29 verified studies
+
+| Ingredient | Studies (PMID) | What they cover |
 |---|---|---|
-| 16029679 (doi 10.1111/j.1524-4725.2005.31732) | Bissett et al., *Dermatol Surg* 2005: 5% niacinamide vs vehicle, 12 weeks, n=50, split-face | Ingredient evidence (wrinkles, elasticity) |
-| 22052267 | Pavicic et al., *J Drugs Dermatol* 2011: 0.1% hyaluronan creams of different molecular weights, 60 days, n=76 | Ingredient evidence (hydration, wrinkles) |
-| 16209160 | Draelos et al., *Cutis* 2005: niacinamide-containing moisturizer, rosacea, 4 weeks, n=50 | Finished product of a different formulation |
-| 24688623 | Jegasothy et al., *J Clin Aesthet Dermatol* 2014: nano-hyaluronic acid range, 8 weeks, n=33 | Finished product, different formulation; "up to" results flagged as best case |
-| 22507050 (doi 10.1016/j.clindermatol.2011.08.018) | Draelos, *Clin Dermatol* 2012: review of barrier repair creams | Ceramide / hyaluronate background (qualitative) |
-| 37276158 (doi 10.36849/JDD.7142) | Draelos et al., *J Drugs Dermatol* 2023: ceramide routine during acne treatment, TEWL, 12 weeks | Ceramide finished product (acne population) |
+| Niacinamide | 16029679, 16209160, 7657446, 16766489, 12100180, 21822427 | Wrinkles/elasticity (5%, 12 wk), rosacea barrier (finished product), acne (4% gel, 8 wk, papules/pustules -60%), sebum (2%, 4-6 wk), pigmentation (5%, 4 wk) and melasma (4%, 8 wk) |
+| Glycerin | 18510666, 10598752 | Review of hydration/barrier effects; barrier recovery after damage |
+| Sodium hyaluronate | 22052267, 24688623, 22507050 | 0.1% by molecular weight (hydration, wrinkles); nano-HA product range; barrier-cream review |
+| Panthenol | 21982351, 29577586 | 1-5% over 30 days (TEWL), 7-11 wt% over 48 h (hydration) |
+| Ceramide NP | 22507050, 37276158, 33984185, 30410378 | Barrier-cream review; ceramide routine in acne treatment and in eczema; single-application hydration |
+| Cholesterol | 9308554 | Cholesterol-dominant lipid mixture, barrier recovery in aged skin (n=6) |
+| Squalane | 40363772 | In-vitro only (human fibroblasts, 0.005-0.015%): the only squalane study found, so VERY_LOW |
+| Tocopherol | 16029671, 27559512 | Two vitamin E reviews (antioxidant, photoprotection, barrier) |
+| Phenoxyethanol | 31588615 | Safety review: safe as a preservative up to 1% |
+| Retinol | 17515510, 20078381 | 0.4% (24 wk) and 0.075% (26 wk) wrinkle studies |
+| Salicylic acid | 1535287, 36999489 | 0.5-2% acne review; serum + mask RCT (acne, pores, sebum, 8 wk) |
+| Ascorbic acid | 23741676, 18503551 | Vitamin C review; 5% vitamin C + madecassoside in photoaged skin (6 months) |
+| Urea | 24314769 | Review of 81 clinical publications (xerosis, dry skin) |
+| Azelaic acid | 1712709 | 20% cream review (acne, melasma) |
+| Purified water, xanthan gum | none | Vehicle and texturiser. No efficacy studies exist to attach, so they stay `UNVERIFIED` and contribute no evidence |
 
-Quality ratings (HIGH/MODERATE/LOW) are a curator's preliminary appraisal, not a formal risk-of-bias assessment.
+An ingredient is `VERIFIED` only when at least one such study or regulatory source is attached. Reference concentration ranges are recorded only where a source supports them (phenoxyethanol, EU Regulation 1223/2009 Annex V: maximum 1.0% as a preservative) and are never treated as proof of safety or efficacy.
 
-None of these studies tested a formula built in this app, so for the user's own products the engine will mostly find ingredient-level or other-formulation evidence. That is the honest answer, and it is why verdicts are mostly "Inconclusive" until the user adds finished-product evidence.
+Most records are ingredient-level. The finished-product studies (niacinamide moisturizer in rosacea, nano-hyaluronic range, three ceramide routines/creams, the salicylic acid serum) tested **other formulations**, so they count as "different formulation" evidence for anything built in this app.
 
-## Ingredients (11)
-Purified water, glycerin, niacinamide, sodium hyaluronate, panthenol, ceramide NP, cholesterol, squalane, tocopherol, phenoxyethanol, xanthan gum: enough to build serums and a barrier cream. Niacinamide and sodium hyaluronate (PubMed-backed) and phenoxyethanol (EU Regulation 1223/2009, Annex V: maximum 1.0% as a preservative) are marked `VERIFIED`; the others are general descriptions marked `UNVERIFIED`. A reference concentration range is recorded only where a source supports it (phenoxyethanol), and is never treated as proof of safety or efficacy.
+## What this means for verdicts
+Because no study tested a formula built here, the guardrail (a SUPPORTED verdict needs finished-product evidence of the same formula) keeps most verdicts at **Inconclusive**, with a score showing how close the ingredient evidence is. To change that, add a finished-product study for the product in the Evidence library (link it to the product), then evaluate again. The matched ingredient studies still drive the score, the reasoning and the recommended tests.
 
 ## Assumptions
 - A finished-product study applies to the exact formulation it is linked to; for any other formula it is "different formulation" evidence.
 - Ingredient-level studies never prove a finished-product claim on their own.
 - A study longer than the claimed timeframe does not prove the benefit already appears at the claimed time.
-- Unknown values (concentration, duration, magnitude) are scored conservatively.
+- Unknown values (concentration, duration, effect size) are scored conservatively; a claim that leaves a field blank gets neutral credit for it.
 - `UNVERIFIED` evidence is excluded from assessments.
-- A claimed percentage is compared with a reported effect size only when the unit is `%` and the source stated the effect.
+- A claimed percentage is compared with a reported effect only when the unit is `%` and the source stated the effect.
+- Benefit matching is keyword-based (see AI_ASSESSMENT_ENGINE.md); unusual wording falls back to Claude's own judgement over a few context records.
 - The scoring weights are initial heuristics and need validation by a domain expert.
+- Wording that implies treating a disease (for example "treats acne") may be a medicinal rather than cosmetic claim in many markets. The playbook asks Claude to flag this and suggest cosmetic wording; it does not state specific laws.
 
 ## Verification status
-`docker compose up --build` was run end to end on 2026-11-25 (Docker 29.2.1): migrations apply, the seed loads 11 ingredients and 6 studies, the app serves on :3000 as a non-root user, and a claim submitted through the browser was evaluated by real Claude (model `sonnet`, through the bridge) and saved. 55 API tests pass.
+The full stack was run with `docker compose up --build`, and claims submitted through the browser were evaluated by real Claude (model `sonnet`, through the host bridge) and saved. 65 API tests pass.

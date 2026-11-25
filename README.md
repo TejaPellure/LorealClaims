@@ -7,10 +7,10 @@ Formulate a cosmetic product, write the claim you want to make, and **Claude eva
 ## The flow (3 steps)
 
 1. **Formulate**: type a product name, add ingredients (drag or click Add), set concentrations so they total 100%, save.
-2. **Claim**: write the claim, pick the product, benefit, target %, weeks and population. Submitting sends it to Claude immediately.
+2. **Claim**: write a claim title (the only required field), optionally a description, benefit chips (pick presets or add your own) and the numbers you know (improvement %, weeks, population). Claude reads the title, the description and the fields together. Submitting sends it to Claude immediately. Earlier claims are behind the **History** button.
 3. **Result**: the report shows the verdict (Supported / Not supported / Inconclusive), a transparent 0-100 evidence score, Claude's reasoning, strengths, limitations, missing evidence, recommended tests and the exact studies used.
 
-Plus two libraries: **Ingredients** (11 ingredients) and **Evidence** (6 real, PubMed-verified studies; add your own and upload PDFs).
+Plus two libraries: **Ingredients** (16) and **Evidence** (29 real, PubMed-verified studies, at least one for every ingredient that has any; add your own and upload PDFs). When you evaluate a claim, Claude is given the evidence for the ingredients in your formula, so a niacinamide product claiming fewer pimples or smaller pores is judged against the real niacinamide acne and sebum studies.
 
 ## Technology
 
@@ -63,8 +63,8 @@ docker compose down -v     # DELETE all data (fresh start, reseeds)
 ## About the data
 
 `prisma/seed-data/reference-data.json`:
-- **Evidence**: 6 real publications. DOI/PMID were checked against PubMed on 2026-11-25 and summaries restate only what each abstract says. None of these studies tested *your* formulas, so most claims will correctly come back **Inconclusive** until finished-product evidence for your formula is added in the Evidence library (link it to the product).
-- **Ingredients**: general descriptions; only those with an attached source are marked Verified.
+- **Evidence**: 29 real publications. DOI/PMID were checked against PubMed on 2026-11-25 and summaries restate only what each abstract says (numbers only where the abstract gives them). None of these studies tested *your* formulas, so most claims will correctly come back **Inconclusive** (with a score showing how close the ingredient evidence is) until finished-product evidence for your formula is added in the Evidence library and linked to the product.
+- **Ingredients**: 16, general descriptions. An ingredient is Verified when it has at least one attached study or regulatory source. Purified water and xanthan gum are vehicle ingredients with no efficacy studies, so they stay unverified.
 
 See [docs/RESEARCH_AND_ASSUMPTIONS.md](docs/RESEARCH_AND_ASSUMPTIONS.md).
 

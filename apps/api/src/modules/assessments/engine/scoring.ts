@@ -20,6 +20,8 @@ const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
 const UNKNOWN_CONCENTRATION = 0.5;
 const UNKNOWN_DURATION = 0.3;
 const UNKNOWN_MAGNITUDE = 0.7;
+/** The claim itself leaves a field blank (timeframe, population): neutral credit. */
+const UNKNOWN_CLAIM_FIELD = 0.5;
 
 /**
  * Formulated vs tested concentration.
@@ -39,7 +41,8 @@ export function concentrationFactor(relation: EvidenceRelation, tested: number |
  * Shorter study: proportional. Within +25% : full credit.
  * Much longer study: 0.6, because a benefit shown at 12 weeks does not show it already exists at 4 weeks.
  */
-export function durationFactor(evidenceWeeks: number | null, claimWeeks: number): number {
+export function durationFactor(evidenceWeeks: number | null, claimWeeks: number | null): number {
+  if (claimWeeks == null) return UNKNOWN_CLAIM_FIELD; // the claim names no timeframe: cannot match or mismatch it
   if (evidenceWeeks == null) return UNKNOWN_DURATION;
   const ratio = evidenceWeeks / claimWeeks;
   if (ratio < 1) return clamp01(ratio);
@@ -49,9 +52,9 @@ export function durationFactor(evidenceWeeks: number | null, claimWeeks: number)
 /** Endpoint family match, scaled by reported effect size when both sides are percentages. */
 export function endpointFactor(categoryMatch: boolean, claim: Pick<ClaimInput, 'targetValue' | 'measurementUnit'>, magnitude: number | null) {
   if (!categoryMatch) return { value: 0, shortfall: false };
-  const comparable = claim.measurementUnit.includes('%') && claim.targetValue > 0;
+  const comparable = claim.measurementUnit.includes('%') && claim.targetValue != null && claim.targetValue > 0;
   if (magnitude == null || !comparable) return { value: UNKNOWN_MAGNITUDE, shortfall: false };
-  const ratio = magnitude / claim.targetValue;
+  const ratio = magnitude! / claim.targetValue!;
   return { value: clamp01(ratio), shortfall: ratio < 1 };
 }
 
@@ -65,7 +68,8 @@ const tokens = (text: string) =>
   );
 
 /** Share of the claim's target-population keywords that also appear in the study population. */
-export function populationFactor(claimPopulation: string, studyPopulation: string): number {
+export function populationFactor(claimPopulation: string | null, studyPopulation: string): number {
+  if (!claimPopulation?.trim()) return UNKNOWN_CLAIM_FIELD;
   const claimTokens = tokens(claimPopulation);
   if (claimTokens.size === 0) return UNKNOWN_CONCENTRATION;
   const studyTokens = tokens(studyPopulation);

@@ -20,9 +20,6 @@ CREATE TYPE "QualityRating" AS ENUM ('HIGH', 'MODERATE', 'LOW', 'VERY_LOW');
 CREATE TYPE "EffectDirection" AS ENUM ('POSITIVE', 'NEUTRAL', 'NEGATIVE');
 
 -- CreateEnum
-CREATE TYPE "BenefitCategory" AS ENUM ('HYDRATION', 'ANTI_WRINKLE', 'BARRIER_REPAIR', 'BRIGHTENING', 'SOOTHING', 'OTHER');
-
--- CreateEnum
 CREATE TYPE "Verdict" AS ENUM ('SUPPORTED', 'NOT_SUPPORTED', 'INCONCLUSIVE');
 
 -- CreateEnum
@@ -58,7 +55,7 @@ CREATE TABLE "Evidence" (
     "title" TEXT NOT NULL,
     "evidenceType" "EvidenceType" NOT NULL,
     "scope" "EvidenceScope" NOT NULL,
-    "benefitCategories" "BenefitCategory"[],
+    "benefits" TEXT[],
     "sourceName" TEXT NOT NULL,
     "doi" TEXT,
     "pmid" TEXT,
@@ -150,12 +147,12 @@ CREATE TABLE "Claim" (
     "productId" TEXT NOT NULL,
     "formulationId" TEXT NOT NULL,
     "title" TEXT NOT NULL,
-    "benefitCategory" "BenefitCategory" NOT NULL,
-    "measurementEndpoint" TEXT NOT NULL,
-    "targetValue" DECIMAL(8,2) NOT NULL,
+    "description" TEXT,
+    "benefits" TEXT[],
+    "targetValue" DECIMAL(8,2),
     "measurementUnit" TEXT NOT NULL DEFAULT '%',
-    "durationWeeks" INTEGER NOT NULL,
-    "targetPopulation" TEXT NOT NULL,
+    "durationWeeks" INTEGER,
+    "targetPopulation" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

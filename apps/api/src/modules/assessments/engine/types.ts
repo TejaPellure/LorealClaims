@@ -56,18 +56,18 @@ export interface EvidenceCandidate {
 export interface ClaimInput {
   id: string;
   title: string; // the claim wording
-  benefitCategory: string;
-  measurementEndpoint: string;
-  targetValue: number;
+  description: string | null;
+  benefits: string[];
+  targetValue: number | null;
   measurementUnit: string;
-  durationWeeks: number;
-  targetPopulation: string;
+  durationWeeks: number | null;
+  targetPopulation: string | null;
 }
 
 export interface FormulationInput {
   id: string;
   productName: string;
-  ingredients: { ingredientId: string; name: string; inciName: string; percentage: number }[];
+  ingredients: { ingredientId: string; name: string; inciName: string; percentage: number; function: string; minConcentration: number | null; maxConcentration: number | null }[];
 }
 
 export interface CriterionScore {

@@ -61,15 +61,6 @@ enum EffectDirection {
   NEGATIVE
 }
 
-enum BenefitCategory {
-  HYDRATION
-  ANTI_WRINKLE
-  BARRIER_REPAIR
-  BRIGHTENING
-  SOOTHING
-  OTHER
-}
-
 enum Verdict {
   SUPPORTED
   NOT_SUPPORTED
@@ -117,7 +108,7 @@ model Evidence {
   title               String
   evidenceType        EvidenceType
   scope               EvidenceScope
-  benefitCategories   BenefitCategory[] // endpoint families, used for deterministic matching
+  benefits            String[] // benefit tags (e.g. hydration, acne-blemishes), used for deterministic matching
   sourceName          String
   doi                 String?            @unique
   pmid                String?            @unique
@@ -236,18 +227,18 @@ model FormulationIngredient {
 // ───────────────────────────── Claims & assessments ─────────────────────────────
 
 model Claim {
-  id                  String          @id @default(uuid())
-  productId           String
-  formulationId       String
-  title               String // the claim wording, e.g. "Reduces wrinkle depth by 20% in 4 weeks"
-  benefitCategory     BenefitCategory
-  measurementEndpoint String // derived from the benefit category
-  targetValue         Decimal         @db.Decimal(8, 2) // expected improvement, e.g. 20
-  measurementUnit     String          @default("%")
-  durationWeeks       Int
-  targetPopulation    String
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
+  id               String   @id @default(uuid())
+  productId        String
+  formulationId    String
+  title            String // the claim wording, e.g. "Reduces wrinkle depth by 20% in 4 weeks"
+  description      String? // optional free-text detail; Claude reads it together with the structured fields
+  benefits         String[] // benefit chips: presets or user-defined (optional)
+  targetValue      Decimal? @db.Decimal(8, 2) // expected improvement, e.g. 20 (optional)
+  measurementUnit  String   @default("%")
+  durationWeeks    Int? // optional
+  targetPopulation String? // optional
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   product     Product      @relation(fields: [productId], references: [id], onDelete: Restrict)
   formulation Formulation  @relation(fields: [formulationId], references: [id], onDelete: Restrict)

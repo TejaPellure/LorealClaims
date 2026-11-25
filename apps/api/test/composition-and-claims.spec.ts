@@ -42,23 +42,19 @@ describe('formulation percentage validation', () => {
 });
 
 describe('claim readiness validation', () => {
-  const completeClaim = {
-    title: 'Claim', benefitCategory: 'HYDRATION', measurementEndpoint: 'e', targetValue: 10, measurementUnit: '%', durationWeeks: 4, targetPopulation: 'adults',
-  };
   const validFormulation = { ingredients: [line('a', 10), line('b', 90)] };
 
-  it('passes a complete claim with a valid formulation', () => {
-    expect(validateClaimReadiness(completeClaim, validFormulation)).toEqual([]);
+  it('needs only the wording and a valid formulation: every other claim field is optional', () => {
+    expect(validateClaimReadiness({ title: 'Makes skin look calmer' }, validFormulation)).toEqual([]);
   });
 
-  it('reports a missing formulation and missing fields', () => {
-    const problems = validateClaimReadiness({ ...completeClaim, measurementEndpoint: '' }, null);
-    expect(problems.join(' ')).toMatch(/measurementEndpoint/);
+  it('reports missing wording and a missing formulation', () => {
+    const problems = validateClaimReadiness({ title: '  ' }, null);
+    expect(problems.join(' ')).toMatch(/missing its wording/);
     expect(problems.join(' ')).toMatch(/not linked to a formulation/);
   });
 
-  it('blocks submission when the formulation does not total 100%', () => {
-    const problems = validateClaimReadiness(completeClaim, { ingredients: [line('a', 40)] });
-    expect(problems.join(' ')).toMatch(/Under-allocated/);
+  it('blocks assessment when the formulation does not total 100%', () => {
+    expect(validateClaimReadiness({ title: 'Claim wording' }, { ingredients: [line('a', 40)] }).join(' ')).toMatch(/Under-allocated/);
   });
 });

@@ -46,6 +46,8 @@ export class InvalidAiResponseError extends Error {
 const VERDICTS: Verdict[] = ['SUPPORTED', 'NOT_SUPPORTED', 'INCONCLUSIVE'];
 const MAX_TEXT = 6000;
 const MAX_ITEMS = 25;
+/** Models sometimes write the two characters backslash + n instead of a line break. */
+const cleanText = (value: string) => value.replace(/\\n/g, '\n').trim();
 
 export function validateAiAssessment(raw: unknown, evidence: EvidenceCandidate[]): AiAssessment {
   const problems: string[] = [];
@@ -58,7 +60,7 @@ export function validateAiAssessment(raw: unknown, evidence: EvidenceCandidate[]
   const text = (field: string): string => {
     const value = obj[field];
     if (typeof value !== 'string' || !value.trim()) problems.push(`"${field}" must be a non-empty string`);
-    return typeof value === 'string' ? value.trim().slice(0, MAX_TEXT) : '';
+    return typeof value === 'string' ? cleanText(value).slice(0, MAX_TEXT) : '';
   };
   const strings = (field: string): string[] => {
     const value = obj[field];
@@ -66,7 +68,7 @@ export function validateAiAssessment(raw: unknown, evidence: EvidenceCandidate[]
       problems.push(`"${field}" must be an array of strings`);
       return [];
     }
-    return value.slice(0, MAX_ITEMS).map((v: string) => v.trim().slice(0, MAX_TEXT)).filter(Boolean);
+    return value.slice(0, MAX_ITEMS).map((v: string) => cleanText(v).slice(0, MAX_TEXT)).filter(Boolean);
   };
   /** Notes must cite real evidence IDs, and (optionally) only evidence of the right kind. */
   const notes = (field: string, allowed: (e: EvidenceCandidate) => boolean, rule: string): EvidenceNote[] => {
@@ -84,7 +86,7 @@ export function validateAiAssessment(raw: unknown, evidence: EvidenceCandidate[]
         if (candidate) problems.push(`"${field}[${index}]" needs a note`);
         return [];
       }
-      return [{ evidenceId: candidate.id, note: entry.note.trim().slice(0, MAX_TEXT) }];
+      return [{ evidenceId: candidate.id, note: cleanText(entry.note).slice(0, MAX_TEXT) }];
     });
   };
 

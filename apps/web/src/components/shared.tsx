@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { Badge, Button, Dialog, ErrorState, Skeleton } from '@/components/ui/primitives';
 import { QualityBadge, ScopeBadge, VerificationBadge } from '@/components/badges';
 import { useAsync } from '@/hooks/hooks';
-import { cn, formatDate, humanize } from '@/lib/lib';
+import { benefitLabel, cn, formatDate, humanize } from '@/lib/lib';
 import { api } from '@/services/api';
 import type { Evidence } from '@/types';
 
@@ -70,6 +70,7 @@ export function EvidenceDetailDialog({ evidenceId, onClose }: { evidenceId: stri
             <Badge>{humanize(data.evidenceType)}</Badge>
           </div>
           <dl>
+            <Detail label="Benefits measured">{data.benefits.map(benefitLabel).join(", ")}</Detail>
             <Detail label="Source">{data.sourceName}</Detail>
             <Detail label="DOI">{data.doi && <a className="inline-flex items-center gap-1 text-teal-700 hover:underline" href={`https://doi.org/${data.doi}`} target="_blank" rel="noreferrer noopener">{data.doi}<ExternalLink className="h-3 w-3" /></a>}</Detail>
             <Detail label="PMID">{data.pmid && <a className="inline-flex items-center gap-1 text-teal-700 hover:underline" href={`https://pubmed.ncbi.nlm.nih.gov/${data.pmid}/`} target="_blank" rel="noreferrer noopener">{data.pmid}<ExternalLink className="h-3 w-3" /></a>}</Detail>

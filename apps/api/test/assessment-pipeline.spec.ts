@@ -13,11 +13,11 @@ function fakePrisma(opts: { evidence?: unknown[]; existing?: { id: string } | nu
   const created: any[] = [];
   const [first, second] = opts.ingredientPercentages ?? [10, 90];
   const claim = {
-    id: 'claim-1', title: 'Increases hydration by 25% in 4 weeks', benefitCategory: 'HYDRATION', measurementEndpoint: 'Skin hydration (corneometry)',
+    id: 'claim-1', title: 'Increases hydration by 25% in 4 weeks', description: null, benefits: ['hydration'],
     targetValue: dec(25), measurementUnit: '%', durationWeeks: 4, targetPopulation: 'Adults with dry skin', productId: 'p1', formulationId: 'f1', product: { name: 'Serum' },
     formulation: { id: 'f1', ingredients: [
-      { ingredientId: 'i1', percentage: dec(first), ingredient: { name: 'Glycerin', inciName: 'Glycerin' } },
-      { ingredientId: 'i2', percentage: dec(second), ingredient: { name: 'Water', inciName: 'Aqua' } },
+      { ingredientId: 'i1', percentage: dec(first), ingredient: { name: 'Glycerin', inciName: 'Glycerin', primaryFunction: 'Humectant', minConcentration: null, maxConcentration: null } },
+      { ingredientId: 'i2', percentage: dec(second), ingredient: { name: 'Water', inciName: 'Aqua', primaryFunction: 'Solvent', minConcentration: null, maxConcentration: null } },
     ] },
   };
   const prisma: any = {
@@ -32,7 +32,7 @@ function fakePrisma(opts: { evidence?: unknown[]; existing?: { id: string } | nu
 }
 
 const evidenceRecord = (over: Record<string, unknown> = {}) => ({
-  id: 'ev-exact', title: 'Finished product hydration study', evidenceType: 'FINISHED_PRODUCT_TRIAL', scope: 'FINISHED_PRODUCT', benefitCategories: ['HYDRATION'],
+  id: 'ev-exact', title: 'Finished product hydration study', evidenceType: 'FINISHED_PRODUCT_TRIAL', scope: 'FINISHED_PRODUCT', benefits: ['hydration'],
   sourceName: 's', doi: null, pmid: null, publishedAt: new Date('2026-01-01'), studyDesign: 'RCT', sampleSize: 40, population: 'Adults with dry skin', durationWeeks: 4,
   testedSubject: 'Serum', testedConcentration: null, endpoint: 'Hydration', resultsSummary: 'r', effectDirection: 'POSITIVE', effectMagnitude: dec(32), limitations: 'l',
   quality: 'MODERATE', status: 'VERIFIED',
@@ -49,8 +49,8 @@ const claudeAnswer = (over: Record<string, unknown> = {}) => ({
 const fakeClaude = (payload: unknown): AssessmentProvider & { generate: jest.Mock } => ({ generate: jest.fn().mockResolvedValue({ payload, model: 'claude-test', raw: { ok: true } }) });
 
 describe('evidence retrieval classifies ingredient vs finished-product evidence', () => {
-  const claim = claimInput({ benefitCategory: 'HYDRATION', targetPopulation: 'Adults with dry skin', durationWeeks: 4, targetValue: 25 });
-  const formulation = { id: 'f1', productName: 'Serum', ingredients: [{ ingredientId: 'i1', name: 'Glycerin', inciName: 'Glycerin', percentage: 10 }] };
+  const claim = claimInput({ title: 'Increases hydration by 25% in 4 weeks', benefits: ['hydration'], targetPopulation: 'Adults with dry skin', durationWeeks: 4, targetValue: 25 });
+  const formulation = { id: 'f1', productName: 'Serum', ingredients: [{ ingredientId: 'i1', name: 'Glycerin', inciName: 'Glycerin', percentage: 10, function: 'Humectant', minConcentration: null, maxConcentration: null }] };
 
   it('marks a study linked to this formulation as FINISHED_EXACT, another formula as FINISHED_OTHER, and ingredient studies as INGREDIENT', async () => {
     const { prisma } = fakePrisma({
@@ -58,7 +58,7 @@ describe('evidence retrieval classifies ingredient vs finished-product evidence'
         evidenceRecord(),
         evidenceRecord({ id: 'ev-other', formulationLinks: [{ formulationId: 'other-formulation' }] }),
         evidenceRecord({ id: 'ev-ing', scope: 'INGREDIENT', formulationLinks: [], testedConcentration: dec(5), effectMagnitude: dec(18) }),
-        evidenceRecord({ id: 'ev-offtopic', scope: 'INGREDIENT', formulationLinks: [], benefitCategories: ['ANTI_WRINKLE'] }),
+        evidenceRecord({ id: 'ev-offtopic', scope: 'INGREDIENT', formulationLinks: [], benefits: ['anti-wrinkle'], title: 'Wrinkle depth study', endpoint: 'Wrinkle depth' }),
       ],
     });
     const result = await retrieveEvidence(prisma, claim, formulation);
@@ -67,7 +67,9 @@ describe('evidence retrieval classifies ingredient vs finished-product evidence'
     expect(byId['ev-other'].relation).toBe('FINISHED_OTHER');
     expect(byId['ev-ing'].relation).toBe('INGREDIENT');
     expect(byId['ev-ing'].formulatedConcentration).toBe(10);
-    expect(byId['ev-offtopic']).toBeUndefined(); // different endpoint and not this formula: irrelevant
+    // A study of another benefit is kept only as CONTEXT, never as support or contradiction.
+    expect(byId['ev-offtopic'].role).toBe('CONTEXT');
+    expect(byId['ev-offtopic'].categoryMatch).toBe(false);
   });
 
   it('classifies neutral results as contradictory and never drops them for supporting ones', async () => {
