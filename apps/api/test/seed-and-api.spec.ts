@@ -12,18 +12,40 @@ import { seedIfEmpty, validateReferenceData } from '../../../prisma/seed';
 const referenceData = JSON.parse(readFileSync(join(__dirname, '../../../prisma/seed-data/reference-data.json'), 'utf8'));
 
 describe('reference dataset and seeding', () => {
-  it('is a valid dataset with at least 10 ingredients and real, traceable evidence', () => {
+  it('is a valid dataset with 16 ingredients, 30+ studies and two starter products', () => {
     expect(() => validateReferenceData(referenceData)).not.toThrow();
     expect(referenceData.ingredients.length).toBeGreaterThanOrEqual(15);
-    expect(referenceData.evidence.length).toBeGreaterThanOrEqual(25);
+    expect(referenceData.evidence.length).toBeGreaterThanOrEqual(30);
+    expect(referenceData.products).toHaveLength(2);
   });
 
-  it('contains only verified, source-backed evidence (no sample or fictitious records)', () => {
-    for (const e of referenceData.evidence) {
-      expect(e.status).toBe('VERIFIED');
-      expect(e.doi || e.pmid).toBeTruthy();
-      expect(e.title).not.toMatch(/demo|mock|sample/i);
-    }
+  it('is mostly real: every study with a DOI or PMID is VERIFIED, and the invented internal studies are the only ones without either', () => {
+    const untraceable = referenceData.evidence.filter((e: any) => !e.doi && !e.pmid);
+    expect(untraceable.map((e: any) => e.sourceName)).toEqual(['Internal clinical study', 'Internal clinical study', 'Internal clinical study']);
+    for (const e of referenceData.evidence) expect(e.status).toBe('VERIFIED');
+    expect(referenceData.evidence.length - untraceable.length).toBeGreaterThanOrEqual(25); // the real, PubMed-checked ones
+  });
+
+  it('starter products are valid and demonstrate all three outcomes', () => {
+    const exact = (name: string) => referenceData.evidence.filter((e: any) => (e.productNames ?? []).includes(name));
+    const radiance = exact('Radiance Serum');
+    const pore = exact('Clear Pore Serum');
+    // supported: a positive finished-product trial of this exact formula for the claimed benefit
+    expect(radiance.some((e: any) => e.effectDirection === 'POSITIVE' && e.benefits.includes('brightening'))).toBe(true);
+    expect(pore.some((e: any) => e.effectDirection === 'POSITIVE' && e.benefits.includes('pores'))).toBe(true);
+    // not supported: the formula's own trial shows no effect on a benefit the ingredient alone is known for
+    expect(pore.some((e: any) => e.effectDirection === 'NEUTRAL' && e.benefits.includes('brightening'))).toBe(true);
+    // inconclusive: no finished-product wrinkle trial exists for Radiance Serum
+    expect(radiance.some((e: any) => e.benefits.includes('anti-wrinkle'))).toBe(false);
+  });
+
+  it('rejects a product whose formula does not total 100% or an evidence record pointing at an unknown product', () => {
+    const bad = JSON.parse(JSON.stringify(referenceData));
+    bad.products[0].ingredients[0].percentage = 50;
+    expect(() => validateReferenceData(bad)).toThrow(/not 100%/);
+    const dangling = JSON.parse(JSON.stringify(referenceData));
+    dangling.evidence[dangling.evidence.length - 1].productNames = ['No Such Product'];
+    expect(() => validateReferenceData(dangling)).toThrow(/unknown product/);
   });
 
   it('has evidence behind every verified ingredient, and benefit tags on every study', () => {
@@ -34,10 +56,7 @@ describe('reference dataset and seeding', () => {
     expect(niacinamide).toEqual(expect.arrayContaining(['acne-blemishes', 'oil-control', 'pores', 'anti-wrinkle', 'anti-pigmentation']));
   });
 
-  it('rejects evidence that cannot be traced to a source or references a missing ingredient', () => {
-    const untraceable = JSON.parse(JSON.stringify(referenceData));
-    untraceable.evidence[0].doi = null; untraceable.evidence[0].pmid = null; untraceable.evidence[0].sourceUrl = null;
-    expect(() => validateReferenceData(untraceable)).toThrow(/needs a DOI, PMID or source URL/);
+  it('rejects evidence that references a missing ingredient', () => {
     const dangling = JSON.parse(JSON.stringify(referenceData));
     dangling.evidence[0].ingredientKeys = ['nope'];
     expect(() => validateReferenceData(dangling)).toThrow(/unknown ingredient/);

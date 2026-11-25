@@ -1,6 +1,6 @@
 {
   "meta": {
-    "notice": "Evidence records are real publications whose DOI/PMID were checked against PubMed on 2026-11-25; summaries restate only what each abstract says and numbers are included only when the abstract states them. An ingredient is marked VERIFIED only when at least one such study or regulatory source is attached; water and xanthan gum are vehicle/texturiser ingredients with no efficacy studies in this library."
+    "notice": "Most evidence records are real publications whose DOI/PMID were checked against PubMed on 2026-11-25. This is a proof of concept: the products Radiance Serum and Clear Pore Serum and the three internal studies of them (no DOI/PMID) are invented so that every verdict can be demonstrated. They are listed in docs/RESEARCH_AND_ASSUMPTIONS.md."
   },
   "ingredients": [
     {
@@ -1303,6 +1303,154 @@
       "status": "VERIFIED",
       "ingredientKeys": [
         "squalane"
+      ]
+    },
+    {
+      "key": "ev-4-week-vehicle-controlled-brightening-tr",
+      "title": "4-week vehicle-controlled brightening trial of Radiance Serum",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL",
+      "scope": "FINISHED_PRODUCT",
+      "benefits": [
+        "brightening",
+        "anti-pigmentation"
+      ],
+      "sourceName": "Internal clinical study",
+      "publishedAt": "2026-01-15",
+      "studyDesign": "Randomised, double-blind, vehicle-controlled study, serum applied twice daily for 4 weeks, skin tone evenness and brightness measured by colorimetry",
+      "sampleSize": 60,
+      "population": "Adults with uneven skin tone",
+      "durationWeeks": 4,
+      "testedSubject": "Radiance Serum (this exact formulation)",
+      "testedConcentration": null,
+      "endpoint": "Skin tone evenness and brightness (colorimetry)",
+      "resultsSummary": "skin tone evenness and brightness improved by 28% from baseline at week 4, significantly more than vehicle (p<0.01).",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": 28,
+      "limitations": "Single-site internal study; independent replication is advisable.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "niacinamide"
+      ],
+      "productNames": [
+        "Radiance Serum"
+      ]
+    },
+    {
+      "key": "ev-8-week-pore-and-blemish-trial-of-clear-p",
+      "title": "8-week pore and blemish trial of Clear Pore Serum",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL",
+      "scope": "FINISHED_PRODUCT",
+      "benefits": [
+        "pores",
+        "acne-blemishes",
+        "oil-control"
+      ],
+      "sourceName": "Internal clinical study",
+      "publishedAt": "2026-02-10",
+      "studyDesign": "Randomised, double-blind, vehicle-controlled study, serum applied twice daily for 8 weeks, pore appearance by image analysis, blemish counts and sebum excretion",
+      "sampleSize": 80,
+      "population": "Adults with oily, blemish-prone skin",
+      "durationWeeks": 8,
+      "testedSubject": "Clear Pore Serum (this exact formulation)",
+      "testedConcentration": null,
+      "endpoint": "Visible pore appearance (image analysis), blemish counts, sebum",
+      "resultsSummary": "visible pore appearance was reduced by 32% and blemish counts fell significantly versus vehicle at week 8; sebum excretion was also significantly lower.",
+      "effectDirection": "POSITIVE",
+      "effectMagnitude": 32,
+      "limitations": "Single-site internal study; independent replication is advisable.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "niacinamide",
+        "salicylic-acid"
+      ],
+      "productNames": [
+        "Clear Pore Serum"
+      ]
+    },
+    {
+      "key": "ev-skin-tone-and-brightness-results-from-th",
+      "title": "Skin tone and brightness results from the 8-week Clear Pore Serum trial",
+      "evidenceType": "FINISHED_PRODUCT_TRIAL",
+      "scope": "FINISHED_PRODUCT",
+      "benefits": [
+        "brightening",
+        "anti-pigmentation"
+      ],
+      "sourceName": "Internal clinical study",
+      "publishedAt": "2026-02-10",
+      "studyDesign": "Secondary endpoint of the same randomised, vehicle-controlled 8-week trial: skin tone evenness and brightness by colorimetry",
+      "sampleSize": 80,
+      "population": "Adults with oily, blemish-prone skin",
+      "durationWeeks": 8,
+      "testedSubject": "Clear Pore Serum (this exact formulation)",
+      "testedConcentration": null,
+      "endpoint": "Skin tone evenness and brightness (colorimetry)",
+      "resultsSummary": "no statistically significant change in skin tone evenness or brightness versus vehicle at week 4 or week 8. The serum improved pores and blemishes but not brightness.",
+      "effectDirection": "NEUTRAL",
+      "effectMagnitude": null,
+      "limitations": "Single-site internal study; independent replication is advisable.",
+      "quality": "MODERATE",
+      "status": "VERIFIED",
+      "ingredientKeys": [
+        "niacinamide",
+        "salicylic-acid"
+      ],
+      "productNames": [
+        "Clear Pore Serum"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "name": "Radiance Serum",
+      "ingredients": [
+        {
+          "ingredient": "niacinamide",
+          "percentage": 5
+        },
+        {
+          "ingredient": "glycerin",
+          "percentage": 5
+        },
+        {
+          "ingredient": "panthenol",
+          "percentage": 1
+        },
+        {
+          "ingredient": "sodium-hyaluronate",
+          "percentage": 0.3
+        },
+        {
+          "ingredient": "aqua",
+          "percentage": 88.7
+        }
+      ]
+    },
+    {
+      "name": "Clear Pore Serum",
+      "ingredients": [
+        {
+          "ingredient": "niacinamide",
+          "percentage": 4
+        },
+        {
+          "ingredient": "salicylic-acid",
+          "percentage": 0.5
+        },
+        {
+          "ingredient": "glycerin",
+          "percentage": 4
+        },
+        {
+          "ingredient": "sodium-hyaluronate",
+          "percentage": 0.3
+        },
+        {
+          "ingredient": "aqua",
+          "percentage": 91.2
+        }
       ]
     }
   ]

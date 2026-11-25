@@ -7,7 +7,8 @@ description: Evidence provenance, ingredient vs finished-product evidence, asses
 
 ## Provenance
 - A record is `VERIFIED` only when its bibliographic data was checked against a public source (PubMed, DOI, publisher page). Summaries restate what the abstract says and nothing more. `UNVERIFIED` evidence is excluded from assessments.
-- Never invent DOIs, PMIDs, results, effect sizes, regulatory limits or evidence IDs, and never add sample or fictitious evidence. If a number is not in the source, leave it `null`.
+- Never invent DOIs, PMIDs, results, effect sizes, regulatory limits or evidence IDs, and never present invented evidence as a real publication. If a number is not in the source, leave it `null`.
+- Proof-of-concept exception: three invented "Internal clinical study" records (no DOI/PMID) and two starter products exist in `reference-data.json` so all three verdicts can be demonstrated; the app header shows a PoC tag and docs/RESEARCH_AND_ASSUMPTIONS.md lists them. Record any addition there.
 
 ## Evidence relations (computed in `evidence-retrieval.ts`)
 | Relation | Meaning | May support a SUPPORTED verdict? |

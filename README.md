@@ -64,6 +64,16 @@ docker compose down -v     # DELETE all data (fresh start, reseeds)
 
 `prisma/seed-data/reference-data.json`:
 - **Evidence**: 29 real publications. DOI/PMID were checked against PubMed on 2026-11-25 and summaries restate only what each abstract says (numbers only where the abstract gives them). None of these studies tested *your* formulas, so most claims will correctly come back **Inconclusive** (with a score showing how close the ingredient evidence is) until finished-product evidence for your formula is added in the Evidence library and linked to the product.
+- **Proof-of-concept data**: the app header carries a **PoC** tag because part of the library is invented so that every verdict can be demonstrated: two starter products (Radiance Serum, Clear Pore Serum) and three "internal clinical study" records of those exact formulas, which have no DOI or PMID. Everything else is real. The invented records are listed in [docs/RESEARCH_AND_ASSUMPTIONS.md](docs/RESEARCH_AND_ASSUMPTIONS.md). Try these claims:
+
+  | Product | Claim | Expected |
+  |---|---|---|
+  | Radiance Serum | Brightens and evens skin tone by 20% in 4 weeks | **Supported**: a finished-product trial of this exact formula shows 28% in 4 weeks |
+  | Radiance Serum | Reduces wrinkle depth by 15% in 8 weeks | **Inconclusive**: only ingredient-level wrinkle studies, no trial of this formula |
+  | Clear Pore Serum | Reduces the look of pores by 25% in 8 weeks | **Supported**: its trial shows 32% |
+  | Clear Pore Serum | Brightens skin tone by 20% in 4 weeks | **Not supported**: its own trial found no brightness change, even though niacinamide alone has brightening studies |
+
+  Claude makes the final call, so wording and verdicts can vary slightly.
 - **Ingredients**: 16, general descriptions. An ingredient is Verified when it has at least one attached study or regulatory source. Purified water and xanthan gum are vehicle ingredients with no efficacy studies, so they stay unverified.
 
 See [docs/RESEARCH_AND_ASSUMPTIONS.md](docs/RESEARCH_AND_ASSUMPTIONS.md).

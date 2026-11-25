@@ -1,7 +1,7 @@
 # CLAUDE.md - Claims Intelligence
 
 ## Purpose
-Scientists build a product formula, state a claim, and Claude evaluates whether the evidence library supports it. **Decision support only; never regulatory approval.** Everything is real: there is no mock AI, no demo data, no fake workflow.
+Scientists build a product formula, state a claim, and Claude evaluates whether the evidence library supports it. **Decision support only; never regulatory approval.** This is a proof of concept (the header shows a PoC tag). The AI is real; the library is mostly real PubMed-verified evidence, plus two starter products and three invented "internal clinical study" records in `prisma/seed-data/reference-data.json` so all three verdicts can be demonstrated. There is no mock AI and no fake workflow.
 
 ## Flow
 Formulate (product + ingredients = 100%) -> Claim (title required; description, benefit chips, numbers optional; auto-evaluated by Claude) -> Result report (History button lists past claims). No review stage, no claim statuses, no personas, no formulation versions: a product is always new and has one immutable formulation.
@@ -45,7 +45,7 @@ Edit `prisma/schema.prisma`, then `npx prisma migrate dev --name <change>` (need
 ## Scientific evidence rules (never violate)
 1. Ingredient evidence does **not** prove a finished-product benefit.
 2. Distinguish ingredient-level, finished-product (this formula), other-formulation, different-concentration and contradictory evidence.
-3. Never fabricate studies, DOIs, PMIDs, results or evidence IDs; never add sample/fictitious evidence. Missing evidence is stated.
+3. Never fabricate studies, DOIs, PMIDs, results or evidence IDs. The only invented evidence is the PoC set listed in docs/RESEARCH_AND_ASSUMPTIONS.md (source "Internal clinical study", no DOI/PMID); do not add more without recording it there. Missing evidence is stated.
 4. Missing evidence is not proof a claim is false: use INCONCLUSIVE.
 5. The score is computed by backend rules (`engine/scoring.ts`), labelled a prototype rubric, never presented as a probability.
 6. Claude's output passes `validateAiAssessment` and `applyGuardrails` before saving. SUPPORTED requires a finished-product study of this exact formula.

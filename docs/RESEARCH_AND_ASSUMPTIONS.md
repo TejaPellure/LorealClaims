@@ -3,7 +3,7 @@
 ## Method
 Bibliographic records were looked up through PubMed E-utilities on 2026-11-25. Only DOI/PMID values returned by PubMed were used, and each summary restates only what the abstract says. A number (concentration, duration, sample size, effect) is entered only when the abstract states it; otherwise the field is empty. `effectMagnitude` (a reported % improvement) is set only where the abstract gives a percentage reduction (currently the niacinamide acne study, -60% papules/pustules). Quality ratings (HIGH/MODERATE/LOW/VERY_LOW) are a curator's preliminary appraisal, not a formal risk-of-bias assessment.
 
-## Library: 16 ingredients, 29 verified studies
+## Library: 16 ingredients, 29 real studies (+3 invented, see below)
 
 | Ingredient | Studies (PMID) | What they cover |
 |---|---|---|
@@ -26,6 +26,12 @@ Bibliographic records were looked up through PubMed E-utilities on 2026-11-25. O
 An ingredient is `VERIFIED` only when at least one such study or regulatory source is attached. Reference concentration ranges are recorded only where a source supports them (phenoxyethanol, EU Regulation 1223/2009 Annex V: maximum 1.0% as a preservative) and are never treated as proof of safety or efficacy.
 
 Most records are ingredient-level. The finished-product studies (niacinamide moisturizer in rosacea, nano-hyaluronic range, three ceramide routines/creams, the salicylic acid serum) tested **other formulations**, so they count as "different formulation" evidence for anything built in this app.
+
+## Proof-of-concept data (invented)
+This is a proof of concept, so the library mixes real and invented records without distinguishing them in the UI; the app header carries a **PoC** tag instead. The invented records are:
+- Products: **Radiance Serum** (niacinamide 5%, glycerin 5%, panthenol 1%, sodium hyaluronate 0.3%, water 88.7%) and **Clear Pore Serum** (niacinamide 4%, salicylic acid 0.5%, glycerin 4%, sodium hyaluronate 0.3%, water 91.2%).
+- Three "Internal clinical study" records (source "Internal clinical study", no DOI or PMID): a 4-week brightening trial of Radiance Serum (28%), an 8-week pore and blemish trial of Clear Pore Serum (32%), and the skin-tone result of that same trial (no significant change).
+They are not research and must not be cited. They exist only to demonstrate Supported (a trial of the exact formula backs the claim), Not supported (the formula's own trial shows no effect on a benefit the ingredient alone is known for) and Inconclusive (only ingredient-level evidence). Everything else in the library is a real, PubMed-checked publication.
 
 ## What this means for verdicts
 Because no study tested a formula built here, the guardrail (a SUPPORTED verdict needs finished-product evidence of the same formula) keeps most verdicts at **Inconclusive**, with a score showing how close the ingredient evidence is. To change that, add a finished-product study for the product in the Evidence library (link it to the product), then evaluate again. The matched ingredient studies still drive the score, the reasoning and the recommended tests.

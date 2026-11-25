@@ -30,4 +30,4 @@ Product 1-N Formulation 1-N FormulationIngredient N-1 Ingredient. Formulation 1-
 `Assessment.inputHash` = SHA-256 of claim + formulation + evidence package + prompt version + weights. Identical inputs return the stored assessment.
 
 ## Seeding
-`prisma/seed.ts` validates `seed-data/reference-data.json` (no duplicate keys, every ingredient reference resolves, every evidence record has a DOI, PMID or URL), checks that ingredients and evidence are both empty, and inserts in one transaction. It never updates or deletes. Products, claims and assessments are created only by users.
+`prisma/seed.ts` validates `seed-data/reference-data.json` (no duplicate keys, every ingredient reference resolves, every evidence record has a DOI, PMID or URL), checks that ingredients and evidence are both empty, and inserts in one transaction. It never updates or deletes. Two starter products with their formulations are seeded together with the evidence (finished-product studies link to the exact formulation). Claims and assessments are created only by users.

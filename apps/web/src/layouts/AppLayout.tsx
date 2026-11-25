@@ -19,16 +19,19 @@ export default function AppLayout() {
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-700 text-white"><Hexagon className="h-4.5 w-4.5" aria-hidden /></span>
             <span className="font-display text-xl font-semibold tracking-tight text-slate-900">Claims <em className="font-medium text-teal-700">Intelligence</em></span>
           </Link>
-          <nav aria-label="Main" className="flex items-center gap-1">
-            {NAV.map(({ to, label, end }) => (
-              <NavLink
-                key={to} to={to} end={end}
-                className={({ isActive }) => cn('rounded-full px-4 py-2 text-sm font-medium transition-colors', isActive ? 'bg-teal-700 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')}
-              >
-                {label}
-              </NavLink>
-            ))}
-          </nav>
+          <div className="flex items-center gap-3">
+            <nav aria-label="Main" className="flex items-center gap-1">
+              {NAV.map(({ to, label, end }) => (
+                <NavLink
+                  key={to} to={to} end={end}
+                  className={({ isActive }) => cn('rounded-full px-4 py-2 text-sm font-medium transition-colors', isActive ? 'bg-teal-700 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')}
+                >
+                  {label}
+                </NavLink>
+              ))}
+            </nav>
+            <span className="rounded-full border border-rose-brand px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-700" title="Proof of concept: some evidence in this library is invented for demonstration">PoC</span>
+          </div>
         </div>
       </header>
       <main className="mx-auto w-full max-w-7xl flex-1 px-5 py-10 sm:px-8"><Outlet /></main>
