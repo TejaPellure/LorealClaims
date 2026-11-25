@@ -1,7 +1,7 @@
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { AlertTriangle, CheckCircle2, GripVertical, Scale, Trash2 } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, GripVertical, Trash2 } from 'lucide-react';
 import { Badge, Button, Input, Progress } from '@/components/ui/primitives';
 import { cn, compositionOf, humanize } from '@/lib/lib';
 import type { Ingredient } from '@/types';
@@ -34,15 +34,13 @@ function Row({ line, selected, readOnly, onSelect, onChange, onRemove }: {
 }
 
 /** Droppable composition canvas with live percentage validation. */
-export function FormulationCanvas({ lines, selectedId, readOnly, onSelect, onChange, onRemove, onBalance }: {
+export function FormulationCanvas({ lines, selectedId, readOnly, onSelect, onChange, onRemove }: {
   lines: CanvasLine[]; selectedId: string | null; readOnly: boolean; onSelect: (id: string) => void;
-  onChange: (id: string, value: string) => void; onRemove: (id: string) => void; onBalance: () => void;
+  onChange: (id: string, value: string) => void; onRemove: (id: string) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: 'canvas' });
   const { total, remaining, status } = compositionOf(lines.map((l) => Number(l.percentage)));
   const tone = status === 'VALID' ? 'green' : status === 'OVER' ? 'red' : 'amber';
-  const hasBase = lines.some((l) => l.ingredient.category === 'BASE');
-  const hasEmpty = lines.some((l) => !(Number(l.percentage) > 0));
 
   return (
     <section className="flex min-w-0 flex-col rounded-lg border border-slate-200 bg-white" aria-label="Formulation canvas">
@@ -70,9 +68,6 @@ export function FormulationCanvas({ lines, selectedId, readOnly, onSelect, onCha
           <span className="font-semibold text-slate-900">Total {total}%</span>
           <span className="text-slate-600">Remaining {remaining}%</span>
           <Badge tone={tone}>{status === 'VALID' ? <><CheckCircle2 className="h-3 w-3" aria-hidden />Valid: totals 100%</> : status === 'OVER' ? <><AlertTriangle className="h-3 w-3" aria-hidden />Over-allocated</> : status === 'UNDER' ? <><AlertTriangle className="h-3 w-3" aria-hidden />Under-allocated</> : 'Empty'}</Badge>
-          {!readOnly && (hasBase || hasEmpty) && status !== 'VALID' && lines.length > 1 && (
-            <Button variant="secondary" size="sm" className="ml-auto" onClick={onBalance} title="Shares the unassigned percentage between ingredients that have no concentration yet. If all have one, water takes the difference."><Scale className="h-4 w-4" />Balance to 100%</Button>
-          )}
         </div>
         <Progress value={total} tone={status === 'VALID' ? 'green' : status === 'OVER' ? 'red' : 'amber'} />
         {status === 'OVER' && <p className="text-xs text-red-700">Over-allocation: reduce concentrations by {Math.abs(remaining)}% to submit.</p>}
