@@ -8,18 +8,17 @@ import { ClaimForm } from '@/features/claims/ClaimForm';
 import { useAsync } from '@/hooks/hooks';
 import { benefitLabel, cn, formatDate } from '@/lib/lib';
 import { api } from '@/services/api';
-import type { Claim, Paged, Product } from '@/types';
 
 /** One-line summary of a claim's optional numbers, e.g. "20% in 4 wk". */
-const targetSummary = (c: Claim) => [c.targetValue != null ? `${c.targetValue}${c.measurementUnit}` : null, c.durationWeeks != null ? `in ${c.durationWeeks} wk` : null].filter(Boolean).join(' ');
+const targetSummary = (c) => [c.targetValue != null ? `${c.targetValue}${c.measurementUnit}` : null, c.durationWeeks != null ? `in ${c.durationWeeks} wk` : null].filter(Boolean).join(' ');
 
 /** Steps 2 and 3: write a claim, get Claude's evaluation. Past claims sit behind the History button. */
 export default function ClaimsPage() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const [showHistory, setShowHistory] = useState(false);
-  const products = useAsync(() => api.get<Paged<Product>>('/products', { pageSize: 100 }));
-  const claims = useAsync(() => api.get<Paged<Claim>>('/claims', { pageSize: 50 }));
+  const products = useAsync(() => api.get('/products', { pageSize: 100 }));
+  const claims = useAsync(() => api.get('/claims', { pageSize: 50 }));
 
   return (
     <>

@@ -1,13 +1,10 @@
 import { Loader2, Sparkles } from 'lucide-react';
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BenefitChips } from '@/components/BenefitChips';
 import { Button, Field, Input, Select, Textarea } from '@/components/ui/primitives';
 import { detectTarget } from '@/lib/lib';
 import { api, errorText } from '@/services/api';
-import type { Assessment, Claim, Product } from '@/types';
-
-type Phase = { name: 'idle' } | { name: 'working'; step: 'saving' | 'evaluating' } | { name: 'failed'; claimId: string; message: string };
 
 /**
  * One short form. Only the claim wording is required: the description, benefit chips and the numbers are optional
@@ -15,39 +12,39 @@ type Phase = { name: 'idle' } | { name: 'working'; step: 'saving' | 'evaluating'
  * immediately sends it to Claude; the user lands on the finished report. If Claude fails the claim is kept and the
  * evaluation can be retried.
  */
-export function ClaimForm({ products, initialProductId }: { products: Product[]; initialProductId?: string }) {
+export function ClaimForm({ products, initialProductId }) {
   const navigate = useNavigate();
   const [productId, setProductId] = useState(products.find((p) => p.id === initialProductId)?.id ?? products[0]?.id ?? '');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [benefits, setBenefits] = useState<string[]>([]);
+  const [benefits, setBenefits] = useState([]);
   const [target, setTarget] = useState('');
   const [weeks, setWeeks] = useState('');
   const [population, setPopulation] = useState('');
-  const [phase, setPhase] = useState<Phase>({ name: 'idle' });
+  const [phase, setPhase] = useState({ name: 'idle' });
 
   const product = products.find((p) => p.id === productId);
   // Numbers typed into the wording or description fill the optional fields when those are left empty.
   const detected = detectTarget(`${title} ${description}`);
   const detectedNote = [!target && detected.percent != null ? `${detected.percent}%` : null, !weeks && detected.weeks != null ? `${detected.weeks} weeks` : null].filter(Boolean).join(' in ');
 
-  const evaluate = async (claimId: string) => {
+  const evaluate = async (claimId) => {
     setPhase({ name: 'working', step: 'evaluating' });
     try {
-      const assessment = await api.post<Assessment>('/claims/assess', { claimId });
+      const assessment = await api.post('/claims/assess', { claimId });
       navigate(`/assessments/${assessment.id}`);
     } catch (e) {
       setPhase({ name: 'failed', claimId, message: errorText(e) });
     }
   };
 
-  const submit = async (event: FormEvent) => {
+  const submit = async (event) => {
     event.preventDefault();
     setPhase({ name: 'working', step: 'saving' });
     const targetValue = target !== '' ? Number(target) : detected.percent;
     const durationWeeks = weeks !== '' ? Number(weeks) : detected.weeks;
     try {
-      const claim = await api.post<Claim>('/claims', {
+      const claim = await api.post('/claims', {
         productId, title, description, benefits, targetValue, durationWeeks, targetPopulation: population,
       });
       await evaluate(claim.id);

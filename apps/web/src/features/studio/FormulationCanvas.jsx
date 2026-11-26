@@ -4,13 +4,10 @@ import { CSS } from '@dnd-kit/utilities';
 import { AlertTriangle, CheckCircle2, GripVertical, Trash2 } from 'lucide-react';
 import { Badge, Button, Input, Progress } from '@/components/ui/primitives';
 import { cn, compositionOf, humanize } from '@/lib/lib';
-import type { Ingredient } from '@/types';
 
-export interface CanvasLine { ingredient: Ingredient; percentage: string }
+function Row({ line, selected, readOnly, onSelect, onChange, onRemove }
 
-function Row({ line, selected, readOnly, onSelect, onChange, onRemove }: {
-  line: CanvasLine; selected: boolean; readOnly: boolean; onSelect: () => void; onChange: (value: string) => void; onRemove: () => void;
-}) {
+) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: `line:${line.ingredient.id}`, disabled: readOnly });
   const share = Math.max(0, Math.min(100, Number(line.percentage) || 0));
   return (
@@ -34,10 +31,9 @@ function Row({ line, selected, readOnly, onSelect, onChange, onRemove }: {
 }
 
 /** Droppable composition canvas with live percentage validation. */
-export function FormulationCanvas({ lines, selectedId, readOnly, onSelect, onChange, onRemove }: {
-  lines: CanvasLine[]; selectedId: string | null; readOnly: boolean; onSelect: (id: string) => void;
-  onChange: (id: string, value: string) => void; onRemove: (id: string) => void;
-}) {
+export function FormulationCanvas({ lines, selectedId, readOnly, onSelect, onChange, onRemove }
+
+) {
   const { setNodeRef, isOver } = useDroppable({ id: 'canvas' });
   const { total, remaining, status } = compositionOf(lines.map((l) => Number(l.percentage)));
   const tone = status === 'VALID' ? 'green' : status === 'OVER' ? 'red' : 'amber';

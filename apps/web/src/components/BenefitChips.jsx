@@ -1,22 +1,22 @@
 import { Plus, X } from 'lucide-react';
-import { useState, type KeyboardEvent } from 'react';
+import { useState } from 'react';
 import { benefitLabel, BENEFIT_PRESETS, cn, normalizeBenefit } from '@/lib/lib';
 
 /**
  * Benefit picker: toggle preset chips, or type your own and press Enter. Values are normalised tags
  * (the same rule the server uses), so "Acne / Blemishes" and the preset chip are one thing.
  */
-export function BenefitChips({ value, onChange, label = 'Benefits', hint }: { value: string[]; onChange: (tags: string[]) => void; label?: string; hint?: string }) {
+export function BenefitChips({ value, onChange, label = 'Benefits', hint }) {
   const [draft, setDraft] = useState('');
   const custom = value.filter((tag) => !BENEFIT_PRESETS.some((p) => p.tag === tag));
 
-  const toggle = (tag: string) => onChange(value.includes(tag) ? value.filter((t) => t !== tag) : [...value, tag]);
+  const toggle = (tag) => onChange(value.includes(tag) ? value.filter((t) => t !== tag) : [...value, tag]);
   const addDraft = () => {
     const tag = normalizeBenefit(draft);
     if (tag && !value.includes(tag)) onChange([...value, tag]);
     setDraft('');
   };
-  const onKey = (event: KeyboardEvent<HTMLInputElement>) => {
+  const onKey = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault(); // do not submit the surrounding form
       addDraft();

@@ -1,5 +1,5 @@
 import { ArrowLeft, ChevronDown, Info, RefreshCw } from 'lucide-react';
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ScopeBadge, VerificationBadge } from '@/components/badges';
@@ -8,9 +8,8 @@ import { Badge, Button, Card, CardBody, CardHeader, CardTitle, ErrorState, Skele
 import { useAsync } from '@/hooks/hooks';
 import { benefitLabel, cn, formatDate, humanize, VERDICT_LABEL } from '@/lib/lib';
 import { api, errorText } from '@/services/api';
-import type { Assessment, AssessmentSummary, EvidenceNote, Verdict } from '@/types';
 
-const VERDICT_STYLE: Record<Verdict, { text: string; ring: string; blurb: string; next: string }> = {
+const VERDICT_STYLE = {
   SUPPORTED: { text: 'text-sage', ring: '#5f7f68', blurb: 'The evidence backs this claim as written.', next: 'You can use this wording, subject to your own regulatory review.' },
   NOT_SUPPORTED: { text: 'text-brick', ring: '#a4363b', blurb: 'The evidence does not back this claim.', next: 'Change the claim or the formula, or test the product for this benefit.' },
   INCONCLUSIVE: { text: 'text-clay', ring: '#b2762a', blurb: 'There is not enough evidence to say yes or no.', next: 'Add evidence for this exact formula, then evaluate again.' },
@@ -19,7 +18,7 @@ const VERDICT_STYLE: Record<Verdict, { text: string; ring: string; blurb: string
 const ID_PATTERN = /\b[0-9a-f]{8}(?:-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?\b/g;
 
 /** Circular score gauge. The score shows how well the evidence fits the claim; it is not a probability. */
-function ScoreRing({ score, color }: { score: number; color: string }) {
+function ScoreRing({ score, color }) {
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
   return (
@@ -36,19 +35,19 @@ function ScoreRing({ score, color }: { score: number; color: string }) {
   );
 }
 
-const Section = ({ title, children, className }: { title: string; children: ReactNode; className?: string }) => (
+const Section = ({ title, children, className }) => (
   <Card className={className}><CardHeader><CardTitle>{title}</CardTitle></CardHeader><CardBody>{children}</CardBody></Card>
 );
 
 /** Removes internal evidence ids from text meant for non-scientists. */
-const plain = (text: string) => text.replace(/\\n/g, '\n').replace(ID_PATTERN, '').replace(/\(\s*(?:ids?\s*)?[,;\s]*\)/gi, '').replace(/\s+([,.;:)])/g, '$1').replace(/[ \t]{2,}/g, ' ').trim();
+const plain = (text) => text.replace(/\\n/g, '\n').replace(ID_PATTERN, '').replace(/\(\s*(?:ids?\s*)?[,;\s]*\)/gi, '').replace(/\s+([,.;:)])/g, '$1').replace(/[ \t]{2,}/g, ' ').trim();
 
 export default function AssessmentReportPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: a, loading, error, reload } = useAsync(() => api.get<Assessment>(`/assessments/${id}`), [id]);
-  const history = useAsync(() => (a ? api.get<AssessmentSummary[]>(`/claims/${a.claim.id}/assessments`) : Promise.resolve([])), [a?.claim.id]);
-  const [openEvidence, setOpenEvidence] = useState<string | null>(null);
+  const { data: a, loading, error, reload } = useAsync(() => api.get(`/assessments/${id}`), [id]);
+  const history = useAsync(() => (a ? api.get(`/claims/${a.claim.id}/assessments`) : Promise.resolve([])), [a?.claim.id]);
+  const [openEvidence, setOpenEvidence] = useState(null);
   const [showScience, setShowScience] = useState(false);
   const [rerunning, setRerunning] = useState(false);
 
@@ -63,16 +62,16 @@ export default function AssessmentReportPage() {
   const studiesUsed = a.evidence.filter((e) => e.role !== 'CONTEXT').length || a.evidence.length;
 
   /** Technical view only: turns evidence ids in Claude's prose into clickable numbered citations. */
-  const withCitations = (raw: string): ReactNode[] => {
+  const withCitations = (raw) => {
     const text = raw.replace(/\\n/g, '\n');
-    const parts: ReactNode[] = [];
+    const parts = [];
     let last = 0;
     for (const match of text.matchAll(ID_PATTERN)) {
       const evidenceId = [...numbers.keys()].find((eid) => eid.startsWith(match[0]));
       if (!evidenceId) continue;
       parts.push(text.slice(last, match.index));
       parts.push(<button key={`${match.index}-${evidenceId}`} className="mx-0.5 cursor-pointer rounded-full bg-teal-50 px-1.5 text-xs font-semibold text-teal-800 hover:bg-teal-100" onClick={() => setOpenEvidence(evidenceId)} aria-label={`Open study ${numbers.get(evidenceId)}`}>[{numbers.get(evidenceId)}]</button>);
-      last = match.index! + match[0].length;
+      last = match.index + match[0].length;
     }
     parts.push(text.slice(last));
     return parts;
@@ -81,7 +80,7 @@ export default function AssessmentReportPage() {
   const rerun = async () => {
     setRerunning(true);
     try {
-      const fresh = await api.post<Assessment>('/claims/assess', { claimId: claim.id, forceNew: true });
+      const fresh = await api.post('/claims/assess', { claimId: claim.id, forceNew: true });
       toast.success('Claude has evaluated this claim again. The earlier result is kept.');
       navigate(`/assessments/${fresh.id}`);
     } catch (e) {
@@ -91,7 +90,7 @@ export default function AssessmentReportPage() {
     }
   };
 
-  const NoteList = ({ notes, empty }: { notes: EvidenceNote[]; empty: string }) =>
+  const NoteList = ({ notes, empty }) =>
     notes.length === 0 ? <p className="text-sm text-slate-500">{empty}</p> : (
       <ul className="space-y-3">
         {notes.map((n) => (

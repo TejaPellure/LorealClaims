@@ -16,7 +16,7 @@ description: Brand visual system, component conventions, layout and accessibilit
 ## Layout
 Top bar only: wordmark + four destinations (Formulate, Claims, Ingredients, Evidence). Centered content, max width 7xl. Three numbered steps guide the main flow. Studio: ingredient picker left, canvas right, one Save.
 
-## Components (`components/ui/primitives.tsx`)
+## Components (`components/ui/primitives.jsx`)
 Button, Input, Textarea, Select (native), Field, Badge, Card, Table, Dialog, Tabs, Tooltip, Skeleton, EmptyState, ErrorState, Progress, FormError. Toasts via `sonner`. Reuse before adding.
 
 ## Interaction and accessibility

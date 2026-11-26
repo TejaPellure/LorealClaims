@@ -1,4 +1,4 @@
-import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core';
+import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { ArrowRight, CheckCircle2, Plus, Save } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -6,24 +6,23 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/shared';
 import { Button, Card, CardBody } from '@/components/ui/primitives';
-import { FormulationCanvas, type CanvasLine } from '@/features/studio/FormulationCanvas';
+import { FormulationCanvas } from '@/features/studio/FormulationCanvas';
 import { IngredientExplorer } from '@/features/studio/IngredientExplorer';
 import { useAsync } from '@/hooks/hooks';
 import { compositionOf, humanize } from '@/lib/lib';
 import { api, errorText } from '@/services/api';
-import type { Ingredient, Paged, Product } from '@/types';
 
 /** Step 1: name a product, add ingredients, make them total 100%, save. A product is always new. */
 export default function FormulationStudioPage() {
   const navigate = useNavigate();
-  const ingredients = useAsync(() => api.get<Paged<Ingredient>>('/ingredients', { pageSize: 100 }));
+  const ingredients = useAsync(() => api.get('/ingredients', { pageSize: 100 }));
   const [name, setName] = useState('');
-  const [lines, setLines] = useState<CanvasLine[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [dragging, setDragging] = useState<Ingredient | null>(null);
+  const [lines, setLines] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [dragging, setDragging] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [created, setCreated] = useState<Product | null>(null);
+  const [error, setError] = useState(null);
+  const [created, setCreated] = useState(null);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
   const composition = compositionOf(lines.map((l) => Number(l.percentage)));
@@ -31,7 +30,7 @@ export default function FormulationStudioPage() {
   const selected = lines.find((l) => l.ingredient.id === selectedId)?.ingredient ?? null;
   const canSave = name.trim().length >= 2 && composition.status === 'VALID' && !saving;
 
-  const addIngredient = (ingredient: Ingredient, at?: number) => {
+  const addIngredient = (ingredient, at) => {
     if (usedIds.has(ingredient.id)) return;
     setLines((current) => {
       const next = [...current];
@@ -41,12 +40,12 @@ export default function FormulationStudioPage() {
     setSelectedId(ingredient.id);
   };
 
-  const onDragStart = (event: DragStartEvent) => {
+  const onDragStart = (event) => {
     const id = String(event.active.id);
     if (id.startsWith('lib:')) setDragging(ingredients.data?.items.find((i) => i.id === id.slice(4)) ?? null);
   };
 
-  const onDragEnd = ({ active, over }: DragEndEvent) => {
+  const onDragEnd = ({ active, over }) => {
     setDragging(null);
     if (!over) return;
     const activeId = String(active.id);
@@ -68,7 +67,7 @@ export default function FormulationStudioPage() {
     setSaving(true);
     setError(null);
     try {
-      const product = await api.post<Product>('/products', {
+      const product = await api.post('/products', {
         name: name.trim(),
         ingredients: lines.map((l) => ({ ingredientId: l.ingredient.id, percentage: Number(l.percentage) })),
       });

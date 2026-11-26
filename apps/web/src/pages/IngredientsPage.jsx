@@ -7,20 +7,19 @@ import { IngredientFormDialog, IngredientProfileDialog } from '@/features/ingred
 import { useAsync, useDebounced } from '@/hooks/hooks';
 import { humanize, INGREDIENT_CATEGORIES } from '@/lib/lib';
 import { api } from '@/services/api';
-import type { Ingredient, Paged } from '@/types';
 
 export default function IngredientsPage() {
   const [q, setQ] = useState('');
   const [category, setCategory] = useState('');
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
-  const [profileId, setProfileId] = useState<string | null>(null);
-  const [evidenceId, setEvidenceId] = useState<string | null>(null);
-  const [form, setForm] = useState<{ open: boolean; ingredient: Ingredient | null }>({ open: false, ingredient: null });
+  const [profileId, setProfileId] = useState(null);
+  const [evidenceId, setEvidenceId] = useState(null);
+  const [form, setForm] = useState({ open: false, ingredient: null });
   const search = useDebounced(q);
 
   const { data, loading, error, reload } = useAsync(
-    () => api.get<Paged<Ingredient>>('/ingredients', { q: search, category, status, page, pageSize: 15 }),
+    () => api.get('/ingredients', { q: search, category, status, page, pageSize: 15 }),
     [search, category, status, page],
   );
 

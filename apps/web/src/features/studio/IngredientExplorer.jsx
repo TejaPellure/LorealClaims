@@ -4,10 +4,9 @@ import { useMemo, useState } from 'react';
 import { VerificationBadge } from '@/components/badges';
 import { Badge, Button, Input, Select, Skeleton } from '@/components/ui/primitives';
 import { cn, humanize, INGREDIENT_CATEGORIES } from '@/lib/lib';
-import type { Ingredient } from '@/types';
 
 /** Draggable ingredient card. The Add button is the keyboard-accessible alternative to dragging. */
-function IngredientCard({ ingredient, used, onAdd }: { ingredient: Ingredient; used: boolean; onAdd: (ingredient: Ingredient) => void }) {
+function IngredientCard({ ingredient, used, onAdd }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: `lib:${ingredient.id}`, disabled: used });
   return (
     <li ref={setNodeRef} className={cn('flex items-start gap-1.5 rounded-md border border-slate-200 bg-white p-2', isDragging && 'opacity-40', used && 'bg-slate-50 opacity-60')}>
@@ -27,7 +26,7 @@ function IngredientCard({ ingredient, used, onAdd }: { ingredient: Ingredient; u
   );
 }
 
-export function IngredientExplorer({ ingredients, loading, usedIds, onAdd }: { ingredients: Ingredient[]; loading: boolean; usedIds: Set<string>; onAdd: (ingredient: Ingredient) => void }) {
+export function IngredientExplorer({ ingredients, loading, usedIds, onAdd }) {
   const [q, setQ] = useState('');
   const [category, setCategory] = useState('');
   const visible = useMemo(

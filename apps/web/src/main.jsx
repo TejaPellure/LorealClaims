@@ -6,7 +6,7 @@ import App from './App';
 import { TooltipProvider } from './components/ui/primitives';
 import './index.css';
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <TooltipProvider>

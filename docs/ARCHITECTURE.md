@@ -26,7 +26,7 @@ One deployable application. The browser only talks to NestJS on its own origin; 
 `evidence-retrieval.ts` -> `providers/providers.ts` (Claude via bridge) -> `ai-schema.ts` (shape validation) -> `assessment-pipeline.ts` (orchestrates and stores). See [AI_ASSESSMENT_ENGINE.md](AI_ASSESSMENT_ENGINE.md).
 
 ## Frontend (`apps/web/src`)
-`pages/` (Formulate, Claims, Report, Ingredients, Evidence), `features/` (studio, claims, evidence, ingredients), `components/ui` primitives, `services/api.ts`, `hooks/`, `layouts/`. Native React state only.
+`pages/` (Formulate, Claims, Report, Ingredients, Evidence), `features/` (studio, claims, evidence, ingredients), `components/ui` primitives, `services/api.js`, `hooks/`, `layouts/`. Native React state only.
 
 ## Request flow: submitting a claim
 1. UI `POST /api/claims` (product, title; optionally description, benefit chips, improvement %, weeks, population). The server binds the product's formulation.

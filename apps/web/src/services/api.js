@@ -3,22 +3,20 @@
 
 const BASE = '/api';
 export class ApiError extends Error {
-  constructor(message: string, public status: number, public details: string[] = []) {
-    super(message);
+  constructor(message,  status,  details = []) {
+    super(message);this.status = status;this.details = details;;
   }
 }
 
-type Query = Record<string, string | number | boolean | undefined | null>;
-
-function toUrl(path: string, query?: Query) {
+function toUrl(path, query) {
   const params = new URLSearchParams();
   Object.entries(query ?? {}).forEach(([k, v]) => v !== undefined && v !== null && v !== '' && params.set(k, String(v)));
   const qs = params.toString();
   return `${BASE}${path}${qs ? `?${qs}` : ''}`;
 }
 
-async function request<T>(path: string, init: RequestInit = {}, query?: Query): Promise<T> {
-  let response: Response;
+async function request(path, init = {}, query) {
+  let response;
   try {
     response = await fetch(toUrl(path, query), {
       ...init,
@@ -32,26 +30,26 @@ async function request<T>(path: string, init: RequestInit = {}, query?: Query): 
   }
   if (!response.ok) {
     const body = await response.json().catch(() => null);
-    const details: string[] = Array.isArray(body?.details) ? body.details.map(String) : [];
+    const details = Array.isArray(body?.details) ? body.details.map(String) : [];
     throw new ApiError(body?.message ?? `Request failed (${response.status})`, response.status, details);
   }
-  return response.status === 204 ? (undefined as T) : ((await response.json()) as T);
+  return response.status === 204 ? (undefined ) : ((await response.json()) );
 }
 
 export const api = {
-  get: <T>(path: string, query?: Query) => request<T>(path, {}, query),
-  post: <T>(path: string, body?: unknown) => request<T>(path, { method: 'POST', body: JSON.stringify(body ?? {}) }),
-  patch: <T>(path: string, body: unknown) => request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
-  upload: <T>(path: string, file: File) => {
+  get: (path, query) => request(path, {}, query),
+  post: (path, body) => request(path, { method: 'POST', body: JSON.stringify(body ?? {}) }),
+  patch: (path, body) => request(path, { method: 'PATCH', body: JSON.stringify(body) }),
+  upload: (path, file) => {
     const form = new FormData();
     form.append('file', file);
-    return request<T>(path, { method: 'POST', body: form });
+    return request(path, { method: 'POST', body: form });
   },
-  downloadUrl: (evidenceId: string) => `${BASE}/evidence/${evidenceId}/download`,
+  downloadUrl: (evidenceId) => `${BASE}/evidence/${evidenceId}/download`,
 };
 
 /** Human-readable text for toasts and inline errors. */
-export function errorText(error: unknown): string {
+export function errorText(error) {
   if (error instanceof ApiError) return error.details.length ? `${error.message} ${error.details.join(' ')}` : error.message;
   return error instanceof Error ? error.message : 'Something went wrong.';
 }

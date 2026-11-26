@@ -9,13 +9,12 @@ import { EvidenceFormDialog } from '@/features/evidence/EvidenceForm';
 import { useAsync, useDebounced } from '@/hooks/hooks';
 import { EVIDENCE_TYPES, formatDate, humanize } from '@/lib/lib';
 import { api, errorText } from '@/services/api';
-import type { Evidence, Paged } from '@/types';
 
 /** Per-row PDF upload (stored on the persistent uploads volume by the server). */
-function UploadButton({ evidence, onDone }: { evidence: Evidence; onDone: () => void }) {
-  const input = useRef<HTMLInputElement>(null);
+function UploadButton({ evidence, onDone }) {
+  const input = useRef(null);
   const [busy, setBusy] = useState(false);
-  const onPick = async (file?: File) => {
+  const onPick = async (file) => {
     if (!file) return;
     setBusy(true);
     try {
@@ -44,15 +43,15 @@ export default function EvidencePage() {
   const [scope, setScope] = useState('');
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
-  const [detailId, setDetailId] = useState<string | null>(null);
+  const [detailId, setDetailId] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const search = useDebounced(q);
 
   const { data, loading, error, reload } = useAsync(
-    () => api.get<Paged<Evidence>>('/evidence', { q: search, evidenceType, scope, status, page, pageSize: 15 }),
+    () => api.get('/evidence', { q: search, evidenceType, scope, status, page, pageSize: 15 }),
     [search, evidenceType, scope, status, page],
   );
-  const reset = <T,>(set: (v: T) => void) => (v: T) => { set(v); setPage(1); };
+  const reset = (set) => (v) => { set(v); setPage(1); };
 
   return (
     <>

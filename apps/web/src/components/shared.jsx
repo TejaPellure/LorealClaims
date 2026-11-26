@@ -1,15 +1,14 @@
 // Small reusable building blocks shared by several pages.
 import { Download, ExternalLink } from 'lucide-react';
-import type { ReactNode } from 'react';
+
 import { Badge, Button, Dialog, ErrorState, Skeleton } from '@/components/ui/primitives';
 import { QualityBadge, ScopeBadge, VerificationBadge } from '@/components/badges';
 import { useAsync } from '@/hooks/hooks';
 import { benefitLabel, cn, formatDate, humanize } from '@/lib/lib';
 import { api } from '@/services/api';
-import type { Evidence } from '@/types';
 
 /** Editorial page heading: small step label, serif title, short description. */
-export function PageHeader({ eyebrow, title, description, actions }: { eyebrow?: string; title: string; description?: string; actions?: ReactNode }) {
+export function PageHeader({ eyebrow, title, description, actions }) {
   return (
     <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
       <div>
@@ -23,7 +22,7 @@ export function PageHeader({ eyebrow, title, description, actions }: { eyebrow?:
 }
 
 /** Label / value row used in detail dialogs and reports. Hides itself when there is no value. */
-export function Detail({ label, children }: { label: string; children?: ReactNode }) {
+export function Detail({ label, children }) {
   if (children === undefined || children === null || children === '') return null;
   return (
     <div className="grid grid-cols-3 gap-2 border-b border-slate-100 py-2 text-sm last:border-0">
@@ -33,16 +32,16 @@ export function Detail({ label, children }: { label: string; children?: ReactNod
   );
 }
 
-export function BulletList({ items, empty }: { items: string[]; empty: string }) {
+export function BulletList({ items, empty }) {
   if (!items.length) return <p className="text-sm text-slate-500">{empty}</p>;
   return <ul className="list-disc space-y-1.5 pl-5 text-sm text-slate-800">{items.map((item, i) => <li key={i}>{item}</li>)}</ul>;
 }
 
 /** Search/filter bar layout. */
-export const FilterBar = ({ children, className }: { children: ReactNode; className?: string }) =>
+export const FilterBar = ({ children, className }) =>
   <div className={cn('flex flex-wrap items-end gap-3 border-b border-slate-100 p-4', className)}>{children}</div>;
 
-export function Pager({ page, pageSize, total, onPage }: { page: number; pageSize: number; total: number; onPage: (page: number) => void }) {
+export function Pager({ page, pageSize, total, onPage }) {
   const pages = Math.max(1, Math.ceil(total / pageSize));
   return (
     <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-xs text-slate-500">
@@ -57,8 +56,8 @@ export function Pager({ page, pageSize, total, onPage }: { page: number; pageSiz
 }
 
 /** Full evidence record in a dialog, with source links and the uploaded PDF (traceability from reports). */
-export function EvidenceDetailDialog({ evidenceId, onClose }: { evidenceId: string | null; onClose: () => void }) {
-  const { data, error, loading, reload } = useAsync(() => (evidenceId ? api.get<Evidence>(`/evidence/${evidenceId}`) : Promise.resolve(null)), [evidenceId]);
+export function EvidenceDetailDialog({ evidenceId, onClose }) {
+  const { data, error, loading, reload } = useAsync(() => (evidenceId ? api.get(`/evidence/${evidenceId}`) : Promise.resolve(null)), [evidenceId]);
   return (
     <Dialog open={!!evidenceId} onOpenChange={(open) => !open && onClose()} title={data?.title ?? 'Evidence record'} description="Source-backed study metadata" wide>
       {loading && !data && <Skeleton className="h-64 w-full" />}

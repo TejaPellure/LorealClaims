@@ -1,11 +1,10 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button, Dialog, Field, FormError, Input, Select, Textarea } from '@/components/ui/primitives';
 import { useAsync, useFormState } from '@/hooks/hooks';
 import { BenefitChips } from '@/components/BenefitChips';
 import { EVIDENCE_TYPES, humanize } from '@/lib/lib';
 import { api, errorText } from '@/services/api';
-import type { Ingredient, Paged, Product } from '@/types';
 
 const EMPTY = {
   title: '', evidenceType: 'CLINICAL_STUDY', scope: 'INGREDIENT', sourceName: '', doi: '', pmid: '', sourceUrl: '', publishedAt: '', studyDesign: '',
@@ -14,32 +13,32 @@ const EMPTY = {
 };
 
 /** Evaluator form for adding an evidence record (optionally with its PDF report). */
-export function EvidenceFormDialog({ open, onClose, onSaved }: { open: boolean; onClose: () => void; onSaved: () => void }) {
+export function EvidenceFormDialog({ open, onClose, onSaved }) {
   return open ? <EvidenceForm onClose={onClose} onSaved={onSaved} /> : null;
 }
 
-function EvidenceForm({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
+function EvidenceForm({ onClose, onSaved }) {
   const { values, bind } = useFormState(EMPTY);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [ingredientIds, setIngredientIds] = useState<string[]>([]);
-  const [formulationIds, setFormulationIds] = useState<string[]>([]);
-  const [file, setFile] = useState<File | null>(null);
+  const [categories, setCategories] = useState([]);
+  const [ingredientIds, setIngredientIds] = useState([]);
+  const [formulationIds, setFormulationIds] = useState([]);
+  const [file, setFile] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const ingredients = useAsync(() => api.get<Paged<Ingredient>>('/ingredients', { pageSize: 100 }));
-  const products = useAsync(() => api.get<Paged<Product>>('/products', { pageSize: 100 }));
+  const [error, setError] = useState(null);
+  const ingredients = useAsync(() => api.get('/ingredients', { pageSize: 100 }));
+  const products = useAsync(() => api.get('/products', { pageSize: 100 }));
 
-  const toggle = <T,>(list: T[], item: T, set: (next: T[]) => void) => set(list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
-  const optionalNumber = (v: unknown) => (String(v ?? '').trim() !== '' ? Number(v) : undefined);
-  const optionalText = (v: unknown) => (String(v ?? '').trim() ? String(v).trim() : undefined);
+  const toggle = (list, item, set) => set(list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
+  const optionalNumber = (v) => (String(v ?? '').trim() !== '' ? Number(v) : undefined);
+  const optionalText = (v) => (String(v ?? '').trim() ? String(v).trim() : undefined);
 
-  const submit = async (event: FormEvent) => {
+  const submit = async (event) => {
     event.preventDefault();
     if (!categories.length) return setError('Choose at least one benefit the study measured (or add your own).');
     setSaving(true);
     setError(null);
     try {
-      const created = await api.post<{ id: string }>('/evidence', {
+      const created = await api.post('/evidence', {
         title: values.title, evidenceType: values.evidenceType, scope: values.scope, benefits: categories, sourceName: values.sourceName,
         doi: optionalText(values.doi), pmid: optionalText(values.pmid), sourceUrl: optionalText(values.sourceUrl),
         publishedAt: optionalText(values.publishedAt), studyDesign: values.studyDesign, sampleSize: optionalNumber(values.sampleSize),

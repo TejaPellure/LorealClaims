@@ -13,7 +13,7 @@ Plus two libraries: **Ingredients** (16) and **Evidence** (29 real, PubMed-verif
 
 ## Technology
 
-NestJS 11 + TypeScript, Prisma 6 + PostgreSQL 16, React 19 + Vite 7, Tailwind CSS v4, Radix-based shadcn-style components, Lucide icons, `@dnd-kit`, Docker Compose. One NestJS app serves the API and the compiled React app.
+NestJS 11 + TypeScript (API), Prisma 6 + PostgreSQL 16, React 19 (JSX, plain JavaScript) + Vite 7, Tailwind CSS v4, Radix-based shadcn-style components, Lucide icons, `@dnd-kit`, Docker Compose. One NestJS app serves the API and the compiled React app.
 
 ## Prerequisites
 

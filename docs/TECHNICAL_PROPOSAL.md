@@ -19,7 +19,7 @@ assess(claimId):
 ```
 
 ## 3. Frontend
-`pages/ClaimsPage.tsx` + `features/claims/ClaimForm.tsx` submit the claim and call `POST /api/claims/assess`; `pages/AssessmentReportPage.tsx` shows the result. In the brief's terms, "Justified: Yes/No" is the three-valued verdict (Supported / Not supported / Inconclusive), "Confidence Score" is the evidence-strength score (0-100, given by Claude with a plain explanation, explicitly not a probability), and "Reasoning" is Claude's summary and detailed reasoning.
+`pages/ClaimsPage.jsx` + `features/claims/ClaimForm.jsx` submit the claim and call `POST /api/claims/assess`; `pages/AssessmentReportPage.jsx` shows the result. In the brief's terms, "Justified: Yes/No" is the three-valued verdict (Supported / Not supported / Inconclusive), "Confidence Score" is the evidence-strength score (0-100, given by Claude with a plain explanation, explicitly not a probability), and "Reasoning" is Claude's summary and detailed reasoning.
 
 ## 4. Business process understanding
 See [BUSINESS_WORKFLOW.md](BUSINESS_WORKFLOW.md). The full process (business proposal, claim manager screening, formulation, evidence, evaluation, review) is collapsed into Formulate -> Claim -> Result. Key insight: substantiation most often fails by treating **ingredient** evidence as proof for the **finished product**, so that distinction is encoded in the data (every study is labelled this formula / another formula / ingredient) and in the prompt Claude follows.

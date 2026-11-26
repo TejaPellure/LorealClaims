@@ -1,5 +1,5 @@
 import { ExternalLink, Pencil } from 'lucide-react';
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Badge, Button, Dialog, ErrorState, Field, FormError, Input, Select, Skeleton, Textarea } from '@/components/ui/primitives';
 import { ScopeBadge, VerificationBadge } from '@/components/badges';
@@ -7,14 +7,13 @@ import { BulletList, Detail } from '@/components/shared';
 import { useAsync, useFormState } from '@/hooks/hooks';
 import { formatDate, humanize, INGREDIENT_CATEGORIES } from '@/lib/lib';
 import { api, errorText } from '@/services/api';
-import type { Evidence, Ingredient } from '@/types';
 
 /** Read-only ingredient profile with evidence and sources. Clearly separates sourced facts from unverified info. */
-export function IngredientProfileDialog({ ingredientId, onClose, onEdit, onOpenEvidence }: {
-  ingredientId: string | null; onClose: () => void; onEdit: (ingredient: Ingredient) => void; onOpenEvidence: (id: string) => void;
-}) {
-  const ingredient = useAsync(() => (ingredientId ? api.get<Ingredient>(`/ingredients/${ingredientId}`) : Promise.resolve(null)), [ingredientId]);
-  const evidence = useAsync(() => (ingredientId ? api.get<Evidence[]>(`/ingredients/${ingredientId}/evidence`) : Promise.resolve([])), [ingredientId]);
+export function IngredientProfileDialog({ ingredientId, onClose, onEdit, onOpenEvidence }
+
+) {
+  const ingredient = useAsync(() => (ingredientId ? api.get(`/ingredients/${ingredientId}`) : Promise.resolve(null)), [ingredientId]);
+  const evidence = useAsync(() => (ingredientId ? api.get(`/ingredients/${ingredientId}/evidence`) : Promise.resolve([])), [ingredientId]);
   const data = ingredient.data;
 
   return (
@@ -87,7 +86,7 @@ const EMPTY = {
 };
 
 /** Create or edit an ingredient. Sources are entered one per line as "Name | URL". */
-export function IngredientFormDialog({ open, ingredient, onClose, onSaved }: { open: boolean; ingredient: Ingredient | null; onClose: () => void; onSaved: () => void }) {
+export function IngredientFormDialog({ open, ingredient, onClose, onSaved }) {
   const initial = ingredient
     ? {
         ...EMPTY, ...Object.fromEntries(Object.entries(ingredient).filter(([, v]) => typeof v === 'string' || typeof v === 'number')),
@@ -96,20 +95,20 @@ export function IngredientFormDialog({ open, ingredient, onClose, onSaved }: { o
         minConcentration: ingredient.minConcentration ?? '', maxConcentration: ingredient.maxConcentration ?? '',
       }
     : EMPTY;
-  return open ? <IngredientForm key={ingredient?.id ?? 'new'} initial={initial as typeof EMPTY} editingId={ingredient?.id} onClose={onClose} onSaved={onSaved} /> : null;
+  return open ? <IngredientForm key={ingredient?.id ?? 'new'} initial={initial } editingId={ingredient?.id} onClose={onClose} onSaved={onSaved} /> : null;
 }
 
-function IngredientForm({ initial, editingId, onClose, onSaved }: { initial: typeof EMPTY; editingId?: string; onClose: () => void; onSaved: () => void }) {
+function IngredientForm({ initial, editingId, onClose, onSaved }) {
   const { values, bind } = useFormState(initial);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
-  const submit = async (event: FormEvent) => {
+  const submit = async (event) => {
     event.preventDefault();
     setSaving(true);
     setError(null);
-    const optionalText = (v: unknown) => (String(v ?? '').trim() ? String(v).trim() : undefined);
-    const optionalNumber = (v: unknown) => (String(v ?? '').trim() !== '' ? Number(v) : undefined);
+    const optionalText = (v) => (String(v ?? '').trim() ? String(v).trim() : undefined);
+    const optionalNumber = (v) => (String(v ?? '').trim() !== '' ? Number(v) : undefined);
     const body = {
       name: values.name, inciName: values.inciName, description: values.description, category: values.category, primaryFunction: values.primaryFunction, status: values.status,
       chemicalName: optionalText(values.chemicalName), concentrationSource: optionalText(values.concentrationSource), solubility: optionalText(values.solubility),

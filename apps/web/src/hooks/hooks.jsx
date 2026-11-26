@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { errorText } from '@/services/api';
 
 /** Loads data on mount / when deps change, with loading + error state and a manual reload. */
-export function useAsync<T>(load: () => Promise<T>, deps: unknown[] = []) {
-  const [state, setState] = useState<{ data: T | null; error: string | null; loading: boolean }>({ data: null, error: null, loading: true });
+export function useAsync(load, deps = []) {
+  const [state, setState] = useState({ data: null, error: null, loading: true });
   const [tick, setTick] = useState(0);
   const loadRef = useRef(load);
   loadRef.current = load;
@@ -23,7 +23,7 @@ export function useAsync<T>(load: () => Promise<T>, deps: unknown[] = []) {
   return { ...state, reload: useCallback(() => setTick((t) => t + 1), []) };
 }
 
-export function useDebounced<T>(value: T, delayMs = 300): T {
+export function useDebounced(value, delayMs = 300) {
   const [debounced, setDebounced] = useState(value);
   useEffect(() => {
     const timer = setTimeout(() => setDebounced(value), delayMs);
@@ -33,12 +33,12 @@ export function useDebounced<T>(value: T, delayMs = 300): T {
 }
 
 /** Tiny controlled-form helper: `const { values, bind, set } = useFormState(initial)`. */
-export function useFormState<T extends Record<string, unknown>>(initial: T) {
-  const [values, setValues] = useState<T>(initial);
-  const set = <K extends keyof T>(key: K, value: T[K]) => setValues((v) => ({ ...v, [key]: value }));
-  const bind = (key: keyof T) => ({
-    value: (values[key] ?? '') as string | number,
-    onChange: (e: { target: { value: string } }) => set(key, e.target.value as T[keyof T]),
+export function useFormState(initial) {
+  const [values, setValues] = useState(initial);
+  const set = (key, value) => setValues((v) => ({ ...v, [key]: value }));
+  const bind = (key) => ({
+    value: (values[key] ?? '') ,
+    onChange: (e) => set(key, e.target.value ),
   });
-  return { values, set, bind, reset: (next: T = initial) => setValues(next) };
+  return { values, set, bind, reset: (next = initial) => setValues(next) };
 }

@@ -30,11 +30,11 @@ npm run build                     # web + api production builds
 ```
 
 ## Conventions
-- TypeScript strict, no unnecessary `any`, descriptive names, small functions, comments only where logic is non-obvious.
+- API: TypeScript strict, no unnecessary `any`, descriptive names, small functions, comments only where logic is non-obvious.
 - Controllers thin; logic in services; DTOs (`class-validator`) for every input. Small modules keep controller + service + DTOs in one `*.module.ts`; the assessment engine is split into files.
 - Config is read **only** in `common/config.ts`. Never hardcode secrets.
 - Lists return `{ items, total, page, pageSize }`; errors `{ statusCode, error, message, details?, path, timestamp }`. Decimals are serialised as numbers.
-- Frontend: native React state + small hooks. All HTTP through `services/api.ts`. Brand style: see the frontend-design skill. Keep forms short; derive what the server can derive.
+- Frontend: native React state + small hooks. All HTTP through `services/api.js`. Brand style: see the frontend-design skill. Keep forms short; derive what the server can derive.
 
 ## Database rules
 UUID keys, `Decimal` for concentrations, enums for statuses. A claim references one formulation. Assessments store immutable JSON snapshots (claim, formulation, evidence): never make a past assessment read live data. The seed is idempotent and only runs on an empty database; never add destructive startup steps.

@@ -4,9 +4,9 @@ import * as TabsPrimitive from '@radix-ui/react-tabs';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import * as DropdownPrimitive from '@radix-ui/react-dropdown-menu';
 import { Slot } from '@radix-ui/react-slot';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cva } from 'class-variance-authority';
 import { AlertTriangle, Inbox, Loader2, X } from 'lucide-react';
-import { forwardRef, type ButtonHTMLAttributes, type HTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes, type TdHTMLAttributes, type ThHTMLAttributes } from 'react';
+import { forwardRef } from 'react';
 import { cn } from '@/lib/lib';
 
 // ───────── Button ─────────
@@ -25,11 +25,8 @@ const buttonVariants = cva(
     defaultVariants: { variant: 'primary', size: 'md' },
   },
 );
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
-  asChild?: boolean;
-  loading?: boolean;
-}
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ className, variant, size, asChild, loading, children, disabled, ...props }, ref) => {
+
+export const Button = forwardRef(({ className, variant, size, asChild, loading, children, disabled, ...props }, ref) => {
   const Comp = asChild ? Slot : 'button';
   return (
     <Comp ref={ref} className={cn(buttonVariants({ variant, size }), className)} disabled={disabled || loading} {...props}>
@@ -41,21 +38,21 @@ Button.displayName = 'Button';
 
 // ───────── Form controls ─────────
 const controlClass = 'w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-2 focus-visible:outline-teal-600 disabled:bg-slate-100';
-export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(({ className, ...props }, ref) => (
+export const Input = forwardRef(({ className, ...props }, ref) => (
   <input ref={ref} className={cn(controlClass, 'h-10', className)} {...props} />
 ));
 Input.displayName = 'Input';
-export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(({ className, ...props }, ref) => (
+export const Textarea = forwardRef(({ className, ...props }, ref) => (
   <textarea ref={ref} rows={3} className={cn(controlClass, 'py-2', className)} {...props} />
 ));
 Textarea.displayName = 'Textarea';
 /** Native <select> styled like shadcn Select: fully keyboard/screen-reader accessible with zero extra JS. */
-export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(({ className, ...props }, ref) => (
+export const Select = forwardRef(({ className, ...props }, ref) => (
   <select ref={ref} className={cn(controlClass, 'h-10 pr-8', className)} {...props} />
 ));
 Select.displayName = 'Select';
 
-export function Field({ label, hint, error, children, className }: { label: string; hint?: string; error?: string; children: ReactNode; className?: string }) {
+export function Field({ label, hint, error, children, className }) {
   return (
     <label className={cn('block space-y-1', className)}>
       <span className="text-xs font-medium text-slate-700">{label}</span>
@@ -81,35 +78,35 @@ const badgeVariants = cva('inline-flex items-center gap-1 rounded-full border px
   },
   defaultVariants: { tone: 'neutral' },
 });
-export function Badge({ className, tone, ...props }: HTMLAttributes<HTMLSpanElement> & VariantProps<typeof badgeVariants>) {
+export function Badge({ className, tone, ...props }) {
   return <span className={cn(badgeVariants({ tone }), className)} {...props} />;
 }
 
 // ───────── Card ─────────
-export const Card = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
+export const Card = ({ className, ...props }) => (
   <div className={cn('rounded-2xl border border-slate-200 bg-white', className)} {...props} />
 );
-export const CardHeader = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
+export const CardHeader = ({ className, ...props }) => (
   <div className={cn('flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-3', className)} {...props} />
 );
-export const CardTitle = ({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) => (
+export const CardTitle = ({ className, ...props }) => (
   <h2 className={cn('font-display text-base font-semibold text-slate-900', className)} {...props} />
 );
-export const CardBody = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => <div className={cn('p-4', className)} {...props} />;
+export const CardBody = ({ className, ...props }) => <div className={cn('p-4', className)} {...props} />;
 
 // ───────── Table ─────────
-export const Table = ({ className, ...props }: HTMLAttributes<HTMLTableElement>) => (
+export const Table = ({ className, ...props }) => (
   <div className="overflow-x-auto"><table className={cn('w-full text-left text-sm', className)} {...props} /></div>
 );
-export const Th = ({ className, ...props }: ThHTMLAttributes<HTMLTableCellElement>) => (
+export const Th = ({ className, ...props }) => (
   <th className={cn('whitespace-nowrap border-b border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500', className)} {...props} />
 );
-export const Td = ({ className, ...props }: TdHTMLAttributes<HTMLTableCellElement>) => (
+export const Td = ({ className, ...props }) => (
   <td className={cn('border-b border-slate-100 px-3 py-2.5 align-top text-slate-800', className)} {...props} />
 );
 
 // ───────── Dialog ─────────
-export function Dialog({ open, onOpenChange, title, description, children, wide }: { open: boolean; onOpenChange: (open: boolean) => void; title: string; description?: string; children: ReactNode; wide?: boolean }) {
+export function Dialog({ open, onOpenChange, title, description, children, wide }) {
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
@@ -133,9 +130,9 @@ export function Dialog({ open, onOpenChange, title, description, children, wide 
   );
 }
 
-export function ConfirmDialog({ open, onOpenChange, title, description, confirmLabel = 'Confirm', danger, loading, onConfirm }: {
-  open: boolean; onOpenChange: (open: boolean) => void; title: string; description: string; confirmLabel?: string; danger?: boolean; loading?: boolean; onConfirm: () => void;
-}) {
+export function ConfirmDialog({ open, onOpenChange, title, description, confirmLabel = 'Confirm', danger, loading, onConfirm }
+
+) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange} title={title} description={description}>
       <div className="flex justify-end gap-2">
@@ -148,20 +145,20 @@ export function ConfirmDialog({ open, onOpenChange, title, description, confirmL
 
 // ───────── Tabs ─────────
 export const Tabs = TabsPrimitive.Root;
-export const TabsList = ({ className, ...props }: TabsPrimitive.TabsListProps) => (
+export const TabsList = ({ className, ...props }) => (
   <TabsPrimitive.List className={cn('inline-flex items-center gap-1 rounded-full bg-slate-100 p-1', className)} {...props} />
 );
-export const TabsTrigger = ({ className, ...props }: TabsPrimitive.TabsTriggerProps) => (
+export const TabsTrigger = ({ className, ...props }) => (
   <TabsPrimitive.Trigger
     className={cn('cursor-pointer rounded-full px-4 py-1 text-sm font-medium text-slate-600 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm', className)}
     {...props}
   />
 );
-export const TabsContent = ({ className, ...props }: TabsPrimitive.TabsContentProps) => <TabsPrimitive.Content className={cn('mt-3', className)} {...props} />;
+export const TabsContent = ({ className, ...props }) => <TabsPrimitive.Content className={cn('mt-3', className)} {...props} />;
 
 // ───────── Tooltip ─────────
 export const TooltipProvider = TooltipPrimitive.Provider;
-export function Tooltip({ content, children }: { content: ReactNode; children: ReactNode }) {
+export function Tooltip({ content, children }) {
   return (
     <TooltipPrimitive.Root delayDuration={150}>
       <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
@@ -177,19 +174,19 @@ export function Tooltip({ content, children }: { content: ReactNode; children: R
 // ───────── Dropdown menu ─────────
 export const DropdownMenu = DropdownPrimitive.Root;
 export const DropdownTrigger = DropdownPrimitive.Trigger;
-export const DropdownContent = ({ className, ...props }: DropdownPrimitive.DropdownMenuContentProps) => (
+export const DropdownContent = ({ className, ...props }) => (
   <DropdownPrimitive.Portal>
     <DropdownPrimitive.Content align="end" sideOffset={6} className={cn('z-50 min-w-48 rounded-md border border-slate-200 bg-white p-1 shadow-lg', className)} {...props} />
   </DropdownPrimitive.Portal>
 );
-export const DropdownItem = ({ className, ...props }: DropdownPrimitive.DropdownMenuItemProps) => (
+export const DropdownItem = ({ className, ...props }) => (
   <DropdownPrimitive.Item className={cn('flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm text-slate-800 outline-none data-[highlighted]:bg-slate-100', className)} {...props} />
 );
 
 // ───────── Feedback states ─────────
-export const Skeleton = ({ className }: { className?: string }) => <div className={cn('animate-pulse rounded bg-slate-200', className)} aria-hidden />;
+export const Skeleton = ({ className }) => <div className={cn('animate-pulse rounded bg-slate-200', className)} aria-hidden />;
 
-export function TableSkeleton({ rows = 5 }: { rows?: number }) {
+export function TableSkeleton({ rows = 5 }) {
   return (
     <div className="space-y-2 p-4" role="status" aria-label="Loading">
       {Array.from({ length: rows }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
@@ -197,7 +194,7 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   );
 }
 
-export function EmptyState({ title, description, action }: { title: string; description?: string; action?: ReactNode }) {
+export function EmptyState({ title, description, action }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 px-4 py-10 text-center">
       <Inbox className="h-8 w-8 text-slate-300" aria-hidden />
@@ -208,7 +205,7 @@ export function EmptyState({ title, description, action }: { title: string; desc
   );
 }
 
-export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+export function ErrorState({ message, onRetry }) {
   return (
     <div className="flex flex-col items-center gap-2 px-4 py-8 text-center" role="alert">
       <AlertTriangle className="h-7 w-7 text-red-500" aria-hidden />
@@ -218,7 +215,7 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
   );
 }
 
-export function Progress({ value, className, tone = 'teal' }: { value: number; className?: string; tone?: 'teal' | 'amber' | 'red' | 'green' }) {
+export function Progress({ value, className, tone = 'teal' }) {
   const color = { teal: 'bg-teal-700', amber: 'bg-amber-500', red: 'bg-red-500', green: 'bg-emerald-500' }[tone];
   return (
     <div className={cn('h-2 w-full overflow-hidden rounded-full bg-slate-200', className)} role="progressbar" aria-valuenow={Math.round(value)} aria-valuemin={0} aria-valuemax={100}>
@@ -228,6 +225,6 @@ export function Progress({ value, className, tone = 'teal' }: { value: number; c
 }
 
 /** Inline error banner for forms (shows server validation details). */
-export function FormError({ message }: { message?: string | null }) {
+export function FormError({ message }) {
   return message ? <p role="alert" className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{message}</p> : null;
 }
