@@ -46,7 +46,7 @@ Edit `prisma/schema.prisma`, then `npx prisma migrate dev --name <change>` (need
 1. Ingredient evidence does **not** prove a finished-product benefit.
 2. Distinguish ingredient-level, finished-product (this formula), other-formulation, different-concentration and contradictory evidence.
 3. Never fabricate studies, DOIs, PMIDs, results or evidence IDs. The only invented evidence is the PoC set listed in docs/RESEARCH_AND_ASSUMPTIONS.md (source "Internal clinical study", no DOI/PMID); do not add more without recording it there. Missing evidence is stated.
-4. Missing evidence is not proof a claim is false: use INCONCLUSIVE.
+4. NOT_SUPPORTED = the claim cannot be made on this evidence (contradicted, falls short, or no study is about the claimed benefit). INCONCLUSIVE = some study is about the claimed benefit and points the right way but is too weak or indirect. NOT_SUPPORTED never means "proven false"; the wording must say "not substantiated yet".
 5. Claude does all the judging: verdict, 0-100 score, which studies matter and every explanation. The backend must not score, filter by relevance, match keywords or override verdicts; it only gathers facts, validates the shape of the answer and stores it.
 6. Claude's output passes `validateAiAssessment` (shape and cited ids only) before saving. The scientific rules (for example SUPPORTED needs a study of this exact formula) live in the prompt and playbook.
 

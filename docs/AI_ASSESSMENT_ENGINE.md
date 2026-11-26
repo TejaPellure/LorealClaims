@@ -11,11 +11,11 @@
 6. **Store** the assessment, the role Claude gave each study, and immutable snapshots of the claim, formulation and evidence.
 
 ## What Claude receives
-- **System prompt** (`engine/prompt.ts`, version `claims-assess-v5`): the rules (below) plus the **evaluation playbook** (`engine/playbook.ts`). The bridge runs the CLI in an empty folder with the prompt on stdin, so nothing else influences an evaluation.
+- **System prompt** (`engine/prompt.ts`, version `claims-assess-v6`): the rules (below) plus the **evaluation playbook** (`engine/playbook.ts`). The bridge runs the CLI in an empty folder with the prompt on stdin, so nothing else influences an evaluation.
 - **User message**: compact JSON with the claim (wording, optional description, benefit chips, optional improvement, weeks, population), the formula (ingredient, percentage, role, sourced reference range if any) and the evidence records.
 
 ### Rules in the prompt
-Ingredient evidence is not finished-product proof; a study of this exact formula is the strongest evidence; first decide which studies are about the claimed benefit; compare concentration, population, duration, endpoint, quality and effect size; never invent evidence or ids; SUPPORTED needs a finished-product study of this exact formula; NOT_SUPPORTED when evidence contradicts the claim (for example this formula's own study measured the benefit and found nothing); missing evidence is INCONCLUSIVE, not false.
+Ingredient evidence is not finished-product proof; a study of this exact formula is the strongest evidence; first decide which studies are about the claimed benefit; compare concentration, population, duration, endpoint, quality and effect size; never invent evidence or ids; SUPPORTED needs a finished-product study of this exact formula; NOT_SUPPORTED when the claim cannot be made on this evidence (it is contradicted, falls short, or no study is about the claimed benefit at all; never "proven false", only "not substantiated yet"); INCONCLUSIVE only when some study is about the claimed benefit and points the right way but is too weak or indirect.
 
 ### Playbook (`engine/playbook.ts`)
 Reading the claim from all its parts, mapping claims to measurable endpoints (corneometry, TEWL, profilometry, sebumeter, lesion counts...), reading effect sizes ("up to X%" is a best case; a share of responders is not a percentage reduction), timeframe, dose and population caveats, an evidence-quality ladder, cosmetic versus medicinal wording, formula-level cautions, and writing for two audiences. It contains judgement rules, never study facts.

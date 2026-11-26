@@ -21,7 +21,7 @@ description: Evidence provenance, ingredient vs finished-product evidence, asses
 1. Ingredient benefit does not equal finished-product benefit.
 2. Decide which studies are about the claimed benefit; compare tested vs formulated concentration, population, duration, endpoint, design, quality and reported effect size against the claim.
 3. A 12-week result does not prove a 4-week benefit; a lower tested concentration does not prove a higher formulated one works as claimed.
-4. SUPPORTED needs a finished-product study of this exact formula. NOT_SUPPORTED needs evidence that contradicts the claim or falls short of it. Otherwise INCONCLUSIVE. Missing evidence is never "false".
+4. SUPPORTED needs a finished-product study of this exact formula. NOT_SUPPORTED = the claim cannot be made on this evidence: it contradicts or falls short of the claim, or no study is about the claimed benefit at all. INCONCLUSIVE = at least one study is about the claimed benefit and points the right way but is too indirect or weak to decide. A NOT_SUPPORTED verdict means "not substantiated yet", never "proven false".
 5. Reference concentration ranges are context, not proof of safety or efficacy.
 6. The score (0-100) is Claude's own rating of how strongly the evidence supports the claim, consistent with the verdict (the prompt asks SUPPORTED 70-100, INCONCLUSIVE 25-69, NOT_SUPPORTED 0-40). It is not a probability.
 7. Output is decision support for scientific evaluators, never legal or regulatory approval.
